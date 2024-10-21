@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { uploadAudio } from '../client'; // Importera din nya client.js
+import { uploadAudio } from '../client'; // Importera client.js
 
 const AudioUploader = () => {
   const [audioBlob, setAudioBlob] = useState(null);
