@@ -169,3 +169,6 @@ _Pvt_Extensions
 paket-files/
 
 
+/node_modules/.bin
+/node_modules
+/node_modules
