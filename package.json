@@ -1,10 +1,14 @@
 {
   "name": "frontend",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "react-scripts start"
+    "start": "react-scripts start",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"  
   },
   "keywords": [],
   "author": "",
@@ -31,6 +35,8 @@
   },
   "proxy": "http://localhost:3001",
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@vitejs/plugin-react": "^4.3.3",
+    "vite": "^5.4.10"
   }
 }

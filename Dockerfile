@@ -1,8 +1,14 @@
 FROM node:20-alpine
-RUN npm install -g nodemon
 EXPOSE 3000
+# Installera beroenden
 WORKDIR /app
-COPY . .
 RUN npm install
-ENV DEBUG='speechai_client:*'
-ENTRYPOINT [ "npm", "run", "dev"]
+# Kopiera resten av projektet
+COPY . .
+# Bygg applikationen för produktion
+RUN npm run build
+# Installera ett enkelt verktyg för att servera statiska filer
+RUN npm install -g serve
+ENV DEBUG='client:*'
+# Kör produktionsservern
+CMD ["npm", "run", "dev"]
