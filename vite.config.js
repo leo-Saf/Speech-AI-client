@@ -6,5 +6,6 @@ export default defineConfig({
   server: {
     host: '0.0.0.0', // Gör servern tillgänglig externt
     port: 5173,      // Den port Vite använder, mappad till 8080 i Docker Compose
+    open: true
   },
 });
