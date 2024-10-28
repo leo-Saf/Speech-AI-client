@@ -2,13 +2,13 @@
   "name": "frontend",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "index.jsx",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "react-scripts start",
+    "start": "vite",
     "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview"  
+    "build": "tsc && vite build",
+    "serve": "vite preview"
   },
   "keywords": [],
   "author": "",
@@ -18,8 +18,7 @@
     "flag-icon-css": "^4.1.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.27.0",
-    "react-scripts": "^5.0.1"
+    "react-router-dom": "^6.27.0"
   },
   "browserslist": {
     "production": [
@@ -33,7 +32,6 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:3001",
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@vitejs/plugin-react": "^4.3.3",

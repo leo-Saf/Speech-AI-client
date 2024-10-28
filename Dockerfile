@@ -1,5 +1,5 @@
 FROM node:20-alpine
-EXPOSE 3000
+EXPOSE 5173
 # Installera beroenden
 WORKDIR /app
 # Kopiera resten av projektet
