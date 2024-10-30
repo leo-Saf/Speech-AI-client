@@ -2,7 +2,9 @@ export const uploadAudio = async (blob) => {
   const formData = new FormData();
   formData.append('audio', blob, 'audio.webm'); // Lägg till Blob i FormData
 
-  const response = await fetch('/api/process-audio', {
+  const {SERVER_API_URL} = require('./URLs');
+
+  const response = await fetch(`${SERVER_API_URL}/api/process-audio`, {
 
     method: 'POST',
     body: formData,
