@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { uploadAudio } from '../client'; // Importera din nya client.js
+import { uploadAudio } from '../client'; // Importera client.js
 
 const AudioUploader = () => {
   const [audioBlob, setAudioBlob] = useState(null);
@@ -12,15 +12,24 @@ const AudioUploader = () => {
     const setupRecorder = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' }); // Använder audio/webm format
+  
+        // Kontrollera om 'audio/webm' stöds av webbläsaren
+        let options = { mimeType: 'audio/webm' };
+        if (!MediaRecorder.isTypeSupported('audio/webm')) {
+          console.warn('audio/webm stöds inte. Försöker använda audio/wav istället.');
+          options = { mimeType: 'audio/wav' }; // fallback om webm inte stöds
+        }
+  
+        const recorder = new MediaRecorder(stream, options); 
         setMediaRecorder(recorder);
       } catch (error) {
         console.error('Fel vid åtkomst till mikrofonen:', error);
       }
     };
-
+  
     setupRecorder();
   }, []);
+  
 
   const handleStartRecording = () => {
     if (!mediaRecorder) return;
