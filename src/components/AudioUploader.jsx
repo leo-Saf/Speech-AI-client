@@ -13,16 +13,28 @@ const AudioUploader = () => {
 
   useEffect(() => {
     const setupRecorder = async () => {
+      if (!window.MediaRecorder) {
+        alert('Din webbläsare stöder inte ljudinspelning.');
+        return;
+      }
+  
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         let options = { mimeType: 'audio/webm' };
         if (!MediaRecorder.isTypeSupported('audio/webm')) {
           console.warn('audio/webm stöds inte. Försöker använda audio/wav istället.');
-          options = { mimeType: 'audio/wav' }; // fallback om webm inte stöds
+          options = { mimeType: 'audio/wav' };
         }
-
-        const recorder = new MediaRecorder(stream, options); 
-        setMediaRecorder(recorder);
+  
+        try {
+          const recorder = new MediaRecorder(stream, options);
+          setMediaRecorder(recorder);
+        } catch (e) {
+          console.warn('Ingen MIME-typ stöds, använder ingen MIME-typ alls');
+          const recorder = new MediaRecorder(stream);
+          setMediaRecorder(recorder);
+        }
+  
       } catch (error) {
         console.error('Fel vid åtkomst till mikrofonen:', error); 
       }
@@ -30,6 +42,7 @@ const AudioUploader = () => {
   
     setupRecorder();
   }, []);
+  
 
   const handleStartRecording = () => {
     if (!mediaRecorder) return;
