@@ -20,7 +20,7 @@ export const promptGPT = async (prompt) => {
   const response = await fetch(`${SERVER_API_URL}/api/prompt`,
     {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json'}, //ska det vara , efter /json?
+      headers: { 'Content-Type': 'application/json'}, 
       body: JSON.stringify({ prompt: prompt }),
     });
 
