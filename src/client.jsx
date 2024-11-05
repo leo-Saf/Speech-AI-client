@@ -15,3 +15,19 @@ export const uploadAudio = async (blob) => {
 
   return await response.blob(); // Returnera bearbetat ljud som Blob från servern
 };
+
+export const promptGPT = async (prompt) => {
+  const response = await fetch(`${SERVER_API_URL}/api/prompt`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json'}, //ska det vara , efter /json?
+      body: JSON.stringify({ prompt: prompt }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Response error');
+    }
+
+    const data = await response.json();
+    return data;
+};

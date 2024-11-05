@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { uploadAudio } from '../client';  // Importera client.js
+import { uploadAudio } from '../client';
 
 const AudioUploader = () => {
   const [audioBlob, setAudioBlob] = useState(null);
