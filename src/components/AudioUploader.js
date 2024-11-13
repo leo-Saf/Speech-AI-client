@@ -9,6 +9,7 @@ const AudioUploader = () => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [responseAudio, setResponseAudio] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [audioChunks, setAudioChunks] = useState([]); // New state to hold chunks
   const audioRef = useRef(null);
   const canvasRef = useRef(null);
   const analyserRef = useRef(null);
@@ -93,7 +94,6 @@ const AudioUploader = () => {
 
   const handleStartRecording = () => {
     if (!mediaRecorder) return;
-
     if (isPaused) {
       mediaRecorder.resume();
       setIsPaused(false);
@@ -102,23 +102,19 @@ const AudioUploader = () => {
       setIsRecording(true);
       silenceHistory.length = 0;
     }
-
+  
     console.log('MediaRecorder state:', mediaRecorder.state);
-
+  
     if (recordingTimeout) clearTimeout(recordingTimeout);
     recordingTimeout = setTimeout(() => {
       handleStopRecording();
     }, 5000); // 5 sekunder för automatisk stoppning
 
     mediaRecorder.ondataavailable = (event) => {
-      console.log('Inspelad data:', event.data);
       if (event.data.size > 0) {
         const audioBlob = new Blob([event.data], { type: 'audio/webm' });
         console.log('AudioBlob:', audioBlob);
-        handleUpload(audioBlob);  // skicka direkt till funktionen för att slippa asynchronous problem
-        //setAudioBlob(audioBlob); // att ta bort detta fixar asynchronous problemet
-      } else {
-        console.error("Ingen ljuddata i event.data");
+        handleUpload(audioBlob);
       }
     };
   };
@@ -131,12 +127,13 @@ const AudioUploader = () => {
       setIsPaused(false);
       clearTimeout(silenceTimeout);
 
-      /*if (audioBlob) { // att ta bort hela denna if-satsen fixar asynchronous problemet
-        console.log("Laddar upp ljuddata..."); //
-        handleUpload(audioBlob); //
-      } else { //
-        console.error("Ingen ljuddata att bearbeta."); //
-      } //*/
+      if (audioChunks.length > 0) {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        setAudioBlob(audioBlob);
+        handleUpload(audioBlob);
+      } else {
+        console.error("No audio data to process.");
+      }
     }
   };
 
