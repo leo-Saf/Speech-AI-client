@@ -3,13 +3,13 @@ import { uploadAudio } from '../client';
 import '../style.css';
 
 const AudioUploader = () => {
-  const [audioBlob, setAudioBlob] = useState(null);
+  //const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [responseAudio, setResponseAudio] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [audioChunks, setAudioChunks] = useState([]); // New state to hold chunks
+  const [audioChunks, setAudioChunks] = useState([]); 
   const audioRef = useRef(null);
   const canvasRef = useRef(null);
   const analyserRef = useRef(null);
@@ -129,7 +129,7 @@ const AudioUploader = () => {
 
       if (audioChunks.length > 0) {
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        setAudioBlob(audioBlob);
+        setAudioChunks(audioBlob);
         handleUpload(audioBlob);
       } else {
         console.error("No audio data to process.");
