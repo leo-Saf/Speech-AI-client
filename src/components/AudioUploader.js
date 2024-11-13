@@ -115,7 +115,8 @@ const AudioUploader = () => {
       if (event.data.size > 0) {
         const audioBlob = new Blob([event.data], { type: 'audio/webm' });
         console.log('AudioBlob:', audioBlob);
-        setAudioBlob(audioBlob);
+        handleUpload(audioBlob);  // skicka direkt till funktionen för att slippa asynchronous problem
+        //setAudioBlob(audioBlob); // att ta bort detta fixar asynchronous problemet
       } else {
         console.error("Ingen ljuddata i event.data");
       }
@@ -130,12 +131,12 @@ const AudioUploader = () => {
       setIsPaused(false);
       clearTimeout(silenceTimeout);
 
-      if (audioBlob) {
-        console.log("Laddar upp ljuddata...");
-        handleUpload(audioBlob);
-      } else {
-        console.error("Ingen ljuddata att bearbeta.");
-      }
+      /*if (audioBlob) { // att ta bort hela denna if-satsen fixar asynchronous problemet
+        console.log("Laddar upp ljuddata..."); //
+        handleUpload(audioBlob); //
+      } else { //
+        console.error("Ingen ljuddata att bearbeta."); //
+      } //*/
     }
   };
 
