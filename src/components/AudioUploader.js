@@ -105,10 +105,10 @@ const AudioUploader = () => {
   
     console.log('MediaRecorder state:', mediaRecorder.state);
   
-    if (recordingTimeout) clearTimeout(recordingTimeout);
+    /*if (recordingTimeout) clearTimeout(recordingTimeout);
     recordingTimeout = setTimeout(() => {
       handleStopRecording();
-    }, 5000); // 5 sekunder för automatisk stoppning
+    }, 5000); // 5 sekunder för automatisk stoppning*/ // behövs inte längre
 
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
@@ -134,6 +134,8 @@ const AudioUploader = () => {
       } else {
         console.error("No audio data to process.");
       }
+
+      setAudioChunks([]); // tar bort gammalt data från audio chunk eftersom denna funktion ska inte räknas som paus funktionen
     }
   };
 
