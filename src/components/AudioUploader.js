@@ -3,12 +3,13 @@ import { uploadAudio } from '../client';
 import '../style.css';
 
 const AudioUploader = () => {
-  const [audioBlob, setAudioBlob] = useState(null);
+  //const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [responseAudio, setResponseAudio] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [audioChunks, setAudioChunks] = useState([]); 
   const audioRef = useRef(null);
   const canvasRef = useRef(null);
   const analyserRef = useRef(null);
@@ -93,7 +94,6 @@ const AudioUploader = () => {
 
   const handleStartRecording = () => {
     if (!mediaRecorder) return;
-
     if (isPaused) {
       mediaRecorder.resume();
       setIsPaused(false);
@@ -102,22 +102,19 @@ const AudioUploader = () => {
       setIsRecording(true);
       silenceHistory.length = 0;
     }
-
+  
     console.log('MediaRecorder state:', mediaRecorder.state);
-
-    if (recordingTimeout) clearTimeout(recordingTimeout);
+  
+    /*if (recordingTimeout) clearTimeout(recordingTimeout);
     recordingTimeout = setTimeout(() => {
       handleStopRecording();
-    }, 5000); // 5 sekunder för automatisk stoppning
+    }, 5000); // 5 sekunder för automatisk stoppning*/ // behövs inte längre
 
     mediaRecorder.ondataavailable = (event) => {
-      console.log('Inspelad data:', event.data);
       if (event.data.size > 0) {
         const audioBlob = new Blob([event.data], { type: 'audio/webm' });
         console.log('AudioBlob:', audioBlob);
-        setAudioBlob(audioBlob);
-      } else {
-        console.error("Ingen ljuddata i event.data");
+        handleUpload(audioBlob);
       }
     };
   };
@@ -130,12 +127,15 @@ const AudioUploader = () => {
       setIsPaused(false);
       clearTimeout(silenceTimeout);
 
-      if (audioBlob) {
-        console.log("Laddar upp ljuddata...");
+      if (audioChunks.length > 0) {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        setAudioChunks(audioBlob);
         handleUpload(audioBlob);
       } else {
         console.error("Ingen ljuddata att bearbeta.");
       }
+
+      setAudioChunks([]); // tar bort gammalt data från audio chunk eftersom denna funktion ska inte räknas som paus funktionen
     }
   };
 
