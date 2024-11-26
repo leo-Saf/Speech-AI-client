@@ -1,92 +1,107 @@
-// App.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './components/Home';
-import Login from './components/Login';
-import AuthModal from './components/AuthModal';
 import HistoryPage from './components/HistoryPage';
 import AudioUploader from './components/AudioUploader';
-import { signOut, onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebaseConfig';
+import Register from './components/Register';
+import Login from './components/Login';
+
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './style.css';
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentScreen, setCurrentScreen] = useState(null);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Håller koll på om användaren är inloggad
+  const [user, setUser] = useState(null); // Sparar information om den inloggade användaren
+  const [authMode, setAuthMode] = useState(null); // Styr vilken modal (Login/Register) som ska visas
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setIsAuthenticated(true);
-        setUser(user);
-      } else {
-        setIsAuthenticated(false);
-        setUser(null);
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const handleOpenAuthModal = (mode) => {
-    setCurrentScreen(mode);
-    setShowAuthModal(true);
+  const handleRegisterSuccess = () => {
+    setAuthMode(null); // Stänger modalen
+    toast.success('Registrering lyckades! Logga in för att fortsätta.');
   };
 
-  const handleCloseAuthModal = () => {
-    setShowAuthModal(false);
+  const handleLoginSuccess = (userData) => {
+    setIsAuthenticated(true);
+    setUser(userData);
+    setAuthMode(null); // Stänger modalen
+    toast.success('Inloggning lyckades! Välkommen.');
   };
 
-  const handleLogout = async () => {
-    await signOut(auth);
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+    toast.info('Du har loggat ut.');
   };
 
-  const handleLoginSuccess = () => {
-    setShowAuthModal(false);
+  const handleAuthClose = () => {
+    setAuthMode(null); // Stänger authMode
   };
 
   return (
     <Router>
       <div>
-        <div className="auth-buttons">
+        <ToastContainer position="top-center" autoClose={3000} />
+        <nav className="auth-buttons">
           {isAuthenticated ? (
             <>
-              <span>Välkommen, {user.displayName || 'Användare'}</span>
-              <button className="logout" onClick={handleLogout}>Logga ut</button>
+              <span>Välkommen, {user ? user.Email : 'Användare'}</span>
+              <button className="logout" onClick={handleLogout}>
+                Logga ut
+              </button>
               <Link to="/historik">
                 <button>Visa Historik</button>
               </Link>
-              
+              <Link to="/inspelning">
+                <button>Inspelning</button>
+              </Link>
             </>
           ) : (
             <>
-              <button onClick={() => handleOpenAuthModal('login')}>Logga in</button>
-              <button onClick={() => handleOpenAuthModal('register')}>Registrera</button>
+              <span>Du är som gäst.</span>
+              <button onClick={() => setAuthMode('login')}>Logga in</button>
+              <button onClick={() => setAuthMode('register')}>Registrera</button>
             </>
           )}
-        </div>
+        </nav>
 
-        {loading ? (
-          <div>Laddar...</div>
-        ) : (
-          <Routes>
-            <Route path="/historik" element={<HistoryPage />} />
-            <Route path="/inspelning" element={<AudioUploader />} />
-            <Route path="/" element={<Home />} />
-          </Routes>
-        )}
+        <Routes>
+          {isAuthenticated ? (
+            <>
+              <Route path="/historik" element={<HistoryPage user={user} />} />
+              <Route path="/inspelning" element={<AudioUploader user={user} />} />
+            </>
+          ) : (
+            <Route
+              path="*"
+              element={
+                <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                  <h2>Du måste logga in för att komma åt denna sida.</h2>
+                  <button onClick={() => setAuthMode('login')}>Logga in</button>
+                </div>
+              }
+            />
+          )}
+          <Route path="/" element={<Home />} />
+        </Routes>
 
-        {showAuthModal && (
-          <AuthModal 
-            mode={currentScreen} 
-            onClose={handleCloseAuthModal} 
-            onLoginSuccess={handleLoginSuccess} // Skicka in funktionen som prop
-          />
+        {/* Rendera modal för inloggning/registrering endast när en knapp trycks */}
+        {authMode === 'login' && (
+          <div className="auth-container">
+            <Login
+              onLoginSuccess={handleLoginSuccess}
+              onClose={() => setAuthMode(null)}
+            />
+          </div>
         )}
+        {authMode === 'register' && (
+          <div className="auth-container">
+            <Register
+              onRegisterSuccess={handleRegisterSuccess}
+              onClose={() => setAuthMode(null)}
+            />
+          </div>
+        )}
+        
       </div>
     </Router>
   );

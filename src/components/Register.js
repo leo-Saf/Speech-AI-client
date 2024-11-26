@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 
-const Login = ({ onLoginSuccess, onClose }) => {
+const Register = ({ onRegisterSuccess, onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch('http://localhost:3000/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -20,13 +20,13 @@ const Login = ({ onLoginSuccess, onClose }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Inloggning misslyckades.');
+        throw new Error(data.error || 'Registrering misslyckades.');
       }
 
-      setMessage('Inloggning lyckades! Välkommen tillbaka!');
-      onLoginSuccess(data);
+      setMessage('Registrering lyckades! Logga in för att fortsätta.');
+      onRegisterSuccess();
     } catch (error) {
-      console.error('Fel vid inloggning:', error);
+      console.error('Fel vid registrering:', error);
       setMessage(`Fel: ${error.message}`);
     } finally {
       setIsLoading(false);
@@ -35,8 +35,8 @@ const Login = ({ onLoginSuccess, onClose }) => {
 
   return (
     <div>
-      <h1>Logga in</h1>
-      <form onSubmit={handleLogin}>
+      <h1>Registrera</h1>
+      <form onSubmit={handleRegister}>
         <div>
           <label>
             Email:
@@ -54,21 +54,21 @@ const Login = ({ onLoginSuccess, onClose }) => {
             Lösenord:
             <input
               type="password"
-              placeholder="password"
               value={password}
+              placeholder="password"
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </label>
         </div>
         <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Laddar...' : 'Logga in'}
+          {isLoading ? 'Laddar...' : 'Registrera'}
         </button>
       </form>
-      <button onClick={onClose} className="close-button">Stäng</button>
       <p>{message}</p>
+      <button onClick={onClose} className="close-button">Stäng</button>
     </div>
   );
 };
 
-export default Login;
+export default Register;

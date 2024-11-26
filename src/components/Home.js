@@ -1,9 +1,12 @@
 // Home.js
-import React, { useState } from 'react';
-
+import React from 'react';
 import AudioUploader from './AudioUploader';
 
 const Home = () => {
+ 
+
+ 
+
   return (
     <div>
       <h1>Välkommen till Språkinlärning</h1>

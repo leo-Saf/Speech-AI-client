@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { getDatabase, ref, get } from 'firebase/database';
 import { useNavigate } from 'react-router-dom';
-import { auth, db } from '../firebaseConfig';
 import '../style.css';
 
 const HistoryPage = () => {
