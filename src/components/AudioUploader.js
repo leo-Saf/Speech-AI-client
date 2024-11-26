@@ -3,7 +3,6 @@ import { uploadAudio } from '../client';
 import '../style.css';
 
 const AudioUploader = () => {
-  //const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -16,11 +15,10 @@ const AudioUploader = () => {
   const audioContextRef = useRef(null);
   const microphoneRef = useRef(null);
 
-  const MAX_SILENCE_TIME = 5000;
+  const MAX_SILENCE_TIME = 3000;
   const SILENCE_THRESHOLD = 30;
   const silenceHistory = [];
   let silenceTimeout = null;
-  let recordingTimeout = null;
 
   useEffect(() => {
     const setupRecorder = async () => {
@@ -60,7 +58,7 @@ const AudioUploader = () => {
 
       if (silenceHistory.length > 10) silenceHistory.shift();
 
-      const isSilent = silenceHistory.every(level => level < SILENCE_THRESHOLD);
+      const isSilent = silenceHistory.every((level) => level < SILENCE_THRESHOLD);
 
       if (isSilent && silenceHistory.length === 10) {
         if (!silenceTimeout) {
@@ -102,13 +100,8 @@ const AudioUploader = () => {
       setIsRecording(true);
       silenceHistory.length = 0;
     }
-  
+
     console.log('MediaRecorder state:', mediaRecorder.state);
-  
-    /*if (recordingTimeout) clearTimeout(recordingTimeout);
-    recordingTimeout = setTimeout(() => {
-      handleStopRecording();
-    }, 5000); // 5 sekunder för automatisk stoppning*/ // behövs inte längre
 
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
@@ -122,20 +115,9 @@ const AudioUploader = () => {
   const handleStopRecording = () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
-      clearTimeout(recordingTimeout);
       setIsRecording(false);
       setIsPaused(false);
       clearTimeout(silenceTimeout);
-
-      if (audioChunks.length > 0) {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        setAudioChunks(audioBlob);
-        handleUpload(audioBlob);
-      } else {
-        console.error("No audio data to process.");
-      }
-
-      setAudioChunks([]); // tar bort gammalt data från audio chunk eftersom denna funktion ska inte räknas som paus funktionen
     }
   };
 
@@ -163,7 +145,14 @@ const AudioUploader = () => {
 
   useEffect(() => {
     if (responseAudio && audioRef.current) {
-      audioRef.current.play();
+      const audioElement = audioRef.current;
+      audioElement.src = responseAudio;
+      audioElement.play().catch((error) => console.error('Fel vid uppspelning..', error));
+
+      audioElement.onended = () => {
+        console.log('AI svarat. Spelar in...');
+        handleStartRecording();
+      };
     }
   }, [responseAudio]);
 
@@ -174,11 +163,11 @@ const AudioUploader = () => {
         {!isRecording ? (
           <button onClick={handleStartRecording} disabled={loading} className="btn start-btn">
             Starta inspelning
-          </button>
+            </button>
         ) : isPaused ? (
           <button onClick={handleStartRecording} disabled={loading} className="btn resume-btn">
             Återuppta inspelning
-          </button>
+            </button>
         ) : (
           <>
             <button onClick={handleStopRecording} disabled={loading} className="btn stop-btn">
@@ -199,7 +188,8 @@ const AudioUploader = () => {
       {responseAudio && (
         <div className="audio-preview">
           <h3>Bearbetat ljud</h3>
-          <audio ref={audioRef} src={responseAudio} controls className="audio-player"></audio>
+          /// <audio ref={audioRef} src={responseAudio} controls className="audio-player"></audio>
+          <audio ref={audioRef} controls className="audio-player"></audio>
         </div>
       )}
     </div>
