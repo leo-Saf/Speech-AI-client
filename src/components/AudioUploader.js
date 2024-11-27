@@ -167,11 +167,11 @@ const AudioUploader = () => {
 
   return (
     <div className="audio-uploader">
-      <h2 className="title">Spela in ett ljud</h2>
+      <h2 className="title">Start recording</h2>
       <div className="recording-controls">
         {!isRecording ? (
           <button onClick={handleStartRecording} disabled={loading} className="btn start-btn">
-            Starta inspelning
+            Start recording
           </button>
         ) : isPaused ? (
           <button onClick={handleStartRecording} disabled={loading} className="btn resume-btn">

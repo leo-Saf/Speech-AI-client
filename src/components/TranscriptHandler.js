@@ -4,13 +4,16 @@ const TranscriptHandler = () => {
   const [status, setStatus] = useState('Not Connected');
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState(null);
-
-  // Got duplicates, so this checks for duplicates of the same word/sentence
+  const [language, setLanguage] = useState('');
   const lastTranscriptRef = React.useRef('');
+
 
   useEffect(() => {
     let mediaRecorder;
     let socket;
+
+    if (!language) 
+    return;
 
     const setupTranscription = async () => {
       try {
@@ -22,9 +25,13 @@ const TranscriptHandler = () => {
         }
 
         mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+        
+        console.log('Selected language:', language);
+        // Dynamic WebSocket URL that changes language for the selected language of the user
+        const socketUrl = `wss://api.deepgram.com/v1/listen?language=${language}`;
+        console.log('WebSocket URL:', socketUrl);
 
-        // Create WebSocket connection
-        socket = new WebSocket('wss://api.deepgram.com/v1/listen', [
+        socket = new WebSocket(socketUrl, [
           'token',
           'e2998f677895517095fd772b3810024fb1340dfb',
         ]);
@@ -33,7 +40,7 @@ const TranscriptHandler = () => {
           setStatus('Connected');
           console.log('WebSocket connected');
 
-          // Send audio data to WebSocket server
+          
           mediaRecorder.addEventListener('dataavailable', (event) => {
             if (event.data.size > 0 && socket.readyState === 1) {
               socket.send(event.data);
@@ -49,10 +56,9 @@ const TranscriptHandler = () => {
             const newTranscript = received.channel.alternatives[0]?.transcript || '';
 
             if (newTranscript && received.is_final) {
-
               if (newTranscript !== lastTranscriptRef.current) {
                 setTranscript((prev) => prev + newTranscript + ' ');
-                lastTranscriptRef.current = newTranscript; 
+                lastTranscriptRef.current = newTranscript;
                 console.log('Final transcript:', newTranscript);
               }
             }
@@ -63,6 +69,7 @@ const TranscriptHandler = () => {
 
         socket.onclose = () => {
           setStatus('Disconnected');
+          setTranscript(''); 
           console.log('WebSocket closed');
         };
 
@@ -81,14 +88,44 @@ const TranscriptHandler = () => {
       if (mediaRecorder) mediaRecorder.stop();
       if (socket) socket.close();
     };
-  }, []); 
+  }, [language]); 
+
+  useEffect(() => {
+    setTranscript('');
+  }, [language]);
+
+  const handleLanguageChange = (e) => {
+    setLanguage(e.target.value);  // Update language state based on user selection
+  };
 
   return (
     <div>
+      <div className='language-selector'>
+        <label htmlFor="language-selector"></label>
+        <select
+          id="language-selector"
+          value={language}
+          onChange={handleLanguageChange}
+        >
+          <option value="">Select Language</option>
+          <option value="en">English🇬🇧</option>
+          <option value="es">Spanish🇪🇸</option>
+          <option value="de">German🇩🇪</option>
+          <option value="fr">French🇫🇷</option>
+          <option value="sv">Swedish🇸🇪</option>
+        </select>
+      </div>
+
       <div style={{ border: '1px solid #1a202c', padding: '10px', marginTop: '20px' }}>
         <h3>Transcription:</h3>
         <p style={{ whiteSpace: 'pre-wrap', color: 'white' }}>{transcript}</p>
+        {language && (
+          <div>
+
+          </div>
+        )}
       </div>
+
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );

@@ -207,6 +207,32 @@ button:hover {
   margin: 20px auto;
 }
 
+/* Styling for the drop down menu */
+.language-selector{
+  margin: 10px 0;
+  }
+  .language-selector select {
+    font-size: 14px;
+    padding: 5px 15px;
+    border: 1px solid#0056b3;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    width: 157px;
+    cursor: pointer;
+    /* Maybe change? */
+    /*appearance: none; */
+  }
+  
+  .language-selector select:hover {
+    background-color: #0056b3;
+  }
+  
+  .language-selector select:focus {
+    outline: none;
+    border-color: #63b3ed;
+  }
+  
 .back-button:hover {
   background-color: #d32f2f;
 }

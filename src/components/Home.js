@@ -7,7 +7,7 @@ import TranscriptHandler from './TranscriptHandler';
 const Home = () => {
   return (
     <div>
-      <h1>Välkommen till Språkinlärning</h1>
+      <h1>Welcome to SpeechAI</h1>
       <AudioUploader /> {}
       <TranscriptHandler /> {}
     </div>
