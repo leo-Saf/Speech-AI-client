@@ -12,6 +12,7 @@ const TranscriptHandler = () => {
     let mediaRecorder;
     let socket;
 
+    // Return nothing if no language is selected
     if (!language) 
     return;
 
@@ -50,6 +51,7 @@ const TranscriptHandler = () => {
           mediaRecorder.start(250); 
         };
 
+        // TODO fixa bättre hantering av dubbletter
         socket.onmessage = (message) => {
           try {
             const received = JSON.parse(message.data);
@@ -93,9 +95,10 @@ const TranscriptHandler = () => {
   useEffect(() => {
     setTranscript('');
   }, [language]);
-
+  
+    // Update language state based on user selection
   const handleLanguageChange = (e) => {
-    setLanguage(e.target.value);  // Update language state based on user selection
+    setLanguage(e.target.value);  
   };
 
   return (
