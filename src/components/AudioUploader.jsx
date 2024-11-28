@@ -5,8 +5,14 @@ import { uploadAudio } from '../client';
 import '../style.css';
 >>>>>>> Stashed changes:src/components/AudioUploader.js
 
+<<<<<<< Updated upstream:src/components/AudioUploader.jsx
 const AudioUploader = () => {
   const [audioBlob, setAudioBlob] = useState(null);
+=======
+
+const AudioUploader = ({ userId }) => {
+  //const [audioBlob, setAudioBlob] = useState(null);
+>>>>>>> Stashed changes:src/components/AudioUploader.js
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -17,6 +23,7 @@ const AudioUploader = () => {
   const analyserRef = useRef(null);
   const audioContextRef = useRef(null);
   const microphoneRef = useRef(null);
+  
 
   const MAX_SILENCE_TIME = 5000;
   const SILENCE_THRESHOLD = 30;
@@ -176,10 +183,24 @@ const AudioUploader = () => {
     }
   };
 
+  
   const handleUpload = async (blob) => {
     setLoading(true);
+  
     try {
+<<<<<<< Updated upstream:src/components/AudioUploader.jsx
       const response = await uploadAudio(blob);  // Försök att ladda upp ljudfilen
+=======
+      if (!userId) {
+        throw new Error('Användar-ID saknas....');
+      }
+      console.log('Uppladdar ljud med användar-ID:', userId);
+  
+      
+      // Logga datan som skickas till backend
+    console.log('Data som skickas till backend:', blob);
+      const response = await uploadAudio(blob, userId);
+>>>>>>> Stashed changes:src/components/AudioUploader.js
       console.log('Uppladdning lyckades:', response);
       const audioURL = URL.createObjectURL(response);
       setResponseAudio(audioURL);  // Sätt ljudfilen som en URL att spela upp

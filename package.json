@@ -38,7 +38,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+<<<<<<< Updated upstream
   },  
+=======
+  },
+  "proxy": "http://localhost:3001",
+>>>>>>> Stashed changes
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@vitejs/plugin-react": "^4.3.3",

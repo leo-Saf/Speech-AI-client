@@ -1,6 +1,12 @@
-export const uploadAudio = async (blob) => {
+//src/client.js
+
+export const uploadAudio = async (audioBlob, userId) => {
+  if (!userId) {
+    throw new Error('Användar-ID saknas. Du måste vara inloggad.');
+  }
   const formData = new FormData();
-  formData.append('audio', blob, 'audio.webm'); // Lägg till Blob i FormData
+  formData.append('audio', audioBlob, 'audio.webm'); 
+  formData.append('userId', userId);
 
   const response = await fetch('/api/process-audio', {
 

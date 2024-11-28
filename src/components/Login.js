@@ -10,6 +10,7 @@ const Login = ({ onClose, onLoginSuccess }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+<<<<<<< Updated upstream
     try {
       await signInWithEmailAndPassword(auth, email, password);
       console.log('Inloggad');
@@ -17,6 +18,36 @@ const Login = ({ onClose, onLoginSuccess }) => {
       onClose(); // Stäng modalen efter inloggning
     } catch (err) {
       setError(err.message); // Sätt felmeddelande om inloggning misslyckas
+=======
+    setIsLoading(true);
+
+    console.log("Data som skickas till backend:", { email, password });
+
+    try {
+      const response = await fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Inloggning misslyckades.');
+      }
+      
+      if (!data.userId) {
+        throw new Error('Användar-ID saknas i backend-responsen.');
+      }
+
+      setMessage('Inloggning lyckades! Välkommen tillbaka!');
+      onLoginSuccess(data);
+    } catch (error) {
+      console.error('Fel vid inloggning:', error);
+      setMessage(`Fel: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+>>>>>>> Stashed changes
     }
   };
 
