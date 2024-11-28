@@ -23,6 +23,13 @@ const Login = ({ onLoginSuccess, onClose }) => {
         throw new Error(data.error || 'Inloggning misslyckades.');
       }
 
+      // Kontrollera att userId finns i svaret
+      if (!data.userId && (!data.user || !data.user.id)) {
+        throw new Error('Backend skickade inte användar-ID!');
+      }
+      
+
+
       setMessage('Inloggning lyckades! Välkommen tillbaka!');
       onLoginSuccess(data);
     } catch (error) {

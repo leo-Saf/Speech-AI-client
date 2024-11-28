@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { uploadAudio } from '../client';
 import '../style.css';
 
-const AudioUploader = () => {
+const AudioUploader = ({ userId }) => {
   //const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -149,7 +149,11 @@ const AudioUploader = () => {
   const handleUpload = async (blob) => {
     setLoading(true);
     try {
-      const response = await uploadAudio(blob);
+      const uploadId = userId || "guest"; // Använd "guest" om userId saknas
+    console.log('Uppladdar ljud med ID:', uploadId);
+    console.log('Data som skickas till backend:', blob);
+
+    const response = await uploadAudio(blob, uploadId);
       console.log('Uppladdning lyckades:', response);
       const audioURL = URL.createObjectURL(response);
       setResponseAudio(audioURL);
