@@ -21,10 +21,21 @@ const App = () => {
   };
 
   const handleLoginSuccess = (userData) => {
-    setIsAuthenticated(true);
-    setUser(userData);
+    console.log('Användardata från backend:', userData); // Logga användardata
+    // Kontrollera alternativa strukturer
+    if (userData?.userId) {
+      setIsAuthenticated(true);
+      setUser({
+        id: userData.userId,
+        email: userData.Email,
+        admin: userData.Admin,
+      });
     setAuthMode(null); // Stänger modalen
     toast.success('Inloggning lyckades! Välkommen.');
+    }
+   else {
+    toast.error('Inloggning misslyckades! Ingen användar-ID hittades.');
+   }
   };
 
   const handleLogout = () => {
@@ -68,8 +79,8 @@ const App = () => {
         <Routes>
           {isAuthenticated ? (
             <>
-              <Route path="/historik" element={<HistoryPage user={user} />} />
-              <Route path="/inspelning" element={<AudioUploader user={user} />} />
+              <Route path="/historik" element={<HistoryPage userId={user?.id} />} />
+              <Route path="/inspelning" element={<AudioUploader userId={user?.id} />} />
             </>
           ) : (
             <Route
@@ -82,7 +93,7 @@ const App = () => {
               }
             />
           )}
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home user={user} />} />
         </Routes>
 
         {/* Rendera modal för inloggning/registrering endast när en knapp trycks */}
