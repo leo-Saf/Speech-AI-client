@@ -1,82 +1,71 @@
-// HistoryPage.js
 import React, { useEffect, useState } from 'react';
-import { getDatabase, ref, get } from 'firebase/database';
-import { useNavigate } from 'react-router-dom';
-import '../style.css';
+import axios from 'axios';
 
-const HistoryPage = () => {
+const HistoryPage = ({ userId }) => {
   const [conversations, setConversations] = useState([]);
-  const [user, setUser] = useState(null); // För att hålla reda på den inloggade användaren
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Kontrollera om användaren är inloggad och hämta konversationer
-  useEffect(() => {
-    const fetchData = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        setUser(user); // Sätt användaren
-        const conversationsRef = ref(db, 'conversations/'); // Hämta konversationer från databasen
+  // Funktion för att hämta användarens konversationer
+  const fetchConversations = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        try {
-          const snapshot = await get(conversationsRef); // Hämta data från Firebase
-          if (snapshot.exists()) {
-            const data = snapshot.val();
-            console.log('Data från Firebase:', data);
-
-            // Skapa en lista med konversationerna
-            const conversationsList = Object.keys(data).map(key => ({
-              id: key,
-              ...data[key], // Lägg till alla fält från konversationen
-            }));
-            setConversations(conversationsList); // Uppdatera state med konversationerna
-          } else {
-            console.log('Inga konversationer tillgängliga.');
-          }
-        } catch (error) {
-          console.log('Fel vid hämtning av konversationer:', error);
-        }
+      const response = await axios.get(`http://localhost:3000/get-user-conversations/${userId}`);
+      setConversations(response.data);
+    } catch (err) {
+      if (err.response && err.response.status === 404) {
+        setError('Inga konversationer hittades.');
       } else {
-        console.log('Ingen användare är inloggad');
-        navigate('/'); // Navigera till startsidan om användaren inte är inloggad
+        setError('Ett fel uppstod vid hämtning av konversationer.');
       }
-    };
-
-    fetchData();
-  }, []); // Kör endast vid komponentladdning
-
-  const handleGoBack = () => {
-    navigate('/'); // Navigera till hemsidan
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return (
-    <div className="history-container">
-      <h2>Historik</h2>
-      {user && <p>Välkommen, {user.displayName || 'Användare'}!</p>} {/* Visa användarens namn */}
-      <ul>
-        {conversations.length > 0 ? (
-          conversations.map((conversation) => (
-            <li key={conversation.id}>
-              <p><strong>Prompt:</strong> {conversation.Prompt}</p>
-              <p><strong>Answer:</strong> {conversation.Answer}</p>
-              <p><strong>Date:</strong> {conversation.Date}</p>
+  useEffect(() => {
+    fetchConversations(); // Hämta konversationer när komponenten laddas
+  }, [userId]);
 
-              {conversation.PromptAudioURL && (
-                <button onClick={() => new Audio(conversation.PromptAudioURL).play()}>
-                  Spela upp Prompt ljud
-                </button>
-              )}
-              {conversation.AnswerAudioURL && (
-                <button onClick={() => new Audio(conversation.AnswerAudioURL).play()}>
-                  Spela upp Answer ljud
-                </button>
-              )}
-            </li>
-          ))
-        ) : (
-          <p>Inga konversationer hittades.</p>
-        )}
-      </ul>
-      <button className="back-button" onClick={handleGoBack}>Tillbaka till Hemsidan</button>
+  return (
+    <div className="history-page">
+      <h1>Historik för konversationer</h1>
+
+      {loading && <p>Laddar...</p>}
+      {error && <p className="error">{error}</p>}
+
+      {/* Lista över konversationer */}
+      <div className="conversation-list">
+        {conversations.length === 0 && !loading && <p>Inga konversationer att visa.</p>}
+        {conversations.map((conversation) => (
+          <div key={conversation.ConversationId} className="conversation-card">
+            <h4>Datum: {conversation.Date}</h4>
+            <p>Status: {conversation.Ended ? 'Avslutad' : 'Pågående'}</p>
+            <ul>
+              {conversation.PromptsAndAnswers.map((item, index) => (
+                <li key={index}>
+                  <strong>Fråga:</strong> {item.Prompt}
+                  <br />
+                  <strong>Svar:</strong> {item.Answer}
+                  <br />
+                  {item.PromptAudioURL && (
+                    <audio controls src={item.PromptAudioURL}>
+                      Din webbläsare stödjer inte ljuduppspelning.
+                    </audio>
+                  )}
+                  {item.AnswerAudioURL && (
+                    <audio controls src={item.AnswerAudioURL}>
+                      Din webbläsare stödjer inte ljuduppspelning.
+                    </audio>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
