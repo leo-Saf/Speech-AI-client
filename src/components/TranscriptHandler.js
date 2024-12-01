@@ -29,7 +29,7 @@ const TranscriptHandler = () => {
         
         console.log('Selected language:', language);
         // Dynamic WebSocket URL that changes language for the selected language of the user
-        const socketUrl = `wss://api.deepgram.com/v1/listen?language=${language}`;
+        const socketUrl = `wss://api.deepgram.com/v1/listen?model=nova-2&language=${language}`;
         console.log('WebSocket URL:', socketUrl);
 
         socket = new WebSocket(socketUrl, [
@@ -54,19 +54,21 @@ const TranscriptHandler = () => {
         // TODO fixa bättre hantering av dubbletter
         socket.onmessage = (message) => {
           try {
-            const received = JSON.parse(message.data);
-            const newTranscript = received.channel.alternatives[0]?.transcript || '';
-
-            if (newTranscript && received.is_final) {
-              if (newTranscript !== lastTranscriptRef.current) {
-                setTranscript((prev) => prev + newTranscript + ' ');
-                lastTranscriptRef.current = newTranscript;
-                console.log('Final transcript:', newTranscript);
-              }
-            }
-          } catch (err) {
-            console.error('Error parsing WebSocket message:', err);
+          const received = JSON.parse(message.data);
+          const newTranscript = received.channel.alternatives[0]?.transcript || '';
+      
+          if (newTranscript && received.is_final) {
+            console.log('Final transcript:', newTranscript);
+      
+            setTranscript((prev) => prev + newTranscript + ' ');
+      
+            // Save the last transcript to avoid duplicates
+            //lastTranscriptRef.current = newTranscript;
           }
+
+        } catch (err) {
+          console.error('Error parsing WebSocket message:', err);
+        }
         };
 
         socket.onclose = () => {
