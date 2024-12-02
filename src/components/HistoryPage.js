@@ -49,17 +49,6 @@ const HistoryPage = ({ userId }) => {
                   <strong>Fråga:</strong> {item.Prompt}
                   <br />
                   <strong>Svar:</strong> {item.Answer}
-                  <br />
-                  {item.PromptAudioURL && (
-                    <audio controls src={item.PromptAudioURL}>
-                      Din webbläsare stödjer inte ljuduppspelning.
-                    </audio>
-                  )}
-                  {item.AnswerAudioURL && (
-                    <audio controls src={item.AnswerAudioURL}>
-                      Din webbläsare stödjer inte ljuduppspelning.
-                    </audio>
-                  )}
                 </li>
               ))}
             </ul>

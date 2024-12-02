@@ -148,20 +148,80 @@ p {
 }
 
 /* Styling för historiksidan */
-.history-container {
+.history-page {
   margin: 20px auto;
   padding: 20px;
-  width: 80%;
-  max-width: 800px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 90%; /* Flexibel bredd för olika skärmstorlekar */
+  max-width: 900px; /* Maximalt bredd */
+  background-color: #f9f9f9; /* Ljus bakgrundsfärg */
+  border-radius: 12px; /* Rundade hörn */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Skugga för djup */
+  font-family: Arial, sans-serif; /* Standardfont */
 }
 
-.history-container h2 {
+/* Rubrik för historiksidan */
+.history-page h1 {
   text-align: center;
-  color: #333;
+  color: #2c3e50; /* Mörkare nyans för bättre kontrast */
+  font-size: 2rem; /* Större text för titeln */
+  margin-bottom: 20px;
 }
+
+/* För varje konversationskort */
+.conversation-card {
+  background-color: #fff; /* Vit bakgrund för varje konversation */
+  padding: 15px;
+  margin-bottom: 20px; /* Avstånd mellan korten */
+  border-radius: 10px; /* Rundade hörn */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Lätt skugga för separering */
+}
+
+.conversation-card h4 {
+  color: #34495e; /* Mörk text för datum */
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.conversation-card p {
+  color: #7f8c8d; /* Grå text för status */
+  font-size: 1rem;
+}
+
+/* Lista för frågor och svar */
+.conversation-card ul {
+  list-style: none; /* Ta bort punkter */
+  padding: 0;
+}
+
+.conversation-card li {
+  margin-bottom: 15px; /* Avstånd mellan varje fråga och svar */
+  font-size: 1rem; /* Standard textstorlek för svar */
+  line-height: 1.5; /* Gör texten mer läsbar genom att ge lite mer mellanrum */
+}
+
+.conversation-card strong {
+  color: #2980b9; /* Blå färg för etiketter */
+  font-weight: bold;
+}
+
+.error {
+  color: #e74c3c; /* Röd text för felmeddelanden */
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+/* Laddningsindikator */
+.history-page p {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #95a5a6; /* Grå färg för laddningstext */
+}
+
+/* Styling för listan av konversationer */
+.conversation-list {
+  margin-top: 20px;
+}
+
 
 ul {
   list-style-type: none;
@@ -174,6 +234,10 @@ li {
   margin: 10px 0;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: black;
+  font-size: 1rem; /* Standard textstorlek för svar */
+  line-height: 1.5; /* Gör texten mer läsbar genom att ge lite mer mellanrum */
+
 }
 
 strong {
