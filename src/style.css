@@ -6,8 +6,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 100vh; /* Full höjd */
   margin: 0;
+  
 }
 
 /* Modal stil */
@@ -147,17 +148,21 @@ p {
   font-size: 14px;
 }
 
-/* Styling för historiksidan */
+
+/* Generell styling för HistoryPage */
 .history-page {
-  margin: 20px auto;
+  margin-top: 60px; /* Skapa utrymme under navigationsfältet */
+  max-width: 800px;
   padding: 20px;
-  width: 90%; /* Flexibel bredd för olika skärmstorlekar */
-  max-width: 900px; /* Maximalt bredd */
-  background-color: #f9f9f9; /* Ljus bakgrundsfärg */
-  border-radius: 12px; /* Rundade hörn */
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Skugga för djup */
-  font-family: Arial, sans-serif; /* Standardfont */
+  background-color: #f4f4f9;
+  color: #333;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-left: auto;
+
 }
+
 
 /* Rubrik för historiksidan */
 .history-page h1 {
@@ -185,6 +190,7 @@ p {
 .conversation-card p {
   color: #7f8c8d; /* Grå text för status */
   font-size: 1rem;
+  margin: 10px 0;
 }
 
 /* Lista för frågor och svar */
@@ -235,8 +241,6 @@ li {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: black;
-  font-size: 1rem; /* Standard textstorlek för svar */
-  line-height: 1.5; /* Gör texten mer läsbar genom att ge lite mer mellanrum */
 
 }
 
