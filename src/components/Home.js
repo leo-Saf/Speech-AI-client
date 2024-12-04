@@ -1,13 +1,12 @@
 // Home.js
-import React, { useState } from 'react';
-
+import React from 'react';
 import AudioUploader from './AudioUploader';
 
-const Home = () => {
+const Home = ({ user }) => {
   return (
     <div>
       <h1>Välkommen till Språkinlärning</h1>
-      <AudioUploader /> {}
+      <AudioUploader userId={user?.id || null} /> {/* Skickar userId eller null */}
     </div>
   );
 };

@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { uploadAudio } from '../client';
 import '../style.css';
 
-const AudioUploader = () => {
+const AudioUploader = ({ userId }) => {
   const [isConversationStarted, setIsConversationStarted] = useState(false);
+  //const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -93,12 +94,12 @@ const AudioUploader = () => {
 
   const handleStartConversation = () => {
     setIsConversationStarted(true);
-    sendMessageToServer('START CONVO'); // SKCIKAS TILL SERVERN TESTA!!!!!!
+    //sendMessageToServer('START CONVO'); // SKCIKAS TILL SERVERN TESTA!!!!!!
   };
 
   const handleStopConversation = () => {
     setIsConversationStarted(false);
-    sendMessageToServer('END CONVO'); // TESTA!!!!
+    sendMessageToServer(userId); // TESTA!!!!
     setIsRecording(false);
     setIsPaused(false);
     clearTimeout(silenceTimeout);
@@ -132,6 +133,16 @@ const AudioUploader = () => {
       setIsRecording(false);
       setIsPaused(false);
       clearTimeout(silenceTimeout);
+
+      /*if (audioChunks.length > 0) {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        setAudioChunks(audioBlob);
+        handleUpload(audioBlob);
+      } else {
+        console.error("Ingen ljuddata att bearbeta.");
+      }
+
+      setAudioChunks([]); // tar bort gammalt data från audio chunk eftersom denna funktion ska inte räknas som paus funktionen*/
     }
   };
 
@@ -145,7 +156,11 @@ const AudioUploader = () => {
   const handleUpload = async (blob) => {
     setLoading(true);
     try {
-      const response = await uploadAudio(blob);
+      const uploadId = userId || "guest"; // Använd "guest" om userId saknas
+    console.log('Uppladdar ljud med ID:', uploadId);
+    console.log('Data som skickas till backend:', blob);
+
+    const response = await uploadAudio(blob, uploadId);
       console.log('Uppladdning lyckades:', response);
       const audioURL = URL.createObjectURL(response);
       setResponseAudio(audioURL);
