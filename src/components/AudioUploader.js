@@ -241,7 +241,7 @@ const AudioUploader = ({ userId }) => {
 };
 
 const sendMessageToServer = async (message) => {
-  await fetch('/conversation', {
+  await fetch('/api/process-audio', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
