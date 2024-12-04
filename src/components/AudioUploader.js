@@ -3,12 +3,13 @@ import { uploadAudio } from '../client';
 import '../style.css';
 
 const AudioUploader = () => {
+  const [isConversationStarted, setIsConversationStarted] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [responseAudio, setResponseAudio] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [audioChunks, setAudioChunks] = useState([]); 
+  const [audioChunks, setAudioChunks] = useState([]);
   const audioRef = useRef(null);
   const canvasRef = useRef(null);
   const analyserRef = useRef(null);
@@ -64,7 +65,7 @@ const AudioUploader = () => {
         if (!silenceTimeout) {
           silenceTimeout = setTimeout(() => {
             console.log('Tystnad detekterad, stoppar inspelningen...');
-            handleStopRecording();  // Stoppa inspelningen vid tystnad
+            handleStopRecording(); // Stoppa inspelningen vid tystnad
           }, MAX_SILENCE_TIME);
         }
       } else {
@@ -89,6 +90,19 @@ const AudioUploader = () => {
       drawWaveform();
     }
   }, [isRecording, isPaused]);
+
+  const handleStartConversation = () => {
+    setIsConversationStarted(true);
+    sendMessageToServer('START CONVO'); // SKCIKAS TILL SERVERN TESTA!!!!!!
+  };
+
+  const handleStopConversation = () => {
+    setIsConversationStarted(false);
+    sendMessageToServer('END CONVO'); // TESTA!!!!
+    setIsRecording(false);
+    setIsPaused(false);
+    clearTimeout(silenceTimeout);
+  };
 
   const handleStartRecording = () => {
     if (!mediaRecorder) return;
@@ -147,7 +161,7 @@ const AudioUploader = () => {
     if (responseAudio && audioRef.current) {
       const audioElement = audioRef.current;
       audioElement.src = responseAudio;
-      audioElement.play().catch((error) => console.error('Fel vid uppspelning..', error));
+      audioElement.play().catch((error) => console.error('Fel vid uppspelning:', error));
 
       audioElement.onended = () => {
         console.log('AI svarat. Spelar in...');
@@ -158,41 +172,68 @@ const AudioUploader = () => {
 
   return (
     <div className="audio-uploader">
-      <h2 className="title">Spela in ett ljud</h2>
-      <div className="recording-controls">
-        {!isRecording ? (
-          <button onClick={handleStartRecording} disabled={loading} className="btn start-btn">
-            Starta inspelning
-            </button>
-        ) : isPaused ? (
-          <button onClick={handleStartRecording} disabled={loading} className="btn resume-btn">
-            Återuppta inspelning
-            </button>
-        ) : (
-          <>
-            <button onClick={handleStopRecording} disabled={loading} className="btn stop-btn">
-              Stoppa inspelning
-            </button>
-            <button onClick={handlePauseRecording} disabled={loading} className="btn pause-btn">
-              Pausa inspelning
-            </button>
-          </>
-        )}
-        {loading && <p className="loading-text">Bearbetar ljud...</p>}
-      </div>
+      {!isConversationStarted ? (
+        <button
+          onClick={handleStartConversation}
+          className="btn start-conversation-btn"
+        >
+          Starta Konversation
+        </button>
+      ) : (
+        <>
+          <button
+            onClick={handleStopConversation}
+            className="btn stop-conversation-btn"
+          >
+            Stoppa Konversation
+          </button>
+          <div className="recording-controls">
+            {!isRecording ? (
+              <button onClick={handleStartRecording} disabled={loading} className="btn start-btn">
+                Starta inspelning
+              </button>
+            ) : isPaused ? (
+              <button onClick={handleStartRecording} disabled={loading} className="btn resume-btn">
+                Återuppta inspelning
+              </button>
+            ) : (
+              <>
+                <button onClick={handleStopRecording} disabled={loading} className="btn stop-btn">
+                  Stoppa inspelning
+                </button>
+                <button onClick={handlePauseRecording} disabled={loading} className="btn pause-btn">
+                  Pausa inspelning
+                </button>
+              </>
+            )}
+            {loading && <p className="loading-text">Bearbetar ljud...</p>}
+          </div>
 
-      <div className="canvas-container">
-        <canvas ref={canvasRef} className="waveform-canvas"></canvas>
-      </div>
+          <div className="canvas-container">
+            <canvas ref={canvasRef} className="waveform-canvas"></canvas>
+          </div>
 
-      {responseAudio && (
-        <div className="audio-preview">
-          <h3>Bearbetat ljud</h3>
-          <audio ref={audioRef} controls className="audio-player"></audio>
-        </div>
+          {responseAudio && (
+            <div className="audio-preview">
+              <h3>Bearbetat ljud</h3>
+              <audio ref={audioRef} controls className="audio-player"></audio>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 };
+
+const sendMessageToServer = async (message) => {
+  await fetch('/conversation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message }), // JSON meddelande
+  });
+};
+
 
 export default AudioUploader;
