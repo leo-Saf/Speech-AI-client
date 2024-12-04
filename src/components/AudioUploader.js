@@ -99,7 +99,7 @@ const AudioUploader = ({ userId }) => {
 
   const handleStopConversation = () => {
     setIsConversationStarted(false);
-    sendMessageToServer(userId); // TESTA!!!!
+    sendMessageToServer(uploadId); // TESTA!!!!
     setIsRecording(false);
     setIsPaused(false);
     clearTimeout(silenceTimeout);
