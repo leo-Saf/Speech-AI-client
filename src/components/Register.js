@@ -55,7 +55,7 @@ const Register = ({ onRegisterSuccess, onClose }) => {
             <input
               type="password"
               value={password}
-              placeholder="password"
+              placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
               required
             />

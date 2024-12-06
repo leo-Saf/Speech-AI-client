@@ -13,7 +13,7 @@ const HistoryPage = ({ userId }) => {
       setError(null);
 
       // Hämta data från API
-      const response = await axios.get(`http://localhost:3000/get-user-conversations/${userId}`);
+      const response = await axios.get(`/get-user-conversations/${userId}`);
       const data = response.data;
 
       // Säkerställ att data är i rätt format
