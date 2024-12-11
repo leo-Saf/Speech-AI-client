@@ -165,11 +165,7 @@ const AudioUploader = ({ userId }) => {
     console.log('Data som skickas till backend:', blob);
 
     const response = await uploadAudio(blob, uploadId);
-    if (!response.ok) {
-      throw new Error(`Upload failed: ${response.status}`);
-    }
-    const responseData = await response.json(); // Ensure backend sends JSON
-    console.log('Response Data:', responseData);
+    
       console.log('Uppladdning lyckades:', response);
       const audioURL = URL.createObjectURL(response);
       setResponseAudio(audioURL);
