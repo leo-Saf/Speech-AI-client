@@ -35,6 +35,8 @@ const AudioUploader = ({ userId }) => {
         analyserRef.current.fftSize = 256;
         microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
         microphoneRef.current.connect(analyserRef.current);
+
+        console.log('userid = ', userId);
       } catch (error) {
         console.error('Fel vid åtkomst till mikrofonen:', error);
       }
@@ -93,13 +95,15 @@ const AudioUploader = ({ userId }) => {
   }, [isRecording, isPaused]);
 
   const handleStartConversation = () => {
+    console.log('userid = ', userId);
     setIsConversationStarted(true);
     //sendMessageToServer('START CONVO'); // SKCIKAS TILL SERVERN TESTA!!!!!!
   };
 
   const handleStopConversation = () => {
+    console.log('userid = ', userId);
     setIsConversationStarted(false);
-    sendMessageToServer(uploadId); // TESTA!!!!
+    sendMessageToServer(userId); // TESTA!!!!
     setIsRecording(false);
     setIsPaused(false);
     clearTimeout(silenceTimeout);
@@ -156,11 +160,16 @@ const AudioUploader = ({ userId }) => {
   const handleUpload = async (blob) => {
     setLoading(true);
     try {
-      const uploadId = userId || "guest"; // Använd "guest" om userId saknas
+      const uploadId = userId; // Använd INTE "guest" om userId saknas
     console.log('Uppladdar ljud med ID:', uploadId);
     console.log('Data som skickas till backend:', blob);
 
     const response = await uploadAudio(blob, uploadId);
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.status}`);
+    }
+    const responseData = await response.json(); // Ensure backend sends JSON
+    console.log('Response Data:', responseData);
       console.log('Uppladdning lyckades:', response);
       const audioURL = URL.createObjectURL(response);
       setResponseAudio(audioURL);
