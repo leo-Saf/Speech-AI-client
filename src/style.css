@@ -375,6 +375,7 @@ button:hover {
 .summary-card p {
   color: #000; /* Svart text */
   margin-left: auto;
+  text-align: left; /* Vänsterjustera texten */
 }
 
 
@@ -383,7 +384,7 @@ button:hover {
   display: flex;
   flex-direction: row; /* Gör att historik och analys ligger sida vid sida */
   border-radius: 10px;
-    margin-left: auto;
+  margin-left: auto;
   
 }
 

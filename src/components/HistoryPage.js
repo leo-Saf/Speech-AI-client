@@ -44,13 +44,20 @@ const HistoryPage = ({ userId }) => {
       const response = await axios.get(`/api/analysis`);
       const { sections, wordCount } = response.data; // Destrukturera det mottagna objektet
 
+      // Rensa bort siffror, rubriker och upprepade texter från början av varje section
+  const cleanedSections = sections.map((section) => {
+    return section
+      .replace(/^\d+\.\s*/, '') // Ta bort siffror följt av punkt och mellanslag
+      .trim(); // Ta bort onödiga mellanrum
+  });
+
       // Bygg analysobjektet baserat på sections-arrayen
       const analysisData = {
-        vocabularyRichness: sections[0] || 'Ingen data tillgänglig.',
-        grammarMistakes: sections[1] || 'Ingen data tillgänglig.',
-        improvements: sections[2] || 'Ingen data tillgänglig.',
-        fillerWords: sections[3] || 'Ingen data tillgänglig.',
-        summary: sections[4] || 'Ingen data tillgänglig.',
+        vocabularyRichness: cleanedSections[0] || 'Ingen data tillgänglig.',
+        grammarMistakes: cleanedSections[1] || 'Ingen data tillgänglig.',
+        improvements: cleanedSections[2] || 'Ingen data tillgänglig.',
+        fillerWords: cleanedSections[3] || 'Ingen data tillgänglig.',
+        summary: cleanedSections[4] || 'Ingen data tillgänglig.',
         wordCount: wordCount || 0,
       };
 
