@@ -7,7 +7,6 @@ const HistoryPage = ({ userId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-
   
   const fetchConversations = async () => {
     try {
@@ -18,10 +17,8 @@ const HistoryPage = ({ userId }) => {
     const userIdentifier = userId || ' '; // Om användar-ID är null, sätt till 'guest'
 
       // Hämta data från API
-      const response = await axios.get(`http://localhost:3001/get-user-conversations/${userIdentifier}`);
-      console.log("Serverrespons:", response.data);  // Logga svaret från servern
+      const response = await axios.get(`http://localhost:3000/get-user-conversations/${userId}`);
       const data = response.data;
-
       if (!data) {
         console.error("Inget svar från servern");
         setError('Ett problem uppstod med att hämta konversationer.');
