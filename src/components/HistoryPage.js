@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebaseConfig';
 import '../style.css';
 
+<<<<<<< Updated upstream
 const HistoryPage = () => {
   const [conversations, setConversations] = useState([]);
   const [user, setUser] = useState(null); // För att hålla reda på den inloggade användaren
@@ -37,6 +38,37 @@ const HistoryPage = () => {
         } catch (error) {
           console.log('Fel vid hämtning av konversationer:', error);
         }
+=======
+const HistoryPage = ({ userId  }) => {
+  const [conversations, setConversations] = useState({
+    singleUserConversations: [],
+    multiUserConversations: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Funktion för att hämta konversationer
+  const fetchConversations = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const url = userId
+        ? `http://localhost:3001/get-user-conversations/${userId}`
+        : `http://localhost:3001/get-guest-conversations`; // Gästkonversationer om inte inloggad
+
+      const response = await axios.get(url);
+      const data = response.data;
+
+      setConversations({
+        singleUserConversations: data.singleUserConversations || [],
+        multiUserConversations: data.multiUserConversations || [],
+      });
+    } catch (err) {
+      console.error(err);
+      if (err.response && err.response.status === 404) {
+        setError('Inga konversationer hittades.');
+>>>>>>> Stashed changes
       } else {
         console.log('Ingen användare är inloggad');
         navigate('/'); // Navigera till startsidan om användaren inte är inloggad
@@ -50,6 +82,37 @@ const HistoryPage = () => {
     navigate('/'); // Navigera till hemsidan
   };
 
+<<<<<<< Updated upstream
+=======
+  useEffect(() => {
+    fetchConversations();
+  }, [userId]);
+
+  // Renderar en lista med konversationer (både enkel- och fleranvändare)
+const renderConversationList = (conversationsList) => {
+  return conversationsList.map((conversation) => (
+    <div key={conversation.ConversationId} className="conversation-card">
+      <h4>Datum: {conversation.Date}</h4>
+      <p>Status: {conversation.Ended ? 'Avslutad' : 'Pågående'}</p>
+      <ul>
+        {Array.isArray(conversation.PromptsAndAnswers) && conversation.PromptsAndAnswers.length > 0 ? (
+          conversation.PromptsAndAnswers.map((item, index) => (
+            <li key={index}>
+              <strong>Fråga:</strong> {item?.Prompt || 'Ingen fråga'}
+              <br />
+              <strong>Svar:</strong> {item?.Answer || 'Inget svar'}
+            </li>
+          ))
+        ) : (
+          <p>Inga frågor och svar tillgängliga.</p>
+        )}
+      </ul>
+    </div>
+  ));
+};
+
+
+>>>>>>> Stashed changes
   return (
     <div className="history-container">
       <h2>Historik</h2>
@@ -62,6 +125,7 @@ const HistoryPage = () => {
               <p><strong>Answer:</strong> {conversation.Answer}</p>
               <p><strong>Date:</strong> {conversation.Date}</p>
 
+<<<<<<< Updated upstream
               {conversation.PromptAudioURL && (
                 <button onClick={() => new Audio(conversation.PromptAudioURL).play()}>
                   Spela upp Prompt ljud
@@ -79,6 +143,23 @@ const HistoryPage = () => {
         )}
       </ul>
       <button className="back-button" onClick={handleGoBack}>Tillbaka till Hemsidan</button>
+=======
+      {loading && <p>Laddar...</p>}
+      {error && <p className="error">{error}</p>}
+
+      <div className="conversation-list">
+        {(!loading && conversations.singleUserConversations.length === 0 &&
+          conversations.multiUserConversations.length === 0) && (
+            <p>Inga konversationer att visa.</p>
+        )}
+
+        {/* Rendera enkelanvändarkonversationer */}
+        {renderConversationList(conversations.singleUserConversations)}
+
+        {/* Rendera fleranvändarkonversationer */}
+        {renderConversationList(conversations.multiUserConversations)}
+      </div>
+>>>>>>> Stashed changes
     </div>
   );
 };

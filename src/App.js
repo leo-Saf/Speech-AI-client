@@ -30,6 +30,13 @@ const App = () => {
     } else {
       toast.error('Inloggning misslyckades! Ingen användar-ID hittades.');
     }
+<<<<<<< Updated upstream
+=======
+   else {
+    toast.error('Inloggning misslyckades! Ingen användar-ID hittades.');
+    console.error('Användardata saknar userId:', userData)
+   }
+>>>>>>> Stashed changes
   };
 
   const handleLogout = () => {
@@ -64,6 +71,10 @@ const App = () => {
           ) : (
             <>
               <span>Du är som gäst.</span>
+              <Link to="/historik">
+            <button>Visa Historik</button>
+          </Link>
+          
               <button onClick={() => setAuthMode('login')}>Logga in</button>
               <button onClick={() => setAuthMode('register')}>Registrera</button>
             </>
@@ -71,12 +82,34 @@ const App = () => {
         </nav>
 
         <Routes>
+<<<<<<< Updated upstream
           {isAuthenticated ? (
             <>
               <Route path="/historik" element={<HistoryPage userId={user?.id} />} />
               <Route path="/inspelning" element={<AudioUploader userId={user?.id}/>} />
             </>
           ) : (
+=======
+  {/* För inloggade användare */}
+  {isAuthenticated ? (
+    <>
+      <Route
+        path="/historik"
+        element={<HistoryPage userId={user?.id || null} />}
+      />
+      <Route
+        path="/inspelning"
+        element={<AudioUploader userId={user?.id || null} />}
+      />
+    </>
+  ) : (
+    /* För gäster */
+    <>
+      <Route
+        path="/historik"
+        element={<HistoryPage userId={null} />} // Passa null för gäst
+      />
+>>>>>>> Stashed changes
             <Route
               path="*"
               element={
@@ -86,6 +119,7 @@ const App = () => {
                 </div>
               }
             />
+             </>
           )}
           <Route path="/" element={<Home userId={user?.id} />} />
         </Routes>

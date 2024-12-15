@@ -10,7 +10,7 @@ const AudioUploader = () => {
   const [audioBlob, setAudioBlob] = useState(null);
 =======
 
-const AudioUploader = ({ userId }) => {
+const AudioUploader = () => {
   //const [audioBlob, setAudioBlob] = useState(null);
 >>>>>>> Stashed changes:src/components/AudioUploader.js
   const [isRecording, setIsRecording] = useState(false);
@@ -138,6 +138,7 @@ const AudioUploader = ({ userId }) => {
       setIsRecording(true);
       silenceHistory.length = 0; // Rensa historik om ny inspelning startar
     }
+<<<<<<< Updated upstream:src/components/AudioUploader.jsx
 
     console.log('MediaRecorder state:', mediaRecorder.state);  // Logga status på recorder
 
@@ -145,6 +146,15 @@ const AudioUploader = ({ userId }) => {
     recordingTimeout = setTimeout(() => {
       handleStopRecording();
     }, 5000); // 5 sek för automatisk stoppning
+=======
+  
+    console.log('MediaRecorder state:', mediaRecorder.state);
+  
+    if (recordingTimeout) clearTimeout(recordingTimeout);
+    recordingTimeout = setTimeout(() => {
+      handleStopRecording();
+    }, 5000); // 5 sekunder för automatisk stoppning
+>>>>>>> Stashed changes:src/components/AudioUploader.js
 
     mediaRecorder.ondataavailable = (event) => {
       console.log('Inspelad data:', event.data); // Här loggar vi själva datan
@@ -171,7 +181,7 @@ const AudioUploader = ({ userId }) => {
         console.log("Laddar upp ljuddata...");
         handleUpload(audioBlob);
       } else {
-        console.error("Ingen ljuddata att bearbeta.");
+        console.error("No audio data to process.");
       }
     }
   };
@@ -199,7 +209,13 @@ const AudioUploader = ({ userId }) => {
       
       // Logga datan som skickas till backend
     console.log('Data som skickas till backend:', blob);
+<<<<<<< Updated upstream:src/components/AudioUploader.jsx
       const response = await uploadAudio(blob, userId);
+>>>>>>> Stashed changes:src/components/AudioUploader.js
+=======
+
+    const response = await uploadAudio(blob, uploadId);
+
 >>>>>>> Stashed changes:src/components/AudioUploader.js
       console.log('Uppladdning lyckades:', response);
       const audioURL = URL.createObjectURL(response);
@@ -220,11 +236,11 @@ const AudioUploader = ({ userId }) => {
 
   return (
     <div className="audio-uploader">
-      <h2 className="title">Spela in ett ljud</h2>
+      <h2 className="title">Start recording</h2>
       <div className="recording-controls">
         {!isRecording ? (
           <button onClick={handleStartRecording} disabled={loading} className="btn start-btn">
-            Starta inspelning
+            Start recording
           </button>
         ) : isPaused ? (
           <button onClick={handleStartRecording} disabled={loading} className="btn resume-btn">
