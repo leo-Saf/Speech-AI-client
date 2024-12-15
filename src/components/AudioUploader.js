@@ -149,27 +149,36 @@ const AudioUploader = ({ userId }) => {
   const handleUpload = async (blob) => {
     setLoading(true);
     try {
-      const uploadId = userId || "guest"; // Använd "guest" om userId saknas
-    console.log('Uppladdar ljud med ID:', uploadId);
-    console.log('Data som skickas till backend:', blob);
-
-    const response = await uploadAudio(blob, uploadId);
-      console.log('Uppladdning lyckades:', response);
+      // Hämta användar-ID eller sätt "guest" om userId saknas
+      const uploadId = userId || "guest";
+      console.log('Uppladdar ljud med ID:', uploadId);  // Logga användar-ID:t som används
+  
+      // Skicka data till backend
+      console.log('Data som skickas till backend:', blob);
+      const response = await uploadAudio(blob, uploadId); // Skicka ID:t till uploadAudio
+  
+      // Logga upplysning om att uppladdningen lyckades
+      console.log('Uppladdning lyckades, ID:', uploadId);
+      console.log('Svaret från backend:', response);
+  
+      // Skapa en URL för att spela upp ljudet som returneras
       const audioURL = URL.createObjectURL(response);
-      setResponseAudio(audioURL);
+      setResponseAudio(audioURL);  // Ställ in ljudet att kunna spelas
+  
     } catch (error) {
       console.error('Fel vid uppladdning:', error);
-      alert(`Fel vid uppladdning: ${error.message}`);
+      alert(`Fel vid uppladdning: ${error.message}`); // Visa felmeddelande för användaren
     } finally {
-      setLoading(false);
+      setLoading(false);  // Stäng av laddningindikator
     }
   };
-
+  
   useEffect(() => {
     if (responseAudio && audioRef.current) {
-      audioRef.current.play();
+      audioRef.current.play();  // Spela upp ljudet när det är mottaget och klart
     }
-  }, [responseAudio]);
+  }, [responseAudio]);  // Kör varje gång responseAudio ändras
+  
 
   return (
     <div className="audio-uploader">

@@ -51,17 +51,24 @@ const App = () => {
   return (
     <Router>
       
+      
       <div>
         <ToastContainer position="top-center" autoClose={3000} />
         <nav className="auth-buttons">
+          
           {isAuthenticated ? (
             <>
+            
               <span>Välkommen, {user ? user.Email : 'Användare'}</span>
+              <Link to="/">
+             <button className="home-button">Hem</button> 
+             </Link>
               <button className="logout" onClick={handleLogout}>
                 Logga ut
               </button>
               <Link to="/historik">
                 <button>Visa Historik</button>
+                
               </Link>
               <Link to="/inspelning">
                 <button>Inspelning</button>
@@ -70,31 +77,57 @@ const App = () => {
           ) : (
             <>
               <span>Du är som gäst.</span>
+              <Link to="/historik">
+            <button>Visa Historik</button>
+          </Link>
+          <Link to="/">
+             <button className="home-button">Hem</button> 
+             </Link>
               <button onClick={() => setAuthMode('login')}>Logga in</button>
               <button onClick={() => setAuthMode('register')}>Registrera</button>
+              
+          
+          
             </>
           )}
         </nav>
 
         <Routes>
-          {isAuthenticated ? (
-            <>
-              <Route path="/historik" element={<HistoryPage userId={user?.id} />} />
-              <Route path="/inspelning" element={<AudioUploader userId={user?.id} />} />
-            </>
-          ) : (
-            <Route
-              path="*"
-              element={
-                <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                  <h2>Du måste logga in för att komma åt denna sida.</h2>
-                  <button onClick={() => setAuthMode('login')}>Logga in</button>
-                </div>
-              }
-            />
-          )}
-          <Route path="/" element={<Home user={user} />} />
-        </Routes>
+  {/* För inloggade användare */}
+  {isAuthenticated ? (
+    <>
+      <Route
+        path="/historik"
+        element={<HistoryPage userId={user?.id} />}
+      />
+      <Route
+        path="/inspelning"
+        element={<AudioUploader userId={user?.id} />}
+      />
+    </>
+  ) : (
+    /* För gäster */
+    <>
+      <Route
+        path="/historik"
+        element={<HistoryPage userId={null} />} // Passa null för gäst
+      />
+      <Route
+        path="*"
+        element={
+          <div style={{ textAlign: 'center', marginTop: '20px' }}>
+            <h2>Du måste logga in för att komma åt denna sida.</h2>
+            <button onClick={() => setAuthMode('login')}>Logga in</button>
+          </div>
+        }
+      />
+    </>
+  )}
+
+  {/* Vanliga sidor */}
+  <Route path="/" element={<Home user={user} />} />
+</Routes>
+
 
         {/* Rendera modal för inloggning/registrering endast när en knapp trycks */}
         {authMode === 'login' && (
