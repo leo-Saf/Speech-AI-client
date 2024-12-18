@@ -1,6 +1,6 @@
 export const uploadAudio = async (blob, userId, additionalParticipants = []) => {
   if (!userId) {
-    throw new Error('Användar-ID saknas. Du måste vara inloggad.');
+    //throw new Error('Användar-ID saknas. Du måste vara inloggad.');
   }
 
   const formData = new FormData();
@@ -13,7 +13,7 @@ export const uploadAudio = async (blob, userId, additionalParticipants = []) => 
   formData.append('participants', JSON.stringify(combinedParticipants));
 
   try {
-    const response = await fetch('/api/process-audio', {
+    const response = await fetch('/api/end-conversation', { // ändrad från process-audio
       method: 'POST',
       body: formData,
     });

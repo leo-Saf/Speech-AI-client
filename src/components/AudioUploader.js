@@ -17,8 +17,10 @@ const AudioUploader = ({ userId }) => {
   const audioContextRef = useRef(null);
   const microphoneRef = useRef(null);
 
-  const MAX_SILENCE_TIME = 3000;
+  const MAX_SILENCE_TIME = 3000; // ti´d efter man börjar prata
   const SILENCE_THRESHOLD = 30;
+  const MAX_RECORDING_TIME = 15000; // 30 s max tid oavsett om man slutar prata eller ej
+  const recordingTimeoutRef = useRef(null);
   const silenceHistory = [];
   let silenceTimeout = null;
 
@@ -118,6 +120,12 @@ const AudioUploader = ({ userId }) => {
       mediaRecorder.start();
       setIsRecording(true);
       silenceHistory.length = 0;
+
+      // timeout
+    recordingTimeoutRef.current = setTimeout(() => {
+      console.log('Max inspelningstid uppnådd, stoppar...');
+      handleStopRecording();
+    }, MAX_RECORDING_TIME);
     }
 
     console.log('MediaRecorder state:', mediaRecorder.state);
@@ -137,6 +145,15 @@ const AudioUploader = ({ userId }) => {
       setIsRecording(false);
       setIsPaused(false);
       clearTimeout(silenceTimeout);
+
+
+    // resettar timer
+    if (recordingTimeoutRef.current) {
+      clearTimeout(recordingTimeoutRef.current);
+      recordingTimeoutRef.current = null;
+    }
+
+    console.log('Recording stopped manually OR by timer.');
 
       /*if (audioChunks.length > 0) {
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
