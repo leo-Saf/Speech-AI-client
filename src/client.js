@@ -1,31 +1,38 @@
-export const uploadAudio = async (blob, userId, participants = []) => {
+export const uploadAudio = async (blob, userId, additionalParticipants = []) => {
   if (!userId) {
     throw new Error('Användar-ID saknas. Du måste vara inloggad.');
   }
 
   const formData = new FormData();
-  formData.append('audio', blob, 'audio.webm'); // Add the Blob to the FormData
-  formData.append('userId', userId);
+  formData.append('audio', blob, 'audio.webm'); // Lägg till Blob i FormData
 
-  // Send participants as a JSON string
-  formData.append('participants', JSON.stringify(participants));
+  // Kombinera userId med eventuella ytterligare deltagare
+  const combinedParticipants = [userId, ...additionalParticipants];
 
-  const response = await fetch('/api/process-audio', {
-    method: 'POST',
-    body: formData,
-  });
+  // Serialisera participants array som en JSON-sträng
+  formData.append('participants', JSON.stringify(combinedParticipants));
 
-  if (!response.ok) {
-    throw new Error('Fel vid uppladdning');
-  }
+  try {
+    const response = await fetch('/api/process-audio', {
+      method: 'POST',
+      body: formData,
+    });
 
-  // Handle response (Blob or JSON as per server response)
-  const contentType = response.headers.get('Content-Type');
-  if (contentType && contentType.includes('application/json')) {
-    const jsonResponse = await response.json();
-    return JSON.stringify(jsonResponse);
-  } else {
-    const audioBlob = await response.blob();
-    return audioBlob;
+    if (!response.ok) {
+      throw new Error('Fel vid uppladdning');
+    }
+
+    // Hantera svar som behövs (Blob eller JSON)
+    const contentType = response.headers.get('Content-Type');
+    if (contentType && contentType.includes('application/json')) {
+      const jsonResponse = await response.json();
+      return JSON.stringify(jsonResponse); // Returnera JSON som en sträng
+    } else {
+      const audioBlob = await response.blob();
+      return audioBlob; // Returnera bearbetat ljud som en Blob
+    }
+  } catch (error) {
+    console.error('Ett fel inträffade vid uppladdningen:', error);
+    throw error;
   }
 };
