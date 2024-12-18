@@ -53,7 +53,7 @@ const HistoryPage = ({ userId }) => {
       const response = await axios.get(`/api/analysis`);
       const { sections, wordCount } = response.data; // Destrukturera det mottagna objektet
 
-      // Rensa bort siffror, rubriker och upprepade texter från början av varje section
+      // Remove all numbers, headers and repeting text from the beginning of section
   const cleanedSections = sections.map((section) => {
     return section
       .replace(/^\d+\.\s*/, '') // Ta bort siffror följt av punkt och mellanslag
