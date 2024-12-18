@@ -14,11 +14,19 @@ const HistoryPage = ({ userId }) => {
     try {
       setLoading(true);
       setError(null);
+     // Hantera om inget userId tillhandahålls (dvs gäst)
+     const userIdentifier = userId || ' '; // Om användar-ID är null, sätt till 'guest'
 
       // Hämta data från API
-      const response = await axios.get(`/get-user-conversations/${userId}`);
+      const response = await axios.get(`http://localhost:3000/get-user-conversations/${userIdentifier}`);
       const data = response.data;
+      if (!data) {
+        console.error("Inget svar från servern");
+        setError('Ett problem uppstod med att hämta konversationer.');
+        return;
+      }
 
+      
       setConversations({
         singleUserConversations: data.singleUserConversations || [],
         multiUserConversations: data.multiUserConversations || [],
@@ -28,6 +36,7 @@ const HistoryPage = ({ userId }) => {
       if (err.response && err.response.status === 404) {
         setError('Inga konversationer hittades.');
       } else {
+        console.error('Fel vid hämtning av konversationer:', error);
         setError('Ett fel uppstod vid hämtning av konversationer.');
       }
     } finally {
@@ -73,9 +82,37 @@ const HistoryPage = ({ userId }) => {
   };
 
   useEffect(() => {
-    fetchConversations();
+  console.log("Användar-ID som skickas:", userId);
+  
+  // Om inget userId finns (dvs gäst), sätt det till 'guest' för att hämta konversationerna för gäst.
+  fetchConversations();
     fetchAnalysis();
-  }, [userId]);
+}, [userId]); // Körs om userId ändras
+
+
+  // Renderar en lista med konversationer (både enkel- och fleranvändare)
+const renderConversationList = (conversationsList) => {
+  return conversationsList.map((conversation) => (
+    <div key={conversation.ConversationId} className="conversation-card">
+      <h4>Datum: {conversation.Date}</h4>
+      <p>Status: {conversation.Ended ? 'Avslutad' : 'Pågående'}</p>
+      <ul>
+        {Array.isArray(conversation.PromptsAndAnswers) && conversation.PromptsAndAnswers.length > 0 ? (
+          conversation.PromptsAndAnswers.map((item, index) => (
+            <li key={index}>
+              <strong>Fråga:</strong> {item?.Prompt || 'Ingen fråga'}
+              <br />
+              <strong>Svar:</strong> {item?.Answer || 'Inget svar'}
+            </li>
+          ))
+        ) : (
+          <p>Inga frågor och svar tillgängliga.</p>
+        )}
+      </ul>
+    </div>
+  ));
+};
+
 
   return (
 <div className="history-analysis-page">
@@ -90,6 +127,35 @@ const HistoryPage = ({ userId }) => {
         conversations.multiUserConversations.length === 0 && (
           <p>Inga konversationer att visa.</p>
         )}
+
+
+
+ ////////////////////////////////////////// NEDAN FRÅN LEO
+   {/* Enkelanvändarkonversationer */}
+   {conversations.singleUserConversations.length > 0 && (
+      <>
+        <h2>Enkelanvändarkonversationer</h2>
+        {renderConversationList(
+          conversations.singleUserConversations.sort(
+            (a, b) => new Date(b.Date) - new Date(a.Date)
+          )
+        )}
+      </>
+    )}
+
+    {/* Fleranvändarkonversationer */}
+    {conversations.multiUserConversations.length > 0 && (
+      <>
+        <h2>Fleranvändarkonversationer</h2>
+        {renderConversationList(
+          conversations.multiUserConversations.sort(
+            (a, b) => new Date(b.Date) - new Date(a.Date)
+          )
+        )}
+      </>
+    )}
+    
+    ///////////////////////////////////////
 
       {conversations.singleUserConversations.map((conversation) => (
         <div key={conversation.ConversationId} className="conversation-card">
