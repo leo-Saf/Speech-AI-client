@@ -1,4 +1,10 @@
+<<<<<<< Updated upstream
 //src/client.js
+=======
+export const uploadAudio = async (blob, userId) => {
+  // Använd 'guest' som fallback om userId saknas eller är tomt
+  const effectiveUserId = userId && userId.trim() !== "" ? userId : null;
+>>>>>>> Stashed changes
 
 export const uploadAudio = async (audioBlob, userId) => {
   if (!userId) {

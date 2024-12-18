@@ -199,12 +199,18 @@ const AudioUploader = () => {
   
     try {
 <<<<<<< Updated upstream:src/components/AudioUploader.jsx
+<<<<<<< Updated upstream:src/components/AudioUploader.jsx
       const response = await uploadAudio(blob);  // Försök att ladda upp ljudfilen
 =======
       if (!userId) {
         throw new Error('Användar-ID saknas....');
       }
       console.log('Uppladdar ljud med användar-ID:', userId);
+=======
+      // Hämta användar-ID eller sätt "guest" om userId saknas
+      const uploadId = userId || null;
+      console.log('Uppladdar ljud med ID:', uploadId);  // Logga användar-ID:t som används
+>>>>>>> Stashed changes:src/components/AudioUploader.js
   
       
       // Logga datan som skickas till backend

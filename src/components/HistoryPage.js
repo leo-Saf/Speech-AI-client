@@ -46,6 +46,7 @@ const HistoryPage = ({ userId  }) => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  console.log("Mottaget userId i HistoryPage:", userId);
 
   // Funktion för att hämta konversationer
   const fetchConversations = async () => {
@@ -53,9 +54,14 @@ const HistoryPage = ({ userId  }) => {
       setLoading(true);
       setError(null);
 
+<<<<<<< Updated upstream
       const url = userId
         ? `http://localhost:3001/get-user-conversations/${userId}`
         : `http://localhost:3001/get-guest-conversations`; // Gästkonversationer om inte inloggad
+=======
+      // Hantera om inget userId tillhandahålls (dvs gäst)
+    const userIdentifier = userId || ''; // Om användar-ID är null, sätt till 'guest'
+>>>>>>> Stashed changes
 
       const response = await axios.get(url);
       const data = response.data;

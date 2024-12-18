@@ -22,6 +22,7 @@ const App = () => {
 
   const handleLoginSuccess = (userData) => {
     console.log('Användardata från backend:', userData); // Logga användardata
+<<<<<<< Updated upstream
     if (userData && userData.userId) {
       setIsAuthenticated(true);
       setUser(userData); // Sparar hela användardata inklusive userId
@@ -29,6 +30,23 @@ const App = () => {
       toast.success(`Inloggning lyckades! Välkommen, ${userData.email}`);
     } else {
       toast.error('Inloggning misslyckades! Ingen användar-ID hittades.');
+=======
+    
+    // Kontrollera alternativa strukturer
+    if (userData?.userId) {
+      setIsAuthenticated(true);
+      setUser({
+        id: userData.userId,
+        email: userData.Email,
+        admin: userData.Admin,
+      });
+      console.log("Inloggning lyckades. User state:", {
+        id: userData.userId,
+        email: userData.Email,
+      });
+    setAuthMode(null); // Stänger modalen
+    toast.success('Inloggning lyckades! Välkommen.');
+>>>>>>> Stashed changes
     }
 <<<<<<< Updated upstream
 =======
