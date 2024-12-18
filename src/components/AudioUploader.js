@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { uploadAudio } from '../client';
+import { useLanguage } from './LanguageContext';
 import '../style.css';
 
 const AudioUploader = () => {
   //const [audioBlob, setAudioBlob] = useState(null);
+  const { selectedLanguage } = useLanguage();
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -93,6 +95,11 @@ const AudioUploader = () => {
   }, [isRecording, isPaused]);
 
   const handleStartRecording = () => {
+    if(!selectedLanguage){
+     alert('Please select a language before starting recording');
+      return;
+    }
+
     if (!mediaRecorder) return;
     if (isPaused) {
       mediaRecorder.resume();
@@ -169,9 +176,15 @@ const AudioUploader = () => {
     <div className="audio-uploader">
       <h2 className="title">Start recording</h2>
       <div className="recording-controls">
-        {!isRecording ? (
-          <button onClick={handleStartRecording} disabled={loading} className="btn start-btn">
-            Start recording
+        {!isRecording ? ( 
+          <button 
+            onClick={handleStartRecording} 
+            disabled={loading || !selectedLanguage} 
+            className={`btn start-btn ${!selectedLanguage ? 'disabled' : ''}`}
+          >
+            {selectedLanguage 
+              ? 'Start recording' 
+              : 'Please select a language first'}
           </button>
         ) : isPaused ? (
           <button onClick={handleStartRecording} disabled={loading} className="btn resume-btn">

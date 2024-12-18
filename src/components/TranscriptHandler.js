@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useLanguage } from './LanguageContext';
+
 
 const TranscriptHandler = () => {
+  const { selectedLanguage, setSelectedLanguage } = useLanguage();
   const [status, setStatus] = useState('Not Connected');
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState(null);
-  const [language, setLanguage] = useState('');
+  //const [language, setLanguage] = useState('');
   const lastTranscriptRef = React.useRef('');
 
 
@@ -13,7 +16,7 @@ const TranscriptHandler = () => {
     let socket;
 
     // Return nothing if no language is selected
-    if (!language) 
+    if (!selectedLanguage) 
     return;
 
     const setupTranscription = async () => {
@@ -27,9 +30,9 @@ const TranscriptHandler = () => {
 
         mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
         
-        console.log('Selected language:', language);
+        console.log('Selected language:', selectedLanguage);
         // Dynamic WebSocket URL that changes language for the selected language of the user
-        const socketUrl = `wss://api.deepgram.com/v1/listen?model=nova-2&language=${language}`;
+        const socketUrl = `wss://api.deepgram.com/v1/listen?model=nova-2&language=${selectedLanguage}`;
         console.log('WebSocket URL:', socketUrl);
 
         socket = new WebSocket(socketUrl, [
@@ -92,15 +95,15 @@ const TranscriptHandler = () => {
       if (mediaRecorder) mediaRecorder.stop();
       if (socket) socket.close();
     };
-  }, [language]); 
+  }, [selectedLanguage]); 
 
   useEffect(() => {
     setTranscript('');
-  }, [language]);
+  }, [selectedLanguage]);
   
     // Update language state based on user selection
   const handleLanguageChange = (e) => {
-    setLanguage(e.target.value);  
+    setSelectedLanguage(e.target.value);  
   };
 
   return (
@@ -109,7 +112,7 @@ const TranscriptHandler = () => {
         <label htmlFor="language-selector"></label>
         <select
           id="language-selector"
-          value={language}
+          value={selectedLanguage}
           onChange={handleLanguageChange}
         >
           <option value="">Select Language</option>
@@ -124,7 +127,7 @@ const TranscriptHandler = () => {
       <div style={{ border: '1px solid #1a202c', padding: '10px', marginTop: '20px' }}>
         <h3>Transcription:</h3>
         <p style={{ whiteSpace: 'pre-wrap', color: 'white' }}>{transcript}</p>
-        {language && (
+        {selectedLanguage && (
           <div>
 
           </div>
