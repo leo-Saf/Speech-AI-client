@@ -130,7 +130,6 @@ const renderConversationList = (conversationsList) => {
 
 
 
- ////////////////////////////////////////// NEDAN FRÅN LEO
    {/* Enkelanvändarkonversationer */}
    {conversations.singleUserConversations.length > 0 && (
       <>
@@ -153,25 +152,9 @@ const renderConversationList = (conversationsList) => {
           )
         )}
       </>
-    )}
-    
-    ///////////////////////////////////////
+    )} 
 
-      {conversations.singleUserConversations.map((conversation) => (
-        <div key={conversation.ConversationId} className="conversation-card">
-          <h4>Datum: {conversation.Date}</h4>
-          <p>Status: {conversation.Ended ? 'Avslutad' : 'Pågående'}</p>
-          <ul>
-            {conversation.PromptsAndAnswers.map((item, index) => (
-              <li key={index}>
-                <strong>Fråga:</strong> {item.Prompt}
-                <br />
-                <strong>Svar:</strong> {item.Answer}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      
     </div>
   </div>
 
