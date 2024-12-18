@@ -3,24 +3,26 @@ import { uploadAudio } from '../client';
 import '../style.css';
 
 const AudioUploader = ({ userId }) => {
+  const [isConversationStarted, setIsConversationStarted] = useState(false);
   //const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [responseAudio, setResponseAudio] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [audioChunks, setAudioChunks] = useState([]); 
+  const [audioChunks, setAudioChunks] = useState([]);
   const audioRef = useRef(null);
   const canvasRef = useRef(null);
   const analyserRef = useRef(null);
   const audioContextRef = useRef(null);
   const microphoneRef = useRef(null);
 
-  const MAX_SILENCE_TIME = 5000;
+  const MAX_SILENCE_TIME = 3000; // ti´d efter man börjar prata
   const SILENCE_THRESHOLD = 30;
+  const MAX_RECORDING_TIME = 15000; // 30 s max tid oavsett om man slutar prata eller ej
+  const recordingTimeoutRef = useRef(null);
   const silenceHistory = [];
   let silenceTimeout = null;
-  let recordingTimeout = null;
 
   useEffect(() => {
     const setupRecorder = async () => {
@@ -35,6 +37,8 @@ const AudioUploader = ({ userId }) => {
         analyserRef.current.fftSize = 256;
         microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
         microphoneRef.current.connect(analyserRef.current);
+
+        console.log('userid = ', userId);
       } catch (error) {
         console.error('Fel vid åtkomst till mikrofonen:', error);
       }
@@ -60,13 +64,13 @@ const AudioUploader = ({ userId }) => {
 
       if (silenceHistory.length > 10) silenceHistory.shift();
 
-      const isSilent = silenceHistory.every(level => level < SILENCE_THRESHOLD);
+      const isSilent = silenceHistory.every((level) => level < SILENCE_THRESHOLD);
 
       if (isSilent && silenceHistory.length === 10) {
         if (!silenceTimeout) {
           silenceTimeout = setTimeout(() => {
             console.log('Tystnad detekterad, stoppar inspelningen...');
-            handleStopRecording();  // Stoppa inspelningen vid tystnad
+            handleStopRecording(); // Stoppa inspelningen vid tystnad
           }, MAX_SILENCE_TIME);
         }
       } else {
@@ -92,6 +96,21 @@ const AudioUploader = ({ userId }) => {
     }
   }, [isRecording, isPaused]);
 
+  const handleStartConversation = () => {
+    console.log('userid = ', userId);
+    setIsConversationStarted(true);
+    //sendMessageToServer('START CONVO'); // SKCIKAS TILL SERVERN TESTA!!!!!!
+  };
+
+  const handleStopConversation = () => {
+    console.log('userid = ', userId);
+    setIsConversationStarted(false);
+    //sendMessageToServer(userId); // TESTA!!!!
+    setIsRecording(false);
+    setIsPaused(false);
+    clearTimeout(silenceTimeout);
+  };
+
   const handleStartRecording = () => {
     if (!mediaRecorder) return;
     if (isPaused) {
@@ -101,14 +120,15 @@ const AudioUploader = ({ userId }) => {
       mediaRecorder.start();
       setIsRecording(true);
       silenceHistory.length = 0;
-    }
-  
-    console.log('MediaRecorder state:', mediaRecorder.state);
-  
-    /*if (recordingTimeout) clearTimeout(recordingTimeout);
-    recordingTimeout = setTimeout(() => {
+
+      // timeout
+    recordingTimeoutRef.current = setTimeout(() => {
+      console.log('Max inspelningstid uppnådd, stoppar...');
       handleStopRecording();
-    }, 5000); // 5 sekunder för automatisk stoppning*/ // behövs inte längre
+    }, MAX_RECORDING_TIME);
+    }
+
+    console.log('MediaRecorder state:', mediaRecorder.state);
 
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
@@ -122,12 +142,20 @@ const AudioUploader = ({ userId }) => {
   const handleStopRecording = () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
-      clearTimeout(recordingTimeout);
       setIsRecording(false);
       setIsPaused(false);
       clearTimeout(silenceTimeout);
 
-      if (audioChunks.length > 0) {
+
+    // resettar timer
+    if (recordingTimeoutRef.current) {
+      clearTimeout(recordingTimeoutRef.current);
+      recordingTimeoutRef.current = null;
+    }
+
+    console.log('Recording stopped manually OR by timer.');
+
+      /*if (audioChunks.length > 0) {
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
         setAudioChunks(audioBlob);
         handleUpload(audioBlob);
@@ -135,7 +163,7 @@ const AudioUploader = ({ userId }) => {
         console.error("Ingen ljuddata att bearbeta.");
       }
 
-      setAudioChunks([]); // tar bort gammalt data från audio chunk eftersom denna funktion ska inte räknas som paus funktionen
+      setAudioChunks([]); // tar bort gammalt data från audio chunk eftersom denna funktion ska inte räknas som paus funktionen*/
     }
   };
 
@@ -149,19 +177,13 @@ const AudioUploader = ({ userId }) => {
   const handleUpload = async (blob) => {
     setLoading(true);
     try {
-      // Hämta användar-ID eller sätt "guest" om userId saknas
-      const uploadId = userId || "guest";
-      console.log('Uppladdar ljud med ID:', uploadId);  // Logga användar-ID:t som används
-  
-      // Skicka data till backend
-      console.log('Data som skickas till backend:', blob);
-      const response = await uploadAudio(blob, uploadId); // Skicka ID:t till uploadAudio
-  
-      // Logga upplysning om att uppladdningen lyckades
-      console.log('Uppladdning lyckades, ID:', uploadId);
-      console.log('Svaret från backend:', response);
-  
-      // Skapa en URL för att spela upp ljudet som returneras
+      const uploadId = userId; // Använd INTE "guest" om userId saknas
+    console.log('Uppladdar ljud med ID:', uploadId);
+    console.log('Data som skickas till backend:', blob);
+
+    const response = await uploadAudio(blob, uploadId);
+    
+      console.log('Uppladdning lyckades:', response);
       const audioURL = URL.createObjectURL(response);
       setResponseAudio(audioURL);  // Ställ in ljudet att kunna spelas
   
@@ -175,48 +197,82 @@ const AudioUploader = ({ userId }) => {
   
   useEffect(() => {
     if (responseAudio && audioRef.current) {
-      audioRef.current.play();  // Spela upp ljudet när det är mottaget och klart
+      const audioElement = audioRef.current;
+      audioElement.src = responseAudio;
+      audioElement.play().catch((error) => console.error('Fel vid uppspelning:', error));
+
+      audioElement.onended = () => {
+        console.log('AI svarat. Spelar in...');
+        handleStartRecording();
+      };
     }
   }, [responseAudio]);  // Kör varje gång responseAudio ändras
   
 
   return (
     <div className="audio-uploader">
-      <h2 className="title">Spela in ett ljud</h2>
-      <div className="recording-controls">
-        {!isRecording ? (
-          <button onClick={handleStartRecording} disabled={loading} className="btn start-btn">
-            Starta inspelning
+      {!isConversationStarted ? (
+        <button
+          onClick={handleStartConversation}
+          className="btn start-conversation-btn"
+        >
+          Starta Konversation
+        </button>
+      ) : (
+        <>
+          <button
+            onClick={handleStopConversation}
+            className="btn stop-conversation-btn"
+          >
+            Stoppa Konversation
           </button>
-        ) : isPaused ? (
-          <button onClick={handleStartRecording} disabled={loading} className="btn resume-btn">
-            Återuppta inspelning
-          </button>
-        ) : (
-          <>
-            <button onClick={handleStopRecording} disabled={loading} className="btn stop-btn">
-              Stoppa inspelning
-            </button>
-            <button onClick={handlePauseRecording} disabled={loading} className="btn pause-btn">
-              Pausa inspelning
-            </button>
-          </>
-        )}
-        {loading && <p className="loading-text">Bearbetar ljud...</p>}
-      </div>
+          <div className="recording-controls">
+            {!isRecording ? (
+              <button onClick={handleStartRecording} disabled={loading} className="btn start-btn">
+                Starta inspelning
+              </button>
+            ) : isPaused ? (
+              <button onClick={handleStartRecording} disabled={loading} className="btn resume-btn">
+                Återuppta inspelning
+              </button>
+            ) : (
+              <>
+                <button onClick={handleStopRecording} disabled={loading} className="btn stop-btn">
+                  Stoppa inspelning
+                </button>
+                <button onClick={handlePauseRecording} disabled={loading} className="btn pause-btn">
+                  Pausa inspelning
+                </button>
+              </>
+            )}
+            {loading && <p className="loading-text">Bearbetar ljud...</p>}
+          </div>
 
-      <div className="canvas-container">
-        <canvas ref={canvasRef} className="waveform-canvas"></canvas>
-      </div>
+          <div className="canvas-container">
+            <canvas ref={canvasRef} className="waveform-canvas"></canvas>
+          </div>
 
-      {responseAudio && (
-        <div className="audio-preview">
-          <h3>Bearbetat ljud</h3>
-          <audio ref={audioRef} src={responseAudio} controls className="audio-player"></audio>
-        </div>
+          {responseAudio && (
+            <div className="audio-preview">
+              <h3>Bearbetat ljud</h3>
+              <audio ref={audioRef} controls className="audio-player"></audio>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 };
+
+const sendMessageToServer = async (message) => {
+  await fetch('/api/end-conversation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message }), // JSON meddelande
+  });
+};
+
 
 export default AudioUploader;
