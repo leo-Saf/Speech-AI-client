@@ -7,10 +7,8 @@ export const uploadAudio = async (blob, userId, participants = []) => {
   formData.append('audio', blob, 'audio.webm'); // Add the Blob to the FormData
   formData.append('userId', userId);
 
-  // Serialize the participants array as a JSON string
-  if (participants.length > 0) {
-    formData.append('participants', JSON.stringify(participants));
-  }
+  // Send participants as a JSON string
+  formData.append('participants', JSON.stringify(participants));
 
   const response = await fetch('/api/process-audio', {
     method: 'POST',
@@ -21,13 +19,13 @@ export const uploadAudio = async (blob, userId, participants = []) => {
     throw new Error('Fel vid uppladdning');
   }
 
-  // Handle response as needed (Blob or JSON)
+  // Handle response (Blob or JSON as per server response)
   const contentType = response.headers.get('Content-Type');
   if (contentType && contentType.includes('application/json')) {
     const jsonResponse = await response.json();
-    return JSON.stringify(jsonResponse); // Return JSON as a string
+    return JSON.stringify(jsonResponse);
   } else {
     const audioBlob = await response.blob();
-    return audioBlob; // Return processed audio as a Blob
+    return audioBlob;
   }
 };
