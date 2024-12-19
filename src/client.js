@@ -13,7 +13,7 @@ export const uploadAudio = async (blob, userId, additionalParticipants = []) => 
   formData.append('participants', JSON.stringify(combinedParticipants));
 
   try {
-    const response = await fetch('/api/end-conversation', { // ändrad från process-audio
+    const response = await fetch('/api/process-audio', { // ändrad från process-audio
       method: 'POST',
       body: formData,
     });
