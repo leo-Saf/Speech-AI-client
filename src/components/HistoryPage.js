@@ -79,6 +79,9 @@ const HistoryPage = ({ userId  }) => {
 
       // Fetch data from the API
       const response = await axios.get(`http://localhost:3001/get-user-conversations/${userIdentifier}`);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
       const data = response.data;
 
