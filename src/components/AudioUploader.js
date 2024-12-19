@@ -216,7 +216,7 @@ const AudioUploader = ({ userId }) => {
           onClick={handleStartConversation}
           className="btn start-conversation-btn"
         >
-          Starta Konversation
+          Start session
         </button>
       ) : (
         <>
@@ -224,28 +224,28 @@ const AudioUploader = ({ userId }) => {
             onClick={handleStopConversation}
             className="btn stop-conversation-btn"
           >
-            Stoppa Konversation
+            Stop session
           </button>
           <div className="recording-controls">
             {!isRecording ? (
               <button onClick={handleStartRecording} disabled={loading} className="btn start-btn">
-                Starta inspelning
+                Start recording
               </button>
             ) : isPaused ? (
               <button onClick={handleStartRecording} disabled={loading} className="btn resume-btn">
-                Återuppta inspelning
+                Continue recording
               </button>
             ) : (
               <>
                 <button onClick={handleStopRecording} disabled={loading} className="btn stop-btn">
-                  Stoppa inspelning
+                  Stop recording
                 </button>
                 <button onClick={handlePauseRecording} disabled={loading} className="btn pause-btn">
-                  Pausa inspelning
+                  Paus recording
                 </button>
               </>
             )}
-            {loading && <p className="loading-text">Bearbetar ljud...</p>}
+            {loading && <p className="loading-text">Processing audio...</p>}
           </div>
 
           <div className="canvas-container">
@@ -254,7 +254,7 @@ const AudioUploader = ({ userId }) => {
 
           {responseAudio && (
             <div className="audio-preview">
-              <h3>Bearbetat ljud</h3>
+              <h3>Processed audio</h3>
               <audio ref={audioRef} controls className="audio-player"></audio>
             </div>
           )}
