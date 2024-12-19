@@ -19,11 +19,18 @@ const HistoryPage = ({ userId }) => {
       setAnalysisError(null);
       setAnalysis({}); // Reset analysis before fetching new data
 
-      // Handle case where no userId is provided (i.e., guest)
-      const userIdentifier = userId || ' '; // If userId is null, set to 'guest'
+      let userIdentifier = userId;
+
+    // If no userId is provided, fetch a guest ID from backend
+    if (!userIdentifier) {
+      const response = await axios.get('http://localhost:3001/api/get-guest-id');
+      userIdentifier = response.data.guestId; // Use the generated guestId
+    }
+
+    console.log("Fetching data for userIdentifier:", userIdentifier);
 
       // Fetch data from the API
-      const response = await axios.get(`http://localhost:3000/api/get-user-conversations/${userIdentifier}`);
+      const response = await axios.get(`http://localhost:3001/api/get-user-conversations/${userIdentifier}`);
       const data = response.data;
       if (!data) {
         console.error("No response from the server");
