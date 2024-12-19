@@ -20,21 +20,21 @@ const Login = ({ onLoginSuccess, onClose }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Inloggning misslyckades.');
+        throw new Error(data.error || 'Login failed.');
       }
 
       // Kontrollera att userId finns i svaret
       if (!data.userId && (!data.user || !data.user.id)) {
-        throw new Error('Backend skickade inte användar-ID!');
+        throw new Error('The server did not send a user-ID!');
       }
       
 
 
-      setMessage('Inloggning lyckades! Välkommen tillbaka!');
+      setMessage('Login successful! Welcome back!');
       onLoginSuccess(data);
     } catch (error) {
       console.error('Fel vid inloggning:', error);
-      setMessage(`Fel: ${error.message}`);
+      setMessage(`Error: ${error.message}`);
     } finally {
       setIsLoading(false);
     }

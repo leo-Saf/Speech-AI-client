@@ -20,10 +20,10 @@ const Register = ({ onRegisterSuccess, onClose }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Registrering misslyckades.');
+        throw new Error(data.error || 'Registration failed.');
       }
 
-      setMessage('Registrering lyckades! Logga in för att fortsätta.');
+      setMessage('Registration successful! Login to proceed.');
       onRegisterSuccess();
     } catch (error) {
       console.error('Fel vid registrering:', error);
