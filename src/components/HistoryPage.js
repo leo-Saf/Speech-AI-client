@@ -48,30 +48,18 @@ const HistoryPage = ({ userId }) => {
     try {
       setAnalysisLoading(true);
       setAnalysisError(null);
+      setAnalysis({}); // Reset analysis before fetching new data
+
+      const userIdentifier = userId || ' '; // If user-ID is null, set as 'Guest'
 
       // Hämta analysdata från API
-      const response = await axios.get(`/api/analysis`);
-      const { sections, wordCount } = response.data; // Destrukturera det mottagna objektet
+      const response = await axios.get(`/api/analysis-by-id/${userIdentifier}`);
+      console.log('Inloggad med userID: ' + userIdentifier);                    // TEST - TA BORT
+      const analysisData = response.data; 
 
-      // Remove all numbers, headers and repeting text from the beginning of section
-  const cleanedSections = sections.map((section) => {
-    return section
-      .replace(/^\d+\.\s*/, '') // Ta bort siffror följt av punkt och mellanslag
-      .trim(); // Ta bort onödiga mellanrum
-  });
-
-      // Bygg analysobjektet baserat på sections-arrayen
-      const analysisData = {
-        vocabularyRichness: cleanedSections[0] || 'Ingen data tillgänglig.',
-        grammarMistakes: cleanedSections[1] || 'Ingen data tillgänglig.',
-        improvements: cleanedSections[2] || 'Ingen data tillgänglig.',
-        fillerWords: cleanedSections[3] || 'Ingen data tillgänglig.',
-        summary: cleanedSections[4] || 'Ingen data tillgänglig.',
-        wordCount: wordCount || 0,
-      };
+      console.log("\n response:      " + JSON.stringify(response));            // TEST - TA BORT
 
       setAnalysis(analysisData);
-
 
     } catch (err) {
       console.error(err);
@@ -86,7 +74,7 @@ const HistoryPage = ({ userId }) => {
   
   // Om inget userId finns (dvs gäst), sätt det till 'guest' för att hämta konversationerna för gäst.
   fetchConversations();
-    fetchAnalysis();
+  fetchAnalysis();
 }, [userId]); // Körs om userId ändras
 
 
@@ -95,18 +83,18 @@ const renderConversationList = (conversationsList) => {
   return conversationsList.map((conversation) => (
     <div key={conversation.ConversationId} className="conversation-card">
       <h4>Datum: {conversation.Date}</h4>
-      <p>Status: {conversation.Ended ? 'Avslutad' : 'Pågående'}</p>
+      <p>Status: {conversation.Ended ? 'Completed' : 'Ongoing'}</p>
       <ul>
         {Array.isArray(conversation.PromptsAndAnswers) && conversation.PromptsAndAnswers.length > 0 ? (
           conversation.PromptsAndAnswers.map((item, index) => (
             <li key={index}>
-              <strong>Fråga:</strong> {item?.Prompt || 'Ingen fråga'}
+              <strong>Fråga:</strong> {item?.Prompt || 'No question'}
               <br />
-              <strong>Svar:</strong> {item?.Answer || 'Inget svar'}
+              <strong>Svar:</strong> {item?.Answer || 'No answer'}
             </li>
           ))
         ) : (
-          <p>Inga frågor och svar tillgängliga.</p>
+          <p>No questions or answers available.</p>
         )}
       </ul>
     </div>
@@ -117,15 +105,15 @@ const renderConversationList = (conversationsList) => {
   return (
 <div className="history-analysis-page">
   <div className="history-section">
-    <h1>Konversationshistorik</h1>
-    {loading && <p>Laddar...</p>}
+    <h1>Conversation history</h1>
+    {loading && <p>Loading...</p>}
     {error && <p className="error">{error}</p>}
 
     <div className="conversation-list">
       {!loading &&
         conversations.singleUserConversations.length === 0 &&
         conversations.multiUserConversations.length === 0 && (
-          <p>Inga konversationer att visa.</p>
+          <p>No conversations to show.</p>
         )}
 
 
@@ -133,7 +121,7 @@ const renderConversationList = (conversationsList) => {
    {/* Enkelanvändarkonversationer */}
    {conversations.singleUserConversations.length > 0 && (
       <>
-        <h2>Enkelanvändarkonversationer</h2>
+        <h2>Single user conversations</h2>
         {renderConversationList(
           conversations.singleUserConversations.sort(
             (a, b) => new Date(b.Date) - new Date(a.Date)
@@ -145,7 +133,7 @@ const renderConversationList = (conversationsList) => {
     {/* Fleranvändarkonversationer */}
     {conversations.multiUserConversations.length > 0 && (
       <>
-        <h2>Fleranvändarkonversationer</h2>
+        <h2>Multi user conversations</h2>
         {renderConversationList(
           conversations.multiUserConversations.sort(
             (a, b) => new Date(b.Date) - new Date(a.Date)
@@ -159,31 +147,31 @@ const renderConversationList = (conversationsList) => {
   </div>
 
   <div className="analysis-section">
-    <h1>Textanalys</h1>
-    {analysisLoading && <p>Laddar analys...</p>}
+    <h1>Text analysis</h1>
+    {analysisLoading && <p>Loading analysis...</p>}
     {analysisError && <p className="error">{analysisError}</p>}
 
     {!analysisLoading && !analysisError && (
       <div className="analysis-grid">
         <div className="analysis-card">
-          <h2>Ordförrådets rikedom</h2>
-          <p>{analysis.vocabularyRichness || 'Ingen data tillgänglig.'}</p>
+          <h2>Vocabulary richness</h2>
+          <p>{analysis.vocabularyRichness || 'No data available.'}</p>
         </div>
         <div className="analysis-card">
-          <h2>Grammatiska fel</h2>
-          <p>{analysis.grammarMistakes || 'Ingen data tillgänglig.'}</p>
+          <h2>Grammatical errors</h2>
+          <p>{analysis.grammarMistakes || 'No data available.'}</p>
         </div>
         <div className="analysis-card">
-          <h2>Förbättringar</h2>
-          <p>{analysis.improvements || 'Ingen data tillgänglig.'}</p>
+          <h2>Improvements</h2>
+          <p>{analysis.improvements || 'No data available.'}</p>
         </div>
         <div className="analysis-card">
-          <h2>Fyllnadsord</h2>
-          <p>{analysis.fillerWords || 'Ingen data tillgänglig.'}</p>
+          <h2>Filler words</h2>
+          <p>{analysis.fillerWords || 'No data available.'}</p>
         </div>
         <div className="analysis-card summary-card">
-          <h2>Sammanfattning</h2>
-          <p>{analysis.summary || 'Ingen data tillgänglig.'}</p>
+          <h2>Summary</h2>
+          <p>{analysis.summary || 'No data available.'}</p>
         </div>
       </div>
     )}
