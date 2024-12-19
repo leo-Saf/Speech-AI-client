@@ -1,12 +1,11 @@
-// Home.js
 import React from 'react';
 import AudioUploader from './AudioUploader';
 
 const Home = ({ user }) => {
   return (
-    <div>
+    <div className="home-container">
       <h1>Välkommen till Speech AI</h1>
-      <AudioUploader userId={user?.id || null} /> {/* Skickar userId eller null */}
+      <AudioUploader userId={user?.id || null} />
     </div>
   );
 };
