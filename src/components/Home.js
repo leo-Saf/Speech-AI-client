@@ -5,7 +5,7 @@ import AudioUploader from './AudioUploader';
 const Home = ({ user }) => {
   return (
     <div>
-      <h1>Välkommen till Speech AI</h1>
+      <h1>Welcome to Speech AI</h1>
       <AudioUploader userId={user?.id || null} /> {/* Skickar userId eller null */}
     </div>
   );

@@ -59,32 +59,32 @@ const App = () => {
           {isAuthenticated ? (
             <>
             
-              <span>Välkommen, {user ? user.Email : 'Användare'}</span>
+              <span>Welcome, {user ? user.Email : 'User'}</span>
               <Link to="/">
-             <button className="home-button">Hem</button> 
+             <button className="home-button">Home</button> 
              </Link>
               <button className="logout" onClick={handleLogout}>
-                Logga ut
+                Log out
               </button>
               <Link to="/historik">
-                <button>Visa Historik</button>
+                <button>Show history</button>
                 
               </Link>
               <Link to="/inspelning">
-                <button>Inspelning</button>
+                <button>Recording</button>
               </Link>
             </>
           ) : (
             <>
-              <span>Du är som gäst.</span>
+              <span>You are participating as a guest.</span>
               <Link to="/historik">
-            <button>Visa Historik</button>
+            <button>Show history</button>
           </Link>
           <Link to="/">
-             <button className="home-button">Hem</button> 
+             <button className="home-button">Home</button> 
              </Link>
-              <button onClick={() => setAuthMode('login')}>Logga in</button>
-              <button onClick={() => setAuthMode('register')}>Registrera</button>
+              <button onClick={() => setAuthMode('login')}>Login</button>
+              <button onClick={() => setAuthMode('register')}>Register</button>
               
           
           

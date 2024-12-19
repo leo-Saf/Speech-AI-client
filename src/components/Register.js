@@ -66,7 +66,7 @@ const Register = ({ onRegisterSuccess, onClose }) => {
         </button>
       </form>
       <p>{message}</p>
-      <button onClick={onClose} className="close-button">Stäng</button>
+      <button onClick={onClose} className="close-button">Close</button>
     </div>
   );
 };
