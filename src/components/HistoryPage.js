@@ -10,10 +10,15 @@ const HistoryPage = ({ userId }) => {
   const [error, setError] = useState(null);
   const [analysisError, setAnalysisError] = useState(null);
 
-  const fetchConversations = async () => {
+  const fetchConversationsAndAnalysis = async () => {
     try {
       setLoading(true);
       setError(null);
+
+      setAnalysisLoading(true);
+      setAnalysisError(null);
+      setAnalysis({}); // Reset analysis before fetching new data
+
      // Hantera om inget userId tillhandahålls (dvs gäst)
      const userIdentifier = userId || ' '; // Om användar-ID är null, sätt till 'guest'
 
@@ -26,55 +31,48 @@ const HistoryPage = ({ userId }) => {
         return;
       }
 
-      
-      setConversations({
-        singleUserConversations: data.singleUserConversations || [],
-        multiUserConversations: data.multiUserConversations || [],
-      });
-    } catch (err) {
-      console.error(err);
-      if (err.response && err.response.status === 404) {
-        setError('Inga konversationer hittades.');
-      } else {
-        console.error('Fel vid hämtning av konversationer:', error);
-        setError('Ett fel uppstod vid hämtning av konversationer.');
+        try{
+        setConversations({
+          singleUserConversations: data.singleUserConversations || [],
+          multiUserConversations: data.multiUserConversations || [],
+        });
+      } catch (err) {
+        console.error(err);
+        if (err.response && err.response.status === 404) {
+          setError('Inga konversationer hittades.');
+        } else {
+          console.error('Fel vid hämtning av konversationer:', error);
+          setError('Ett fel uppstod vid hämtning av konversationer.');
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
+
+      try{
+      setAnalysis(data.analysisData);
+
+      } catch (err) {
+        console.error(err);
+        setAnalysisError('Ett fel uppstod vid hämtning av analysdata.');
+      } finally {
+        setAnalysisLoading(false);
+      }
+
+
+  } catch (err) {
+    console.error("Fel vid hämtning av data:" + err);
+    setAnalysisError('Ett fel uppstod vid hämtning av konversationer och analysdata.');
+  } finally {
+    setAnalysisLoading(false);
+  }
   };
 
-  const fetchAnalysis = async () => {
-    try {
-      setAnalysisLoading(true);
-      setAnalysisError(null);
-      setAnalysis({}); // Reset analysis before fetching new data
-
-      const userIdentifier = userId || ' '; // If user-ID is null, set as 'Guest'
-
-      // Hämta analysdata från API
-      const response = await axios.get(`/api/analysis-by-id/${userIdentifier}`);
-      console.log('Inloggad med userID: ' + userIdentifier);                    // TEST - TA BORT
-      const analysisData = response.data; 
-
-      console.log("\n response:      " + JSON.stringify(response));            // TEST - TA BORT
-
-      setAnalysis(analysisData);
-
-    } catch (err) {
-      console.error(err);
-      setAnalysisError('Ett fel uppstod vid hämtning av analysdata.');
-    } finally {
-      setAnalysisLoading(false);
-    }
-  };
 
   useEffect(() => {
   console.log("Användar-ID som skickas:", userId);
   
   // Om inget userId finns (dvs gäst), sätt det till 'guest' för att hämta konversationerna för gäst.
-  fetchConversations();
-  fetchAnalysis();
+  fetchConversationsAndAnalysis();
 }, [userId]); // Körs om userId ändras
 
 
