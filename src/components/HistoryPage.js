@@ -64,6 +64,7 @@ const HistoryPage = ({ userId  }) => {
 >>>>>>> Stashed changes
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       const response = await axios.get(url);
 =======
       // Hämta data från API
@@ -71,6 +72,13 @@ const HistoryPage = ({ userId  }) => {
 <<<<<<< Updated upstream
 >>>>>>> Stashed changes
 =======
+>>>>>>> Stashed changes
+=======
+      // Handle case where no userId is provided (i.e., guest)
+      const userIdentifier = userId || ' '; // If userId is null, set to 'guest'
+
+      // Fetch data from the API
+      const response = await axios.get(`http://localhost:3001/get-user-conversations/${userIdentifier}`);
 >>>>>>> Stashed changes
       const data = response.data;
 
@@ -111,6 +119,7 @@ const HistoryPage = ({ userId  }) => {
 
 >>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
   // Renderar en lista med konversationer (både enkel- och fleranvändare)
 const renderConversationList = (conversationsList) => {
   return conversationsList.map((conversation) => (
@@ -181,6 +190,101 @@ const renderConversationList = (conversationsList) => {
 
         {/* Rendera fleranvändarkonversationer */}
         {renderConversationList(conversations.multiUserConversations)}
+=======
+  // Renders a list of conversations (both single-user and multi-user)
+  const renderConversationList = (conversationsList) => {
+    return conversationsList.map((conversation) => (
+      <div key={conversation.ConversationId} className="conversation-card">
+        <h4>Date: {conversation.Date}</h4>
+        <p>Status: {conversation.Ended ? 'Completed' : 'Ongoing'}</p>
+        <ul>
+          {Array.isArray(conversation.PromptsAndAnswers) && conversation.PromptsAndAnswers.length > 0 ? (
+            conversation.PromptsAndAnswers.map((item, index) => (
+              <li key={index}>
+                <strong>Question:</strong> {item?.Prompt || 'No question'}
+                <br />
+                <strong>Answer:</strong> {item?.Answer || 'No answer'}
+              </li>
+            ))
+          ) : (
+            <p>No questions or answers available.</p>
+          )}
+        </ul>
+      </div>
+    ));
+  };
+
+  return (
+    <div className="history-analysis-page">
+      <div className="history-section">
+        <h1>Conversation history</h1>
+        {loading && <p>Loading...</p>}
+        {error && <p className="error">{error}</p>}
+
+        <div className="conversation-list">
+          {!loading &&
+            conversations.singleUserConversations.length === 0 &&
+            conversations.multiUserConversations.length === 0 && (
+              <p>No conversations to show.</p>
+            )}
+
+          {/* Single user conversations */}
+          {conversations.singleUserConversations.length > 0 && (
+            <>
+              <h2>Single user conversations</h2>
+              {renderConversationList(
+                conversations.singleUserConversations.sort(
+                  (a, b) => new Date(b.Date) - new Date(a.Date)
+                )
+              )}
+            </>
+          )}
+
+          {/* Multi user conversations */}
+          {conversations.multiUserConversations.length > 0 && (
+            <>
+              <h2>Multi user conversations</h2>
+              {renderConversationList(
+                conversations.multiUserConversations.sort(
+                  (a, b) => new Date(b.Date) - new Date(a.Date)
+                )
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="analysis-section">
+        <h1>Text analysis</h1>
+        {analysisLoading && <p>Loading analysis...</p>}
+        {analysisError && <p className="error">{analysisError}</p>}
+
+        {!analysisLoading && !analysisError && (
+  <div className="analysis-grid">
+    <div className="analysis-card">
+      <h2>Vocabulary richness</h2>
+      <p>{analysis?.vocabularyRichness || 'No data available.'}</p>
+    </div>
+    <div className="analysis-card">
+      <h2>Grammatical errors</h2>
+      <p>{analysis?.grammarMistakes || 'No data available.'}</p>
+    </div>
+    <div className="analysis-card">
+      <h2>Improvements</h2>
+      <p>{analysis?.improvements || 'No data available.'}</p>
+    </div>
+    <div className="analysis-card">
+      <h2>Filler words</h2>
+      <p>{analysis?.fillerWords || 'No data available.'}</p>
+    </div>
+    <div className="analysis-card summary-card">
+      <h2>Summary</h2>
+      <p>{analysis?.summary || 'No data available.'}</p>
+    </div>
+  </div>
+)}
+
+>>>>>>> Stashed changes
       </div>
 >>>>>>> Stashed changes
     </div>
