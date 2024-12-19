@@ -68,6 +68,9 @@ const HistoryPage = ({ userId  }) => {
 =======
       // Hämta data från API
       const response = await axios.get(`http://localhost:3001/get-user-conversations/${userIdentifier}`);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
       const data = response.data;
 
@@ -96,8 +99,17 @@ const HistoryPage = ({ userId  }) => {
 <<<<<<< Updated upstream
 =======
   useEffect(() => {
+<<<<<<< Updated upstream
     fetchConversations();
   }, [userId]);
+=======
+  console.log("Användar-ID som skickas:", userId);
+ 
+  // Om inget userId finns (dvs gäst), sätt det till 'guest' för att hämta konversationerna för gäst.
+  fetchConversationsAndAnalysis();
+}, [userId]); // Körs om userId ändras
+
+>>>>>>> Stashed changes
 
   // Renderar en lista med konversationer (både enkel- och fleranvändare)
 const renderConversationList = (conversationsList) => {
