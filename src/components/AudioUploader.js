@@ -17,8 +17,10 @@ const AudioUploader = ({ userId }) => {
   const audioContextRef = useRef(null);
   const microphoneRef = useRef(null);
 
-  const MAX_SILENCE_TIME = 3000;
+  const MAX_SILENCE_TIME = 3000; // ti´d efter man börjar prata
   const SILENCE_THRESHOLD = 30;
+  const MAX_RECORDING_TIME = 15000; // 30 s max tid oavsett om man slutar prata eller ej
+  const recordingTimeoutRef = useRef(null);
   const silenceHistory = [];
   let silenceTimeout = null;
 
@@ -103,7 +105,7 @@ const AudioUploader = ({ userId }) => {
   const handleStopConversation = () => {
     console.log('userid = ', userId);
     setIsConversationStarted(false);
-    sendMessageToServer(userId); // TESTA!!!!
+    //sendMessageToServer(userId); // TESTA!!!!
     setIsRecording(false);
     setIsPaused(false);
     clearTimeout(silenceTimeout);
@@ -118,6 +120,12 @@ const AudioUploader = ({ userId }) => {
       mediaRecorder.start();
       setIsRecording(true);
       silenceHistory.length = 0;
+
+      // timeout
+    recordingTimeoutRef.current = setTimeout(() => {
+      console.log('Max inspelningstid uppnådd, stoppar...');
+      handleStopRecording();
+    }, MAX_RECORDING_TIME);
     }
 
     console.log('MediaRecorder state:', mediaRecorder.state);
@@ -137,6 +145,15 @@ const AudioUploader = ({ userId }) => {
       setIsRecording(false);
       setIsPaused(false);
       clearTimeout(silenceTimeout);
+
+
+    // resettar timer
+    if (recordingTimeoutRef.current) {
+      clearTimeout(recordingTimeoutRef.current);
+      recordingTimeoutRef.current = null;
+    }
+
+    console.log('Recording stopped manually OR by timer.');
 
       /*if (audioChunks.length > 0) {
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
@@ -160,19 +177,13 @@ const AudioUploader = ({ userId }) => {
   const handleUpload = async (blob) => {
     setLoading(true);
     try {
-      // Hämta användar-ID eller sätt "guest" om userId saknas
-      const uploadId = userId || "guest";
-      console.log('Uppladdar ljud med ID:', uploadId);  // Logga användar-ID:t som används
-  
-      // Skicka data till backend
-      console.log('Data som skickas till backend:', blob);
-      const response = await uploadAudio(blob, uploadId); // Skicka ID:t till uploadAudio
-  
-      // Logga upplysning om att uppladdningen lyckades
-      console.log('Uppladdning lyckades, ID:', uploadId);
-      console.log('Svaret från backend:', response);
-  
-      // Skapa en URL för att spela upp ljudet som returneras
+      const uploadId = userId; // Använd INTE "guest" om userId saknas
+    console.log('Uppladdar ljud med ID:', uploadId);
+    console.log('Data som skickas till backend:', blob);
+
+    const response = await uploadAudio(blob, uploadId);
+    
+      console.log('Uppladdning lyckades:', response);
       const audioURL = URL.createObjectURL(response);
       setResponseAudio(audioURL);  // Ställ in ljudet att kunna spelas
   
