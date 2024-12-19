@@ -63,7 +63,12 @@ const HistoryPage = ({ userId  }) => {
     const userIdentifier = userId || ''; // Om användar-ID är null, sätt till 'guest'
 >>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
       const response = await axios.get(url);
+=======
+      // Hämta data från API
+      const response = await axios.get(`http://localhost:3001/get-user-conversations/${userIdentifier}`);
+>>>>>>> Stashed changes
       const data = response.data;
 
       setConversations({

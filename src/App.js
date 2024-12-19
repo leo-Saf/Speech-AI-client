@@ -15,12 +15,15 @@ const App = () => {
   const [user, setUser] = useState(null); // Sparar information om den inloggade användaren
   const [authMode, setAuthMode] = useState(null); // Styr vilken modal (Login/Register) som ska visas
 
+  // Hantering av lyckad registrering
   const handleRegisterSuccess = () => {
     setAuthMode(null); // Stänger modalen
     toast.success('Registrering lyckades! Logga in för att fortsätta.');
   };
 
+  // Hantering av lyckad inloggning
   const handleLoginSuccess = (userData) => {
+<<<<<<< Updated upstream
     console.log('Användardata från backend:', userData); // Logga användardata
 <<<<<<< Updated upstream
     if (userData && userData.userId) {
@@ -33,6 +36,9 @@ const App = () => {
 =======
     
     // Kontrollera alternativa strukturer
+=======
+    console.log('Användardata från backend:', userData);
+>>>>>>> Stashed changes
     if (userData?.userId) {
       setIsAuthenticated(true);
       setUser({
@@ -40,6 +46,7 @@ const App = () => {
         email: userData.Email,
         admin: userData.Admin,
       });
+<<<<<<< Updated upstream
       console.log("Inloggning lyckades. User state:", {
         id: userData.userId,
         email: userData.Email,
@@ -55,20 +62,25 @@ const App = () => {
     console.error('Användardata saknar userId:', userData)
    }
 >>>>>>> Stashed changes
+=======
+      setAuthMode(null); // Stänger modalen
+      toast.success('Inloggning lyckades! Välkommen.');
+    } else {
+      toast.error('Inloggning misslyckades! Ingen användar-ID hittades.');
+    }
+>>>>>>> Stashed changes
   };
 
+  // Hantering av utloggning
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUser(null);
     toast.info('Du har loggat ut.');
   };
 
-  const handleAuthClose = () => {
-    setAuthMode(null); // Stänger authMode
-  };
-
   return (
     <Router>
+<<<<<<< Updated upstream
       
       <div>
         <ToastContainer position="top-center" autoClose={3000} />
@@ -95,10 +107,64 @@ const App = () => {
           
               <button onClick={() => setAuthMode('login')}>Logga in</button>
               <button onClick={() => setAuthMode('register')}>Registrera</button>
-            </>
-          )}
+=======
+      <div>
+        <ToastContainer position="top-center" autoClose={3000} />
+
+        {/* Navigation */}
+        <nav className="navbar">
+          <div className="navbar-brand">
+            <Link to="/" className="brand-logo">SpeechAI</Link>
+          </div>
+          <ul className="navbar-links">
+            {isAuthenticated ? (
+              <>
+                <li>Välkommen, {user ? user.email : 'Användare'}</li>
+                <li><Link to="/">Hem</Link></li>
+                <li><Link to="/historik">Visa Historik</Link></li>
+                <li><Link to="/inspelning">Inspelning</Link></li>
+                <li>
+                  <button className="logout" onClick={handleLogout}>Logga ut</button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="guest-message">Du är som gäst.</li>
+                <li><Link to="/historik" >Visa Historik</Link></li>
+                <li><Link to="/">Hem</Link></li>
+                <li><button onClick={() => setAuthMode('login')}>Logga in</button></li>
+                <li><button onClick={() => setAuthMode('register')}>Registrera</button></li>
+              </>
+            )}
+          </ul>
         </nav>
 
+        {/* Routes */}
+        <Routes>
+          <Route path="/" element={<Home user={user} />} />
+          {isAuthenticated ? (
+            <>
+              <Route path="/historik" element={<HistoryPage userId={user?.id } />} />
+              <Route path="/inspelning" element={<AudioUploader userId={user?.id} />} />
+            </>
+          ) : (
+            <>
+              <Route path="/historik" element={<HistoryPage userId={null} />} />
+              <Route
+                path="*"
+                element={
+                  <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                    <h2>Du måste logga in för att komma åt denna sida.</h2>
+                    <button onClick={() => setAuthMode('login')}>Logga in</button>
+                  </div>
+                }
+              />
+>>>>>>> Stashed changes
+            </>
+          )}
+        </Routes>
+
+<<<<<<< Updated upstream
         <Routes>
 <<<<<<< Updated upstream
           {isAuthenticated ? (
@@ -143,6 +209,9 @@ const App = () => {
         </Routes>
 
         {/* Rendera modal för inloggning/registrering endast när en knapp trycks */}
+=======
+        {/* Modal för autentisering */}
+>>>>>>> Stashed changes
         {authMode === 'login' && (
           <div className="auth-container">
             <Login
@@ -159,7 +228,6 @@ const App = () => {
             />
           </div>
         )}
-        
       </div>
     </Router>
   );
