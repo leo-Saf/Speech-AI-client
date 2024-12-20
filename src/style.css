@@ -150,6 +150,7 @@ p {
 
 
 /* Generell styling för HistoryPage */
+
 .history-page {
   margin-top: 60px; /* Skapa utrymme under navigationsfältet */
   max-width: 800px;
@@ -161,7 +162,7 @@ p {
   text-align: center;
   margin-left: auto;
 
-}
+} 
 
 
 /* Rubrik för historiksidan */
@@ -377,65 +378,125 @@ button:hover {
   margin-left: auto;
   text-align: left; /* Vänsterjustera texten */
 }
+/* Reset any inherited styles that might affect the layout */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
 
-
+/* Main layout adjustments */
 .history-analysis-page {
-  margin-top: 60px; /* Skapa utrymme under navigationsfältet */
+  margin: 80px 40px 40px; /* Reduced side margins to allow more space */
   display: flex;
-  flex-direction: row; /* Gör att historik och analys ligger sida vid sida */
-  border-radius: 10px;
-  margin-left: auto;
-  
+  flex-direction: row;
+  gap: 40px; /* Increased gap between sections */
+  width: calc(100% - 85px); /* Account for margins */
+  flex-wrap: nowrap;
+
+  color: #333; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 }
 
 .history-section,
-.analysis-section {  
-  flex: 1; /* Gör sektionerna lika breda */
-  background-color: #ffffff; /* Vit bakgrund för båda sektionerna */
+.analysis-section {
+  flex: 1;
+  background-color: #ffffff;
   border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Lätt skugga */ 
-  margin-left: auto;
+  padding: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 0;
+  height: fit-content;
+  
 }
 
+/* Header styling */
 .history-section h1,
 .analysis-section h1 {
-  color: #2c3e50;
-  font-size: 1.5rem;
-  margin-bottom: 20px;
+  color: #000000;
+  font-size: 1.8rem;
+  margin-bottom: 30px;
   text-align: center;
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  padding: 15px 0;
+  z-index: 10;
+  border-bottom: 2px solid #f0f0f0;
 }
 
-.history-section h2,
-.analysis-section h2 {
-  color: #2c3e50;
-  font-size: 1.2rem;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
+/* Analysis cards grid */
 .analysis-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Två kolumner */
-  gap: 20px;
-  margin-top: 60px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  margin-top: 30px;
 }
 
+/* Individual analysis cards */
 .analysis-card {
-  border: 1px solid #ccc;
-  padding: 15px;
+  display: flex;
+  flex-direction: column; /* Vertikal layout */
+  justify-content: flex-start; /* Rubrik överst, text under */
+  align-items: flex-start; /* Vänsterjustera innehållet */
+  border: 1px solid #e0e0e0;
+  padding: 10px;
   border-radius: 10px;
   background-color: #f9f9f9;
-  min-height: 150px; /* Säkerställ samma höjd för alla kort */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lätt skugga */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  height: 250px; /* Increased height */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
 }
 
+/* Summary card specific styles */
 .summary-card {
-  grid-column: span 2; /* Gör att sammanfattningen täcker hela bredden */ 
-  background-color: #eef;
-  padding: 15px;
-  font-weight: bold;
+  grid-column: span 2;
+  height: 300px; /* Fast höjd för sammanfattning */
+  background-color: #f0f0f7;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 20px;
+  border-radius: 10px; /* Rundade hörn */
+}
+
+/* Card content styling */
+.analysis-card h2 {
+  color: #34495e; /* Mörk text för datum */
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.analysis-card p {
+  margin: 0; /* Ta bort oönskad marginal */
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+  flex: 1; /* Gör så att texten tar upp tillgängligt utrymme */
+  overflow-y: auto; /* Scrolla om texten blir för lång */
+}
+
+/* Conversation cards in history section */
+.conversation-card {
+  background-color: #fff;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Ensure proper scrolling for long content */
+.history-section {
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
+}
+
+/* Conversation section header */
+.history-section h2 {
+  color: #000000;
+  font-size: 1.4rem;
+  margin: 20px 0;
+  text-align: center;
 }
