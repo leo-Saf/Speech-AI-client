@@ -5,24 +5,36 @@ import HistoryPage from './components/HistoryPage';
 import AudioUploader from './components/AudioUploader';
 import Register from './components/Register';
 import Login from './components/Login';
-
+import AddUser from './components/AddUser';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './style.css';
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Håller koll på om användaren är inloggad
-  const [user, setUser] = useState(null); // Sparar information om den inloggade användaren
-  const [authMode, setAuthMode] = useState(null); // Styr vilken modal (Login/Register) som ska visas
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authMode, setAuthMode] = useState(null);
+  const [emails, setEmails] = useState([]); // State to store an array of emails
+  const [showAddUserModal, setShowAddUserModal] = useState(false); // State to control modal visibility
+
+  const handleFetchAndResetEmails = () => {
+    const currentEmails = [...emails]; // Clone the emails
+    setEmails([]); // Reset the emails array
+    return currentEmails;
+  };
+  
+  // Function to handle the email passed from AddUser
+  const handleEmailSubmit = (email) => {
+    setEmails((prevEmails) => [...prevEmails, email]); // Add new email to the array
+    toast.success('User added: ' + email); // Optional: Notify the user
+  };
 
   const handleRegisterSuccess = () => {
-    setAuthMode(null); // Stänger modalen
+    setAuthMode(null);
     toast.success('Registrering lyckades! Logga in för att fortsätta.');
   };
 
   const handleLoginSuccess = (userData) => {
-    console.log('Användardata från backend:', userData); // Logga användardata
-    // Kontrollera alternativa strukturer
     if (userData?.userId) {
       setIsAuthenticated(true);
       setUser({
@@ -30,27 +42,26 @@ const App = () => {
         email: userData.Email,
         admin: userData.Admin,
       });
-    setAuthMode(null); // Stänger modalen
+    setAuthMode(null);
     toast.success('Inloggning lyckades! Välkommen.');
     }
-   else {
+    else {
     toast.error('Inloggning misslyckades! Ingen användar-ID hittades.');
-   }
-  };
+  }
+};
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUser(null);
     toast.info('Du har loggat ut.');
   };
-
+  
   const handleAuthClose = () => {
     setAuthMode(null); // Stänger authMode
   };
 
   return (
     <Router>
-      
       <div>
         <ToastContainer position="top-center" autoClose={3000} />
         <nav className="auth-buttons">
@@ -66,6 +77,7 @@ const App = () => {
               <Link to="/inspelning">
                 <button>Inspelning</button>
               </Link>
+              <button onClick={() => setShowAddUserModal(true)}>Add User</button> 
             </>
           ) : (
             <>
@@ -76,6 +88,7 @@ const App = () => {
           )}
         </nav>
 
+        {/* Routes */}
         <Routes>
           {isAuthenticated ? (
             <>
@@ -96,7 +109,20 @@ const App = () => {
           <Route path="/" element={<Home user={user} />} />
         </Routes>
 
-        {/* Rendera modal för inloggning/registrering endast när en knapp trycks */}
+        {/* Add User Modal */}
+        {showAddUserModal && (
+          <div className="modal">
+            <div className="modal-content">
+              <button className="close" onClick={() => setShowAddUserModal(false)}>
+                &times;
+              </button>
+              {/* Pass the handleEmailSubmit function to AddUser */}
+              <AddUser onEmailSubmit={handleEmailSubmit} />
+            </div>
+          </div>
+        )}
+
+        {/* Render Login/Register Modals */}
         {authMode === 'login' && (
           <div className="auth-container">
             <Login
@@ -113,7 +139,16 @@ const App = () => {
             />
           </div>
         )}
-        
+
+        {/* Display the list of emails under "Lägg till" button */}
+        <div className="added-users-list">
+          <h3>Added Users:</h3>
+          <ul>
+            {emails.map((email, index) => (
+              <li key={index}>{email}</li>
+            ))}
+          </ul>
+        </div>
       </div>
     </Router>
   );
