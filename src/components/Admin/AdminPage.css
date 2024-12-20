@@ -1,0 +1,79 @@
+/* Allmän stil för admin-sidan */
+.admin-page {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 20px;
+  }
+  
+  .admin-page-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #2e3d49;
+  }
+  
+  /* Loader och error hantering */
+  .loading-text {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #007BFF;
+  }
+  
+  .error-text {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #dc3545;
+    font-weight: bold;
+  }
+  
+  /* Konversationslistan */
+  .conversation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* Stilar för varje konversation */
+  .conversation-card {
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .conversation-title {
+    font-size: 1.2rem;
+    color: #007BFF;
+  }
+  
+  .conversation-status {
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  .conversation-status.ended {
+    color: #dc3545;
+  }
+  
+  .conversation-status.ongoing {
+    color: #28a745;
+  }
+  
+  /* Prompts och Answers */
+  .prompts-and-answers {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .prompts-and-answers li {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+  }
+  
+  .prompts-and-answers strong {
+    color: #333;
+  }
+  

@@ -9,21 +9,28 @@ const HistoryPage = ({ userId }) => {
   const [analysisLoading, setAnalysisLoading] = useState(true);
   const [error, setError] = useState(null);
   const [analysisError, setAnalysisError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(""); // State for selected date
 
   const fetchConversationsAndAnalysis = async () => {
     try {
       setLoading(true);
       setError(null);
-
       setAnalysisLoading(true);
       setAnalysisError(null);
       setAnalysis({}); // Reset analysis before fetching new data
 
-      // Handle case where no userId is provided (i.e., guest)
-      const userIdentifier = userId || ' '; // If userId is null, set to 'guest'
+      let userIdentifier = userId;
+
+      // If no userId is provided, fetch a guest ID from backend
+      if (!userIdentifier) {
+        const response = await axios.get('http://localhost:3001/api/get-guest-id');
+        userIdentifier = response.data.guestId; // Use the generated guestId
+      }
+
+      console.log("Fetching data for userIdentifier:", userIdentifier);
 
       // Fetch data from the API
-      const response = await axios.get(`http://localhost:3000/api/get-user-conversations/${userIdentifier}`);
+      const response = await axios.get(`http://localhost:3001/api/get-user-conversations/${userIdentifier}`);
       const data = response.data;
       if (!data) {
         console.error("No response from the server");
@@ -38,12 +45,7 @@ const HistoryPage = ({ userId }) => {
         });
       } catch (err) {
         console.error(err);
-        if (err.response && err.response.status === 404) {
-          setError('No conversations found.');
-        } else {
-          console.error('Error while fetching conversations:', error);
-          setError('An error occurred while fetching conversations.');
-        }
+        setError('An error occurred while fetching conversations.');
       } finally {
         setLoading(false);
       }
@@ -56,7 +58,6 @@ const HistoryPage = ({ userId }) => {
       } finally {
         setAnalysisLoading(false);
       }
-
     } catch (err) {
       console.error("Error fetching data:" + err);
       setAnalysisError('An error occurred while fetching conversations and analysis data.');
@@ -70,11 +71,24 @@ const HistoryPage = ({ userId }) => {
 
     // If no userId is provided (i.e., guest), set it to 'guest' to fetch guest conversations
     fetchConversationsAndAnalysis();
-  }, [userId]); // Runs if userId changes
+  }, [userId]);
 
-  // Renders a list of conversations (both single-user and multi-user)
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
+
+  const filterConversationsByDate = (conversationsList) => {
+    if (!selectedDate) return conversationsList;
+
+    return conversationsList.filter((conversation) =>
+      conversation.Date.startsWith(selectedDate)
+    );
+  };
+
   const renderConversationList = (conversationsList) => {
-    return conversationsList.map((conversation) => (
+    const filteredConversations = filterConversationsByDate(conversationsList);
+
+    return filteredConversations.map((conversation) => (
       <div key={conversation.ConversationId} className="conversation-card">
         <h4>Date: {conversation.Date}</h4>
         <p>Status: {conversation.Ended ? 'Completed' : 'Ongoing'}</p>
@@ -99,6 +113,17 @@ const HistoryPage = ({ userId }) => {
     <div className="history-analysis-page">
       <div className="history-section">
         <h1>Conversation history</h1>
+
+        <div className="filter-section">
+          <label htmlFor="date-filter">Filter by Date:</label>
+          <input
+            type="date"
+            id="date-filter"
+            value={selectedDate}
+            onChange={handleDateChange}
+          />
+        </div>
+
         {loading && <p>Loading...</p>}
         {error && <p className="error">{error}</p>}
 
@@ -109,7 +134,6 @@ const HistoryPage = ({ userId }) => {
               <p>No conversations to show.</p>
             )}
 
-          {/* Single user conversations */}
           {conversations.singleUserConversations.length > 0 && (
             <>
               <h2>Single user conversations</h2>
@@ -121,7 +145,6 @@ const HistoryPage = ({ userId }) => {
             </>
           )}
 
-          {/* Multi user conversations */}
           {conversations.multiUserConversations.length > 0 && (
             <>
               <h2>Multi user conversations</h2>
