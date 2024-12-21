@@ -1,0 +1,227 @@
+/* General styling for the history page */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #1e1e2f;
+    color: #ffffff;
+    line-height: 1.6;
+    height: inherit;
+  }
+
+  .history-analysis-page {
+    display: flex; /* Enables flexible box layout */
+    padding: 20px;
+    padding-top: 100px; /* Adjusts padding so that it doesn't overlap with navigation */
+    font-family: 'Arial', sans-serif; /* Sets font-family for the page */
+    min-height: 100vh; /* Ensures the page is at least 100% of the viewport height */
+    overflow: auto; /* Prevents content from being cut off */
+    gap: 20px; /* Adds spacing between child elements */
+    flex-wrap: wrap; /* Allows sections to wrap to the next line for smaller screens */
+    margin-top: 20px;
+  }
+  
+  /* Styles for the history section */
+.history-section {
+    background-color: #5e71a464; /* Sets a semi-transparent background color */
+    border-radius: 8px; /* Adds rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Adds a shadow for visual depth */
+    padding: 20px; /* Adds spacing inside the section */
+    margin-bottom: 20px; /* Adds spacing below the section */
+    flex: 1; /* Allows the section to expand to fill available space */
+    min-width: 300px; /* Ensures a minimum width to avoid excessive compression */
+    display: flex; /* Enables flexbox layout */
+    flex-direction: column; /* Arranges content vertically */
+  }
+  
+  /* Heading 1 styles inside history section */
+.history-section h1 {
+    font-size: 2.5rem; /* Sets font size */
+    margin-bottom: 20px; /* Adds space below the heading */
+    color: #8a8aa6; /* Sets text color */
+    text-align: left; /* Aligns text to the left */
+  }
+  
+  /* Styles for filter section */
+.history-section .filter-section {
+    margin-bottom: 20px; /* Adds spacing below the filter section */
+  }
+
+  .history-section .filter-section label {
+  font-weight: bold; /* Makes the text bold */
+  color: #e4e4ef90; /* Sets a soft color for the label */
+}
+  
+.history-section .filter-section input[type="date"] {
+    padding: 8px; /* Adds padding to the input */
+    font-size: 16px; /* Sets the font size */
+    margin-top: 8px; /* Adds margin above the input */
+    border-radius: 4px; /* Rounds the input's corners */
+    border: 1px solid #dddddda6; /* Sets a border color */
+    background-color: #232e52b3; /* Sets input background color */
+    width: 200px; /* Fixes the input width */
+  }
+
+  .history-section h2 {
+    color: #b3e8de90;
+  }
+  
+  .history-section .conversation-list {
+    margin-top: 20px;
+  }
+  
+  .history-section .conversation-card {
+    background-color:rgba(21, 27, 57, 0.415);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 5px rgba(225, 119, 119, 0.1);
+  }
+  
+  .history-section .conversation-card h4 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #cde4e390;
+  }
+  
+  .history-section .conversation-card p {
+    font-size: 1rem;
+    color: #8c0d0d;
+  }
+  
+  /* Styles for unordered lists inside conversation cards */
+.history-section .conversation-card ul {
+  list-style-type: disc; /* Displays bullet points */
+  padding-left: 20px; /* Adds space to the left */
+  margin: 10px 0; /* Adds space above and below the list */
+  color: #e0f7fa; /* Text color */
+  font-family: 'Arial', sans-serif; /* Consistent font */
+}
+  
+  /* Styles for list items inside conversation cards */
+.history-section .conversation-card li {
+    padding: 8px 0; /* Adds space between items */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Adds a subtle separator */
+    color: #b7dfdc; /* Sets a lighter text color */
+    font-size: 1rem; /* Adjusts font size */
+    font-weight: 400; /* Normal font weight */
+    transition: all 0.3s ease; /* Smooth transition on hover */
+    padding-left: 15px; /* Adds space to the left */
+  }
+
+  /* Styles for emphasized text */
+.conversation-card strong {
+    color: #2980b9; /* Blue color for emphasis */
+    font-weight: bold; /* Bolder font */
+  }
+  
+  /* Hover effects for list items */
+.history-section .conversation-card li:hover {
+    color: #ffffff; /* Changes text color on hover */
+    background-color: rgba(255, 255, 255, 0.1); /* Adds a highlight background */
+    cursor: pointer; /* Indicates interactivity */
+  }
+  
+  /* Removes the bottom border for the last list item */
+.history-section .conversation-card li:last-child {
+    border-bottom: none; /* Removes the separator */
+  }
+  
+  /* Ensures long text wraps correctly */
+.history-section .conversation-card li {
+    word-wrap: break-word; /* Breaks long words */
+    white-space: pre-line; /* Preserves line breaks */
+  }
+  
+  
+  .history-section .error {
+    color: red;
+    font-weight: bold;
+  }
+  
+  /* Styling for analysis section */
+.analysis-section {
+    background-color: #5e71a464; /* Light tone to create contrast */
+    border-radius: 8px; /* Rounds corners for a softer look */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+    padding: 30px; /* Adds internal spacing */
+    flex: 1; /* Allows the section to grow within the container */
+    min-width: 300px; /* Ensures minimum width */
+    display: flex; /* Enables flexbox layout */
+    flex-direction: column; /* Aligns items in a vertical direction */
+  }
+  
+  .analysis-section h1 {
+    font-size: 2.5rem; /* Large font size for headings */
+    color: #8a8aa6; /* Sets a neutral color for the heading */
+    margin-bottom: 30px; /* Adds space below the heading */
+    text-align: center; /* Centers the heading text */
+  }
+  
+  .analysis-section .analysis-grid {
+    display: grid; /* Enables grid layout */
+    grid-template-columns: repeat(2, 1fr); /* Creates two equal-width columns */
+    gap: 20px; /* Space between grid items */
+    margin-bottom: 20px; /* Adds space below the grid */
+  }
+  
+  .analysis-section .analysis-card {
+    background-color: #c0c0c4; /* Light background for contrast */
+    border: 1px solid #ddd; /* Light border for subtle framing */
+    border-radius: 8px; /* Rounds corners for a soft design */
+    padding: 20px; /* Adds spacing inside the card */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for a raised effect */
+    text-align: left; /* Aligns text to the left */
+    display: flex; /* Enables flexbox layout */
+    flex-direction: column; /* Aligns items in a vertical direction */
+    justify-content: flex-start; /* Positions content at the top of the card */
+  }
+  
+  .analysis-section .analysis-card h2 {
+    font-size: 1.3rem; /* Medium font size for the heading */
+    margin-bottom: 10px; /* Adds space below the heading */
+    color: #5e71a4; /* Darker color for better readability */
+    font-weight: 600; /* Makes the heading semi-bold */
+  }
+  
+  .analysis-section .analysis-card p {
+    font-size: 1rem; /* Standard font size for paragraph text */
+    color: #323030; /* Neutral color for text readability */
+  }
+  
+  .analysis-section .summary-card {
+    background-color: #c9dbe9; /* Light blue background to emphasize the card */
+    border: 1px solid #1a73e8; /* Blue border for a highlighted look */
+    grid-column: span 2; /* Makes the card span two columns */
+    padding: 25px; /* Adds spacing inside the card */
+  }
+  
+  .analysis-section .summary-card h2 {
+    font-size: 1.5rem; /* Slightly larger font for the heading */
+    color: #1a73e8; /* Blue color to match the card theme */
+  }
+  
+  .analysis-section .summary-card p {
+    font-size: 1.1rem; /* Slightly larger font for better readability */
+    color: #444; /* Darker color for good contrast */
+    line-height: 1.5; /* Increases spacing between lines for better readability */
+  }
+  
+  /* Text animation and loading feedback */
+  .loading-text {
+    font-size: 1.3rem; /* Large font for visibility */
+    font-style: italic; /* Italic style for emphasis */
+    color: #5e71a4; /* Consistent color theme */
+    text-align: center; /* Centers the text */
+  }
+  
+  @media (max-width: 768px) {
+    .analysis-section .analysis-grid {
+      grid-template-columns: 1fr; /* Switches to a single column for smaller screens */
+    }
+  
+    .analysis-section .summary-card {
+      grid-column: span 1; /* Returns to a single-column width */
+    }
+  }

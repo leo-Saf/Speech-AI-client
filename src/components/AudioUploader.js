@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { uploadAudio } from '../client';
-import '../style.css';
+
 
 const AudioUploader = ({ userId }) => {
   const [isConversationStarted, setIsConversationStarted] = useState(false);

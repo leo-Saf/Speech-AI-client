@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../style.css';
+import './HistoryStyle.css';
 
 const HistoryPage = ({ userId }) => {
   const [conversations, setConversations] = useState({ singleUserConversations: [], multiUserConversations: [] });

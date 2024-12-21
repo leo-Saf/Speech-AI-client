@@ -1,0 +1,394 @@
+/* Basic resets */
+body {
+    margin: 0; /* Removes default margin */
+    padding: 0; /* Removes default padding */
+    font-family: Arial, sans-serif; /* Sets a clean and common font */
+    background-color: #1e1e2f; /* Dark background for the whole page */
+    color: #ffffff; /* White text color for contrast */
+    line-height: 1.6; /* Adjusts line height for readability */
+  }
+  
+  h1, h2, h3 {
+    text-align: center; /* Centers heading text */
+    color: #f8f8f8; /* Light color for headings */
+  }
+  
+  /* Navigation styles */
+  nav {
+    background-color: #24243e; /* Dark background for the navigation */
+    display: flex; /* Flexbox layout for navigation */
+    justify-content: space-between; /* Aligns items on each end of the nav */
+    align-items: center; /* Centers items vertically */
+    padding: 10px 20px; /* Adds padding for spacing */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Light shadow for the navigation */
+    top: 0; /* Fixes the navigation to the top */
+    z-index: 10; /* Makes sure it stays on top */
+    width: 97%; /* Keeps width 97% of the container */
+  }
+  
+  nav .auth-buttons {
+    display: flex; /* Aligns buttons horizontally */
+    align-items: center; /* Vertically aligns items */
+    gap: 10px; /* Space between buttons */
+  }
+  
+  /* Styling for the site title (h1) */
+  nav h1.site-title {
+    font-size: 2.5rem; /* Larger font size for the title */
+    margin-left: 0; /* Removes default margin from the left */
+    color: #ffffff; /* White color for the site title */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Optional shadow for contrast */
+    flex: 1; /* Makes it take up available space */
+    text-align: left; /* Aligns text to the left */
+  }
+  
+  /* Button styles */
+  nav .span {
+    font-weight: bold; /* Makes text bold */
+    color: #625f5f; /* Subtle color for the text */
+  }
+  
+  nav button {
+    padding: 8px 12px; /* Adds padding inside the button */
+    font-size: 14px; /* Sets a smaller font size */
+    border: none; /* Removes default button border */
+    border-radius: 5px; /* Rounds the corners */
+    cursor: pointer; /* Indicates clickable elements */
+    background-color: #6c63ff; /* Purple background color */
+    color: white; /* White text color */
+    transition: background-color 0.3s, transform 0.3s; /* Smooth transition on hover */
+    margin: 0 10px; /* Adds horizontal margin between buttons */
+  }
+  
+  nav button:hover {
+    background-color: #534dfb; /* Darker purple background on hover */
+    transform: translateY(-2px); /* Slight upward movement on hover */
+  }
+  
+  nav .admin-button {
+    background-color: #ff6b6b; /* Red background color for the admin button */
+  }
+  
+  nav .admin-button:hover {
+    background-color: #d85757; /* Darker red on hover */
+  }  
+  
+  
+  /* Home page styles */
+  .home-container {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  
+  /* Auth modal styles */
+.auth-container {
+    position: fixed; /* Fixes the modal in place */
+    top: 50%; /* Centers vertically */
+    left: 50%; /* Centers horizontally */
+    transform: translate(-50%, -50%); /* Adjusts to exactly the center */
+    background-color: #2e2e4e; /* Dark background color for the modal */
+    color: #ffffff; /* White text color */
+    padding: 30px; /* Increased padding for more spacious content */
+    border-radius: 15px; /* Softer corners */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow for emphasis */
+    width: 90%; /* Modal takes up 90% width of the screen */
+    max-width: 400px; /* Limits the width to 400px */
+    animation: fadeIn 0.4s ease-out; /* Simple fade-in animation for better user experience */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Thin border for definition */
+  }
+  
+  /* Animation for modal */
+  @keyframes fadeIn {
+    from {
+      opacity: 0; /* Starts transparent */
+      transform: translate(-50%, -60%); /* Starts slightly above center */
+    }
+    to {
+      opacity: 1; /* Becomes fully visible */
+      transform: translate(-50%, -50%); /* Ends at the center */
+    }
+  }
+  
+  .auth-container h2 {
+    font-size: 1.8rem; /* Large font size for the heading */
+    margin-bottom: 20px; /* Space below the heading */
+    text-align: center; /* Centers the heading */
+    color: #ffffff; /* White color for the heading */
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4); /* Subtle shadow for text visibility */
+  }
+  
+  .auth-container p {
+    font-size: 1rem; /* Normal text size for description */
+    margin-bottom: 15px; /* Space below the paragraph */
+    line-height: 1.6; /* Improves readability */
+    text-align: center; /* Centers the paragraph text */
+    color: #cfcfcf; /* Softer contrast for help text */
+  }
+  
+  /* Buttons inside modal */
+  .auth-container button {
+    display: block; /* Makes the button block-level to take full width */
+    width: 100%; /* Full width for uniform look */
+    padding: 10px; /* Padding for better clickable area */
+    font-size: 16px; /* Sets readable font size */
+    font-weight: bold; /* Makes text bold */
+    border: none; /* Removes button border */
+    border-radius: 8px; /* Rounded corners for button */
+    cursor: pointer; /* Indicates a clickable element */
+    margin-top: 15px; /* Space above the button */
+    background-color: #6c63ff; /* Purple background color for the button */
+    color: white; /* White text color */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth color and transform transitions */
+  }
+  
+  .auth-container button:hover {
+    background-color: #534dfb; /* Darker purple background on hover */
+    transform: translateY(-2px); /* Smooth "pop" effect on hover */
+  }
+  
+  .auth-container button:active {
+    background-color: #4139cb; /* Even darker purple when button is pressed */
+    transform: translateY(1px); /* Slight downward effect when active */
+  }
+  
+  /* Close button */
+.auth-container .close-button {
+    background-color: #ff6b6b; /* Red color for visibility */
+    color: white; /* White text */
+    padding: 10px 15px; /* Padding for better clickability */
+    margin-top: 20px; /* Space above the button */
+    border: none; /* Removes default button border */
+    border-radius: 5px; /* Rounded corners for the button */
+    font-size: 1rem; /* Set font size for readability */
+    cursor: pointer; /* Indicates clickable element */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transition for background color and transform */
+    width: 100%; /* Full width for symmetry */
+    text-align: center; /* Centers the button text */
+  }
+  
+  .auth-container .close-button:hover {
+    background-color: #e85757; /* Darker red on hover */
+    transform: translateY(-2px); /* Smooth "pop" effect on hover */
+  }
+  
+  .auth-container .close-button:active {
+    background-color: #d04d4d; /* Even darker red when button is pressed */
+    transform: translateY(1px); /* Slight downward effect when active */
+  }
+  
+  /* Input fields inside the modal */
+  .auth-container input[type="text"],
+  .auth-container input[type="password"],
+  .auth-container input[type="email"] {
+    width: 100%; /* Full width for inputs */
+    padding: 10px; /* Padding for better usability */
+    margin-bottom: 15px; /* Space below the input field */
+    font-size: 1rem; /* Set font size for readability */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Light border color for the inputs */
+    border-radius: 5px; /* Rounded corners for inputs */
+    background-color: #1f1f3d; /* Dark background color for inputs */
+    color: white; /* White text color */
+  }
+  
+  .auth-container input:focus {
+    outline: none; /* Removes the default focus outline */
+    border-color: #6c63ff; /* Changes border color on focus */
+    box-shadow: 0 0 5px rgba(108, 99, 255, 0.5); /* Subtle glow effect when focused */
+  }
+  
+  
+  /* Toast notifications */
+  .Toastify__toast {
+    background-color: #333344;
+    color: #fefefe;
+  }
+  
+  .Toastify__toast--success {
+    background-color: #2d8954;
+  }
+  
+  .Toastify__toast--error {
+    background-color: #b52c2c;
+  }
+  
+  /* General Button Styling */
+  button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  button.Logout {
+    background-color: #d13434;
+  }
+  
+  button.Logout:hover {
+    background-color: #e45858;
+  }
+  
+  button.home-button {
+    background-color: #18a71dad;
+  }
+  
+  button.home-button:hover {
+    background-color: #45a047;
+  }
+
+  
+  
+/* Audio uploader container */
+.audio-uploader {
+    padding: 20px;
+    background-color: #2e2e4e; /* Mörk bakgrundsfärg */
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    margin: 0 auto; /* Centrerar behållaren */
+    color: #fff; /* Vit text */
+    text-align: center; /* Centrerad text */
+  }
+  
+  /* Button styles */
+  .audio-uploader .btn {
+    padding: 10px 15px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    margin: 10px;
+    color: white;
+    text-transform: uppercase;
+  }
+  
+  /* Specific button colors */
+  .start-conversation-btn {
+    background-color: #6c63ff;
+  }
+  
+  .stop-conversation-btn {
+    background-color: #ff6b6b;
+  }
+  
+  .start-btn {
+    background-color: #28a745;
+  }
+  
+  .pause-btn {
+    background-color: #ffc107;
+    color: #000;
+  }
+  
+  .resume-btn {
+    background-color: #007bff;
+  }
+  
+  .stop-btn {
+    background-color: #dc3545;
+  }
+  
+  /* Hover effects for buttons */
+  .audio-uploader .btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+  }
+  
+  .audio-uploader .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Loading text styling */
+  .loading-text {
+    font-style: italic;
+    color: #ff6b6b;
+    margin-top: 10px;
+  }
+  
+  /* Canvas container */
+  .canvas-container {
+    margin: 20px 0;
+    border: 2px solid #fff;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #24243e;
+  }
+  
+  /* Waveform canvas */
+  .waveform-canvas {
+    width: 100%;
+    height: 100px;
+    display: block;
+  }
+  
+  /* Processed audio preview */
+  .audio-preview {
+    margin-top: 20px;
+    background-color: #3a3a5e;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .audio-preview h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  
+  .audio-preview .audio-player {
+    width: 100%;
+    border-radius: 5px;
+  }
+  
+
+
+  /* Responsive layout for small screens */
+  @media (max-width: 768px) {
+    nav {
+      flex-direction: column;
+      padding: 15px;
+    }
+  
+    nav .auth-buttons {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 5px;
+    }
+  
+    .auth-container {
+      width: 90%;
+    }
+  }
+  
+
+  /* Styling for Home Page */
+.home-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 70px); 
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .home-title {
+    font-size: 2.5rem;
+    margin-top: 20px; /* Adding spacing below the nav */
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Subtle shadow for title */
+  }
+  
+  .audio-uploader-container {
+    margin-top: 40px; /* Space below the title */
+    width: 100%;
+    max-width: 600px; /* Limit the width of AudioUploader */
+   
+    padding: 20px;
+   
+  }
+  
+
+  
