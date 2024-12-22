@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import React, { useEffect, useState } from 'react';
 import { getDatabase, ref, get } from 'firebase/database';
 import { useNavigate } from 'react-router-dom';
@@ -290,8 +291,66 @@ const renderConversationList = (conversationsList) => {
 >>>>>>> Stashed changes
       </div>
 >>>>>>> Stashed changes
+=======
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const Conversations = ({ currentUser }) => {
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        setLoading(true);
+        let userId = currentUser ? currentUser.email : ''; // If no user logged in, empty string will fetch for guest
+
+        // Make API call to fetch conversations
+        const response = await axios.get(`http://localhost:3001/api/get-user-conversations/${userId}`);
+        
+        // If user is a guest, conversations will be a single list
+        // If user is logged in, conversations will be divided into two categories: singleUserConversations, multiUserConversations
+        const fetchedConversations = currentUser ? response.data : response.data.conversations;
+        
+        setConversations(fetchedConversations);
+      } catch (error) {
+        setError('Error fetching conversations');
+        console.error('Error fetching conversations:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConversations();
+  }, [currentUser]);  // Re-run this effect if `currentUser` changes
+
+  return (
+    <div>
+      {loading ? <p>Loading...</p> : (
+        <div>
+          {error && <p>{error}</p>}
+          <h2>{currentUser ? "Your Conversations" : "Guest Conversations"}</h2>
+          <ul>
+            {conversations && conversations.length > 0 ? (
+              conversations.map((conversation, index) => (
+                <li key={index}>
+                  {conversation.title ? conversation.title : 'Untitled'}
+                </li>
+              ))
+            ) : (
+              <p>No conversations available.</p>
+            )}
+          </ul>
+        </div>
+      )}
+>>>>>>> Stashed changes
     </div>
   );
 };
 
+<<<<<<< Updated upstream
 export default HistoryPage;
+=======
+export default Conversations;
+>>>>>>> Stashed changes
