@@ -2,6 +2,7 @@
 import React from 'react';
 import AudioUploader from './AudioUploader';
 import '../styling.css';
+
 const Home = ({ user }) => {
   return (
     <div className="home-page">
