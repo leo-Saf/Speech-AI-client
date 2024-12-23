@@ -104,8 +104,8 @@ const App = () => {
             <button>View History</button>
           </Link>
           <Link to="/Recording">
-    <button>Recording</button>
-  </Link>
+          <button>Recording</button>
+          </Link>
               <button onClick={() => setAuthMode('login')}>Login</button>
               <button onClick={() => setAuthMode('register')}>Register</button>
               
@@ -117,14 +117,20 @@ const App = () => {
 
         <Routes>
    {/* Routes for authenticated users */}
-   <Route path="/Recording" element={<AudioUploader userId={isAuthenticated ? user?.id : null} />} />
+  
   {isAuthenticated ? (
     <>
       <Route
+      
         path="/historik"
         element={<HistoryPage userId={user?.id} />}
       />
-      
+      <Route
+        path="/Recording"
+        element={
+              <AudioUploader userId={user?.id} />
+        }
+      />
       {user?.admin && ( // Admin-specifik rutt
                 <Route path="/admin" element={user?.admin ? <AdminPage user={user} /> : <Navigate to="/" />} />
 
@@ -135,7 +141,14 @@ const App = () => {
     <>
       <Route
         path="/historik"
-        element={<HistoryPage userId={null} />} // Pass null for guest on history page
+        element={
+        <HistoryPage userId={null} />} // Pass null for guest on history page
+      />
+      <Route
+        path="/Recording"
+        element={
+              <AudioUploader userId={null} />
+        }
       />
       <Route
         path="*"
