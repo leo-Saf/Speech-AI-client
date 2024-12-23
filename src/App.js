@@ -99,9 +99,13 @@ const App = () => {
               <Link to="/">
              <button className="home-button">Home</button> 
              </Link>
+             
               <Link to="/historik">
             <button>View History</button>
           </Link>
+          <Link to="/Recording">
+    <button>Recording</button>
+  </Link>
               <button onClick={() => setAuthMode('login')}>Login</button>
               <button onClick={() => setAuthMode('register')}>Register</button>
               
@@ -113,16 +117,14 @@ const App = () => {
 
         <Routes>
    {/* Routes for authenticated users */}
+   <Route path="/Recording" element={<AudioUploader userId={isAuthenticated ? user?.id : null} />} />
   {isAuthenticated ? (
     <>
       <Route
         path="/historik"
         element={<HistoryPage userId={user?.id} />}
       />
-      <Route
-        path="/Recording"
-        element={<AudioUploader userId={user?.id} />}
-      />
+      
       {user?.admin && ( // Admin-specifik rutt
                 <Route path="/admin" element={user?.admin ? <AdminPage user={user} /> : <Navigate to="/" />} />
 

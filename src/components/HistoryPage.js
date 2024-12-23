@@ -9,7 +9,8 @@ const HistoryPage = ({ userId }) => {
   const [analysisLoading, setAnalysisLoading] = useState(true);
   const [error, setError] = useState(null);
   const [analysisError, setAnalysisError] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(""); // State for selected date
+  const [startDate, setStartDate] = useState("");  // Start date state
+  const [endDate, setEndDate] = useState("");      // End date state
 
   const fetchConversationsAndAnalysis = async () => {
     try {
@@ -73,20 +74,34 @@ const HistoryPage = ({ userId }) => {
     fetchConversationsAndAnalysis();
   }, [userId]);
 
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
+  const handleStartDateChange = (event) => {
+    setStartDate(event.target.value);
   };
 
-  const filterConversationsByDate = (conversationsList) => {
-    if (!selectedDate) return conversationsList;
+  const handleEndDateChange = (event) => {
+    setEndDate(event.target.value);
+  };
 
-    return conversationsList.filter((conversation) =>
-      conversation.Date.startsWith(selectedDate)
-    );
+  const filterConversationsByDateRange = (conversationsList) => {
+    if (!startDate && !endDate) return conversationsList;
+
+    return conversationsList.filter((conversation) => {
+      const conversationDate = conversation.Date;
+      if (startDate && endDate) {
+        return new Date(conversationDate) >= new Date(startDate) && new Date(conversationDate) <= new Date(endDate);
+      }
+      if (startDate) {
+        return new Date(conversationDate) >= new Date(startDate);
+      }
+      if (endDate) {
+        return new Date(conversationDate) <= new Date(endDate);
+      }
+      return true;
+    });
   };
 
   const renderConversationList = (conversationsList) => {
-    const filteredConversations = filterConversationsByDate(conversationsList);
+    const filteredConversations = filterConversationsByDateRange(conversationsList);
 
     return filteredConversations.map((conversation) => (
       <div key={conversation.ConversationId} className="conversation-card">
@@ -115,12 +130,20 @@ const HistoryPage = ({ userId }) => {
         <h1>Conversation history</h1>
 
         <div className="filter-section">
-          <label htmlFor="date-filter">Filter by Date:</label>
+          <label htmlFor="start-date-filter">Start Date:</label>
           <input
             type="date"
-            id="date-filter"
-            value={selectedDate}
-            onChange={handleDateChange}
+            id="start-date-filter"
+            value={startDate}
+            onChange={handleStartDateChange}
+          />
+
+          <label htmlFor="end-date-filter">End Date:</label>
+          <input
+            type="date"
+            id="end-date-filter"
+            value={endDate}
+            onChange={handleEndDateChange}
           />
         </div>
 
