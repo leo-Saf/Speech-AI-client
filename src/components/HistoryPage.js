@@ -160,7 +160,7 @@ const HistoryPage = ({ userId }) => {
 
       <div className="analysis-section">
         <h1>Text analysis</h1>
-        {analysisLoading && <p>Loading analysis...</p>}
+        {analysisLoading && <p>Loading...</p>}
         {analysisError && <p className="error">{analysisError}</p>}
 
         {!analysisLoading && !analysisError && (
