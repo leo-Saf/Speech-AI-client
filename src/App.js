@@ -102,8 +102,8 @@ const App = () => {
               <Link to="/historik">
             <button>View History</button>
           </Link>
-              <button onClick={() => setAuthMode('login')}>Logga in</button>
-              <button onClick={() => setAuthMode('register')}>Registrera</button>
+              <button onClick={() => setAuthMode('login')}>Login</button>
+              <button onClick={() => setAuthMode('register')}>Register</button>
               
           
           
