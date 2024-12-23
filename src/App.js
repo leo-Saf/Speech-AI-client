@@ -124,7 +124,8 @@ const App = () => {
         element={<AudioUploader userId={user?.id} />}
       />
       {user?.admin && ( // Admin-specifik rutt
-                <Route path="/admin" element={<AdminPage />} />
+                <Route path="/admin" element={user?.admin ? <AdminPage user={user} /> : <Navigate to="/" />} />
+
               )}
     </>
   ) : (
