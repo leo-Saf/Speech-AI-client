@@ -77,3 +77,24 @@
     color: #333;
   }
   
+
+  .show-conversations-btn {
+    background-color: #4CAF50;  /* Grön bakgrundsfärg */
+    color: white;               /* Vit textfärg */
+    border: none;               /* Ta bort standardbordern */
+    border-radius: 5px;         /* Rundade hörn */
+    padding: 10px 20px;         /* Padding för att ge knappen storlek */
+    font-size: 16px;            /* Större textstorlek */
+    cursor: pointer;           /* Pekande mus vid hover */
+    transition: background-color 0.3s ease;  /* Mjuk övergång på bakgrundsfärg */
+    margin-bottom: 20px;        /* Lite mellanrum under knappen */
+  }
+  
+  .show-conversations-btn:hover {
+    background-color: #45a049;  /* En mörkare grön på hover */
+  }
+  
+  .show-conversations-btn:focus {
+    outline: none;  /* Ta bort fokusramen */
+  }
+  

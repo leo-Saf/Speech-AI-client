@@ -3,128 +3,155 @@ import axios from 'axios';
 import './AdminPage.css';
 
 const AdminPage = () => {
-  const [conversations, setConversations] = useState([]);
-  const [users, setUsers] = useState([]); // För att spara användare
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedUser, setSelectedUser] = useState(null); // För att hålla reda på vald användare
+  const [users, setUsers] = useState([]); // Alla användare
+  const [selectedUserId, setSelectedUserId] = useState(null); // Vald användar-ID
+  const [conversations, setConversations] = useState([]); // Användarens konversationer
+  const [loading, setLoading] = useState(false); // För att visa laddning
+  const [error, setError] = useState(null); // För att hantera fel
 
-  // Funktion för att hämta konversationer
-  const fetchAllConversations = async () => {
+  // Funktion för att hämta alla användare
+  const fetchAllUsers = async () => {
     try {
-      setLoading(true);
-      setError(null);
-      const response = await axios.get('http://localhost:3001/api/get-all-conversations');
-      const data = response.data;
-      if (!data || data.length === 0) {
-        setError('Inga konversationer hittades.');
+      const response = await axios.get('/api/get-all-users');
+      setUsers(response.data); // Sätt alla användare i state
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setError('Failed to load users');
+    }
+  };
+
+  // Funktion för att hämta användarens ID baserat på e-post
+  const fetchUserId = async (email) => {
+    try {
+      // Avkoda e-postadressen innan vi gör begäran
+      const decodedEmail = decodeURIComponent(email);  // Avkoda från URL-kodning
+      console.log('Decoded email:', decodedEmail);  // Logga för att kontrollera e-posten
+      const response = await axios.get('/api/get-user-id', { params: { email: decodedEmail } });
+      return response.data.userId;
+    } catch (error) {
+      console.error("Error fetching user ID:", error);
+      setError('Failed to load user ID');
+    }
+  };
+
+  // Funktion för att hämta användarens konversationer
+  const fetchUserConversations = async (userId) => {
+    if (!userId) {
+      setError('Invalid user ID');
+      return;
+    }
+    setLoading(true);
+    setError(null);
+
+    try {
+      console.log('Fetching conversations for user ID:', userId);
+      const response = await axios.get(`/api/get-user-conversations/${userId}`);
+
+      if (response.data.message) {
+          // Om meddelandet är 'No conversations found', hantera det här
+          if (response.data.message === 'No conversations found') {
+            setConversations([]);  // Rensa konversationerna om det inte finns några
+            setError(null);  // Rensa eventuella gamla fel
+          } else {
+            setError(response.data.message);  // Visa generella felmeddelanden om de finns
+          }
       } else {
-        setConversations(data);
+        const { singleUserConversations, multiUserConversations } = response.data;
+        setConversations([...singleUserConversations, ...multiUserConversations]);
       }
-    } catch (err) {
-      console.error('Fel vid hämtning av konversationer:', err);
-      setError('Ett fel inträffade vid hämtning av konversationer.');
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+      setError('Failed to load conversations');
     } finally {
       setLoading(false);
     }
   };
 
-  // Funktion för att hämta alla användare
-  const fetchAllUsers = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/api/get-all-users'); // Uppdatera med rätt API-url för användare
-      setUsers(response.data);
-    } catch (err) {
-      console.error('Fel vid hämtning av användare:', err);
-      setError('Ett fel inträffade vid hämtning av användare.');
-    }
-  };
-
-  // Hämta konversationer och användare när komponenten laddas
+  // När komponenten har laddats, hämta användare
   useEffect(() => {
-    fetchAllConversations();
     fetchAllUsers();
   }, []);
 
-  const handleUserChange = (event) => {
-    const userId = event.target.value;
-    setSelectedUser(userId);
+  // När en användare är vald, hämta användar-ID och deras konversationer
+  const handleUserSelect = async (event) => {
+    const email = event.target.value;
+    console.log('Selected email:', email); // Logga för att kontrollera e-posten
+    if (email) {
+      const userId = await fetchUserId(email); // Hämta användarens ID
+      if (userId) {
+        setSelectedUserId(userId); // Sätt valt användar-ID
+        fetchUserConversations(userId); // Hämta konversationer för användaren
+      } else {
+        setError('User ID not found');
+      }
+    }
   };
 
-  const renderConversationList = () => {
-  if (loading) return <p className="loading-text">Laddar...</p>;
-  if (error) return <p className="error-text">{error}</p>;
+  // Filterfunktion för att filtrera konversationer baserat på datum
+  const filterConversationsByDateRange = (conversationsList) => {
+    const startDate = new Date('2024-01-01'); // Startdatum för filtrering
+    const endDate = new Date('2024-12-31'); // Slutdatum för filtrering
+    
+    return conversationsList.filter(conversation => {
+      const conversationDate = new Date(conversation.Date);
+      return conversationDate >= startDate && conversationDate <= endDate;
+    });
+  };
 
-  if (conversations.length === 0) return <p>Inga konversationer tillgängliga.</p>;
+  // Rendera konversationerna i en lista med filtrering baserat på datum
+  const renderConversationList = (conversationsList) => {
+    const filteredConversations = filterConversationsByDateRange(conversationsList);
 
-  // Filtrera konversationer baserat på vald användare, om det finns någon
-  const filteredConversations = selectedUser
-    ? conversations.filter(conversation => Array.isArray(conversation.Users) && conversation.Users.includes(selectedUser))
-    : conversations;
-
-  return filteredConversations.map((conversation) => {
-    if (conversation.UserId) {
-      // För användarkonversationer
-      return conversation.Conversations.map((userConversation) => (
-        <div key={userConversation.ConversationId} className="conversation-card">
-          <h4 className="conversation-title">Datum: {userConversation.Date}</h4>
-          <p className={`conversation-status ${userConversation.Ended ? 'ended' : 'ongoing'}`}>
-            Status: {userConversation.Ended ? 'Avslutad' : 'Pågående'}
-          </p>
-          <ul className="prompts-and-answers">
-            {userConversation.PromptsAndAnswers?.length > 0 ? (
-              userConversation.PromptsAndAnswers.map((item, index) => (
-                <li key={item?.Prompt || index}>
-                  <strong>Fråga:</strong> {item?.Prompt || 'Ingen fråga'} <br />
-                  <strong>Svar:</strong> {item?.Answer || 'Inget svar'}
-                </li>
-              ))
-            ) : (
-              <p>No questions or answers available.</p>
-            )}
-          </ul>
-          
-          <div className="conversation-users">
-            <strong>Användare:</strong> 
-            {conversation.Users && Array.isArray(conversation.Users) ? 
-              conversation.Users.map((userId) => {
-                // Här kollar vi om den aktuella användaren har en e-post
-                const user = conversation.Users.find((user) => user.UserId === userId);
-                return user ? user.Email || 'Gäst' : 'Gäst'; 
-              }).join(', ') : 'Ingen användare'}
-          </div>
-        </div>
-      ));
-    }
-  });
-};
-
-  
-
-  const renderUsersDropdown = () => {
-    return (
-      <div className="user-dropdown">
-        <label htmlFor="users">Välj en användare:</label>
-        <select id="users" onChange={handleUserChange} value={selectedUser || ''}>
-          <option value="" disabled>Välj användare</option>
-          {users.map((user) => (
-            <option key={user.id} value={user.id}>{user.Email}</option>
-          ))}
-        </select>
+    return filteredConversations.map((conversation) => (
+      <div key={conversation.ConversationId} className="conversation-card">
+        <h4>Date: {conversation.Date}</h4>
+        <p>Status: {conversation.Ended ? 'Completed' : 'Ongoing'}</p>
+        <ul>
+          {Array.isArray(conversation.PromptsAndAnswers) && conversation.PromptsAndAnswers.length > 0 ? (
+            conversation.PromptsAndAnswers.map((item, index) => (
+              <li key={index}>
+                <strong>Question:</strong> {item?.Prompt || 'No question'}
+                <br />
+                <strong>Answer:</strong> {item?.Answer || 'No answer'}
+              </li>
+            ))
+          ) : (
+            <p>No questions or answers available.</p>
+          )}
+        </ul>
       </div>
-    );
+    ));
   };
 
   return (
     <div className="admin-page">
-      <h1 className="admin-page-title">Admin - Alla Konversationer</h1>
-
-      {/* Dropdown för användare */}
-      {renderUsersDropdown()}
-
-      <div className="conversation-list">
-        {renderConversationList()}
+      <h1>Admin Page</h1>
+      <div>
+        <label>Select a user:</label>
+        <select onChange={handleUserSelect}>
+          <option value="">-- Select a user --</option>
+          {users.map((user) => (
+            <option key={user.Email} value={user.Email}>
+              {user.Email} - {user.id}
+            </option>
+          ))}
+        </select>
       </div>
+
+      {loading && <p>Loading conversations...</p>}
+      {error && <p className="error">{error}</p>}
+      
+      {conversations.length === 0 && !loading && !error && (
+        // När det inte finns några konversationer och ingen laddning sker, håll sidan tom
+        <p>No conversations available for this user.</p>
+      )}
+      
+      {conversations.length > 0 && !error && (
+        <div>
+          <h2>Conversations for {selectedUserId}</h2>
+          {renderConversationList(conversations)} {/* Rendera filtrerade konversationer */}
+        </div>
+      )}
     </div>
   );
 };
