@@ -216,6 +216,7 @@ p {
   font-size: 1.1rem;
 }
 
+
 /* Laddningsindikator */
 .history-page p {
   text-align: center;
@@ -362,3 +363,79 @@ button:hover {
   cursor: pointer;
 }
 
+.close-button:hover {
+  background: #cc0000;
+}
+
+
+/* Analysis */
+
+/* Textfärg för analyskorten */
+.analysis-card p,
+.summary-card p {
+  color: #000; /* Svart text */
+  margin-left: auto;
+  text-align: left; /* Vänsterjustera texten */
+}
+
+
+.history-analysis-page {
+  margin-top: 60px; /* Skapa utrymme under navigationsfältet */
+  display: flex;
+  flex-direction: row; /* Gör att historik och analys ligger sida vid sida */
+  border-radius: 10px;
+  margin-left: auto;
+  
+}
+
+.history-section,
+.analysis-section {  
+  flex: 1; /* Gör sektionerna lika breda */
+  background-color: #ffffff; /* Vit bakgrund för båda sektionerna */
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Lätt skugga */ 
+  margin-left: auto;
+}
+
+.history-section h1,
+.analysis-section h1 {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.history-section h2,
+.analysis-section h2 {
+  color: #2c3e50;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Två kolumner */
+  gap: 20px;
+  margin-top: 60px;
+}
+
+.analysis-card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  min-height: 150px; /* Säkerställ samma höjd för alla kort */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lätt skugga */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.summary-card {
+  grid-column: span 2; /* Gör att sammanfattningen täcker hela bredden */ 
+  background-color: #eef;
+  padding: 15px;
+  font-weight: bold;
+}

@@ -4,84 +4,189 @@ import '../style.css';
 
 const HistoryPage = ({ userId }) => {
   const [conversations, setConversations] = useState({ singleUserConversations: [], multiUserConversations: [] });
+  const [analysis, setAnalysis] = useState({});
   const [loading, setLoading] = useState(true);
+  const [analysisLoading, setAnalysisLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [analysisError, setAnalysisError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(""); // State for selected date
 
-  const fetchConversations = async () => {
+  const fetchConversationsAndAnalysis = async () => {
     try {
       setLoading(true);
       setError(null);
+      setAnalysisLoading(true);
+      setAnalysisError(null);
+      setAnalysis({}); // Reset analysis before fetching new data
 
-      // Hämta data från API
-      const response = await axios.get(`http://localhost:3000/get-user-conversations/${userId}`);
-      const data = response.data;
+      let userIdentifier = userId;
 
-      // Säkerställ att data är i rätt format
-      setConversations({
-        singleUserConversations: data.singleUserConversations || [],
-        multiUserConversations: data.multiUserConversations || [],
-      });
-    } catch (err) {
-      console.error(err);
-      if (err.response && err.response.status === 404) {
-        setError('Inga konversationer hittades.');
-      } else {
-        setError('Ett fel uppstod vid hämtning av konversationer.');
+      // If no userId is provided, fetch a guest ID from backend
+      if (!userIdentifier) {
+        const response = await axios.get('http://localhost:3001/api/get-guest-id');
+        userIdentifier = response.data.guestId; // Use the generated guestId
       }
+
+      console.log("Fetching data for userIdentifier:", userIdentifier);
+
+      // Fetch data from the API
+      const response = await axios.get(`http://localhost:3001/api/get-user-conversations/${userIdentifier}`);
+      const data = response.data;
+      if (!data) {
+        console.error("No response from the server");
+        setError('An issue occurred while fetching conversations.');
+        return;
+      }
+
+      try {
+        setConversations({
+          singleUserConversations: data.singleUserConversations || [],
+          multiUserConversations: data.multiUserConversations || [],
+        });
+      } catch (err) {
+        console.error(err);
+        setError('An error occurred while fetching conversations.');
+      } finally {
+        setLoading(false);
+      }
+
+      try {
+        setAnalysis(data.analysisData);
+      } catch (err) {
+        console.error(err);
+        setAnalysisError('An error occurred while fetching analysis data.');
+      } finally {
+        setAnalysisLoading(false);
+      }
+    } catch (err) {
+      console.error("Error fetching data:" + err);
+      setAnalysisError('An error occurred while fetching conversations and analysis data.');
     } finally {
-      setLoading(false);
+      setAnalysisLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchConversations();
+    console.log("User ID being sent:", userId);
+
+    // If no userId is provided (i.e., guest), set it to 'guest' to fetch guest conversations
+    fetchConversationsAndAnalysis();
   }, [userId]);
 
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
+
+  const filterConversationsByDate = (conversationsList) => {
+    if (!selectedDate) return conversationsList;
+
+    return conversationsList.filter((conversation) =>
+      conversation.Date.startsWith(selectedDate)
+    );
+  };
+
+  const renderConversationList = (conversationsList) => {
+    const filteredConversations = filterConversationsByDate(conversationsList);
+
+    return filteredConversations.map((conversation) => (
+      <div key={conversation.ConversationId} className="conversation-card">
+        <h4>Date: {conversation.Date}</h4>
+        <p>Status: {conversation.Ended ? 'Completed' : 'Ongoing'}</p>
+        <ul>
+          {Array.isArray(conversation.PromptsAndAnswers) && conversation.PromptsAndAnswers.length > 0 ? (
+            conversation.PromptsAndAnswers.map((item, index) => (
+              <li key={index}>
+                <strong>Question:</strong> {item?.Prompt || 'No question'}
+                <br />
+                <strong>Answer:</strong> {item?.Answer || 'No answer'}
+              </li>
+            ))
+          ) : (
+            <p>No questions or answers available.</p>
+          )}
+        </ul>
+      </div>
+    ));
+  };
+
   return (
-    <div className="history-page">
-      <h1>Historik för konversationer</h1>
+    <div className="history-analysis-page">
+      <div className="history-section">
+        <h1>Conversation history</h1>
 
-      {loading && <p>Laddar...</p>}
-      {error && <p className="error">{error}</p>}
+        <div className="filter-section">
+          <label htmlFor="date-filter">Filter by Date:</label>
+          <input
+            type="date"
+            id="date-filter"
+            value={selectedDate}
+            onChange={handleDateChange}
+          />
+        </div>
 
-      <div className="conversation-list">
-        {!loading &&
-          conversations.singleUserConversations.length === 0 &&
-          conversations.multiUserConversations.length === 0 && (
-            <p>Inga konversationer att visa.</p>
+        {loading && <p>Loading...</p>}
+        {error && <p className="error">{error}</p>}
+
+        <div className="conversation-list">
+          {!loading &&
+            conversations.singleUserConversations.length === 0 &&
+            conversations.multiUserConversations.length === 0 && (
+              <p>No conversations to show.</p>
+            )}
+
+          {conversations.singleUserConversations.length > 0 && (
+            <>
+              <h2>Single user conversations</h2>
+              {renderConversationList(
+                conversations.singleUserConversations.sort(
+                  (a, b) => new Date(b.Date) - new Date(a.Date)
+                )
+              )}
+            </>
           )}
 
-        {conversations.singleUserConversations.map((conversation) => (
-          <div key={conversation.ConversationId} className="conversation-card">
-            <h4>Datum: {conversation.Date}</h4>
-            <p>Status: {conversation.Ended ? 'Avslutad' : 'Pågående'}</p>
-            <ul>
-              {conversation.PromptsAndAnswers.map((item, index) => (
-                <li key={index}>
-                  <strong>Fråga:</strong> {item.Prompt}
-                  <br />
-                  <strong>Svar:</strong> {item.Answer}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+          {conversations.multiUserConversations.length > 0 && (
+            <>
+              <h2>Multi user conversations</h2>
+              {renderConversationList(
+                conversations.multiUserConversations.sort(
+                  (a, b) => new Date(b.Date) - new Date(a.Date)
+                )
+              )}
+            </>
+          )}
+        </div>
+      </div>
 
-        {conversations.multiUserConversations.map((conversation) => (
-          <div key={conversation.ConversationId} className="conversation-card">
-            <h4>Datum: {conversation.Date}</h4>
-            <p>Status: {conversation.Ended ? 'Avslutad' : 'Pågående'}</p>
-            <ul>
-              {conversation.PromptsAndAnswers.map((item, index) => (
-                <li key={index}>
-                  <strong>Fråga:</strong> {item.Prompt}
-                  <br />
-                  <strong>Svar:</strong> {item.Answer}
-                </li>
-              ))}
-            </ul>
+      <div className="analysis-section">
+        <h1>Text analysis</h1>
+        {analysisLoading && <p>Loading analysis...</p>}
+        {analysisError && <p className="error">{analysisError}</p>}
+
+        {!analysisLoading && !analysisError && (
+          <div className="analysis-grid">
+            <div className="analysis-card">
+              <h2>Vocabulary richness</h2>
+              <p>{analysis.vocabularyRichness || 'No data available.'}</p>
+            </div>
+            <div className="analysis-card">
+              <h2>Grammatical errors</h2>
+              <p>{analysis.grammarMistakes || 'No data available.'}</p>
+            </div>
+            <div className="analysis-card">
+              <h2>Improvements</h2>
+              <p>{analysis.improvements || 'No data available.'}</p>
+            </div>
+            <div className="analysis-card">
+              <h2>Filler words</h2>
+              <p>{analysis.fillerWords || 'No data available.'}</p>
+            </div>
+            <div className="analysis-card summary-card">
+              <h2>Summary</h2>
+              <p>{analysis.summary || 'No data available.'}</p>
+            </div>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

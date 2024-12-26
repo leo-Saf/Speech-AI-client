@@ -24,6 +24,7 @@ const AddUser = ({ onEmailSubmit }) => {
       }*/
 
       // On success, pass the email back to the parent component
+      console.log('NEW EMAIL: ', email);
       onEmailSubmit(email);  // Send the email back to the parent (App.js)
 
       setMessage('User added successfully!');
