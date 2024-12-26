@@ -1,5 +1,6 @@
 // Login.js
 import React, { useState } from 'react';
+import '../styling.css'
 
 const Login = ({ onLoginSuccess, onClose }) => {
   const [email, setEmail] = useState(''); // State to store the email

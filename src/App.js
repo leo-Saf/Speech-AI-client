@@ -10,7 +10,7 @@ import AddUser from './components/AddUser';
 
 import { toast, ToastContainer } from 'react-toastify'; // For notifications
 import 'react-toastify/dist/ReactToastify.css'; // Toast container styles
-import './style.css'; // Custom styles
+import './styling.css'; // Custom styles
 
 const App = () => {
 
@@ -87,18 +87,17 @@ const App = () => {
       <div>
         <ToastContainer position="top-center" autoClose={3000} />
         <nav className="auth-buttons">
+        <h1 className="site-title">Speech AI</h1>
            {/* If the user is authenticated */}
           {isAuthenticated ? (
             <>
             
-              <span>Welcome, {user ? user.Email : 'User'}</span>
+              <span className="span">Welcome {user ? user.email : 'User'}</span>
                {/* Button for home page */}
               <Link to="/">
              <button className="home-button">Home</button> 
              </Link>
-              <button className="Logout" onClick={handleLogout}>
-                Logga ut
-              </button>
+              
               <Link to="/historik">
                 <button>View History</button>
                 
@@ -107,6 +106,9 @@ const App = () => {
                 <button>Recording</button>
               </Link>
               <button onClick={() => setShowAddUserModal(true)}>Add User</button> 
+              <button className="Logout" onClick={handleLogout}>
+              Logout
+              </button>
               {/* Show Admin page link if the user is an admin */}
               {user?.admin && ( 
                 <Link to="/admin">
@@ -118,15 +120,19 @@ const App = () => {
 
             // If the user is not authenticated
             <>
-              <span>You are a guest.</span>
+              <span className="span">You are a guest</span>
+              <Link to="/">
+             <button className="home-button">Home</button> 
+             </Link>
+             
               <Link to="/historik">
             <button>View History</button>
           </Link>
-          <Link to="/">
-             <button className="home-button">Home</button> 
-             </Link>
-              <button onClick={() => setAuthMode('login')}>Logga in</button>
-              <button onClick={() => setAuthMode('register')}>Registrera</button>
+          <Link to="/Recording">
+          <button>Recording</button>
+          </Link>
+              <button onClick={() => setAuthMode('login')}>Login</button>
+              <button onClick={() => setAuthMode('register')}>Register</button>
               
           
           
@@ -136,9 +142,11 @@ const App = () => {
 
         <Routes>
    {/* Routes for authenticated users */}
+  
   {isAuthenticated ? (
     <>
       <Route
+      
         path="/historik"
         element={<HistoryPage userId={user?.id} />}
       />
@@ -158,7 +166,8 @@ const App = () => {
                 }
       />
       {user?.admin && ( // Admin-specifik rutt
-                <Route path="/admin" element={<AdminPage />} />
+                <Route path="/admin" element={user?.admin ? <AdminPage user={user} /> : <Navigate to="/" />} />
+
               )}
     </>
   ) : (
@@ -166,7 +175,14 @@ const App = () => {
     <>
       <Route
         path="/historik"
-        element={<HistoryPage userId={null} />} // Pass null for guest on history page
+        element={
+        <HistoryPage userId={null} />} // Pass null for guest on history page
+      />
+      <Route
+        path="/Recording"
+        element={
+              <AudioUploader userId={null} />
+        }
       />
       <Route
         path="*"
