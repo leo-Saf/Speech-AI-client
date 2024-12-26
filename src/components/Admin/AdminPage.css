@@ -1,79 +1,98 @@
-/* Allmän stil för admin-sidan */
+/* Grundläggande layout och bakgrund */
 .admin-page {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    color: #333;
-    padding: 20px;
-  }
-  
-  .admin-page-title {
-    text-align: center;
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #2e3d49;
-  }
-  
-  /* Loader och error hantering */
-  .loading-text {
-    text-align: center;
-    font-size: 1.5rem;
-    color: #007BFF;
-  }
-  
-  .error-text {
-    text-align: center;
-    font-size: 1.5rem;
-    color: #dc3545;
-    font-weight: bold;
-  }
-  
-  /* Konversationslistan */
-  .conversation-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  /* Stilar för varje konversation */
-  .conversation-card {
-    background-color: #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-  }
-  
-  .conversation-title {
-    font-size: 1.2rem;
-    color: #007BFF;
-  }
-  
-  .conversation-status {
-    font-weight: bold;
-    margin: 10px 0;
-  }
-  
-  .conversation-status.ended {
-    color: #dc3545;
-  }
-  
-  .conversation-status.ongoing {
-    color: #28a745;
-  }
-  
-  /* Prompts och Answers */
-  .prompts-and-answers {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .prompts-and-answers li {
-    margin-bottom: 15px;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
-  }
-  
-  .prompts-and-answers strong {
-    color: #333;
-  }
-  
+  background-color: #f8f9fa; /* Ljusgrå bakgrund */
+  color: #212529; /* Mörk text */
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.admin-page-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #343a40; /* Mörkare nyans */
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Knapp för att visa/dölja konversationer */
+.show-conversations-button {
+  display: block;
+  margin: 0 auto;
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #007bff; /* Blå färg */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.show-conversations-button:hover {
+  background-color: #0056b3; /* Mörkare blå */
+}
+
+/* Lista över konversationer */
+.conversation-list {
+  margin-top: 20px;
+}
+
+.conversation-card {
+  background-color: #ffffff; /* Vit kortbakgrund */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.conversation-card h3 {
+  margin-top: 0;
+  color: #495057; /* Mellangrå */
+}
+
+.conversation-details {
+  background-color: #f1f3f5; /* Ljusare bakgrund */
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  border-left: 4px solid #6c757d; /* Accentfärg */
+}
+
+.conversation-details h4 {
+  margin: 0;
+  color: #6c757d; /* Mjuk grå */
+}
+
+.conversation-details ul {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.conversation-details ul li {
+  background-color: #ffffff;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  border: 1px solid #e9ecef;
+}
+
+.conversation-details ul li strong {
+  color: #343a40; /* Starkare kontrast */
+}
+
+/* Laddning och felmeddelanden */
+.loading-text {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #17a2b8; /* Cyanblå */
+}
+
+.error-text {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #dc3545; /* Röd */
+  font-weight: bold;
+}

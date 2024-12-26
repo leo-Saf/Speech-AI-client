@@ -4,22 +4,49 @@ import './AdminPage.css';
 
 const AdminPage = () => {
   const [conversations, setConversations] = useState([]);
-  const [users, setUsers] = useState([]); // För att spara användare
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedUser, setSelectedUser] = useState(null); // För att hålla reda på vald användare
+  const [showConversations, setShowConversations] = useState(false);
 
   // Funktion för att hämta konversationer
+  const fetchUserEmail = async (userId) => {
+    // Kolla om userId är en gäst och hantera det separat
+  if (userId.startsWith('Guest-')) {
+    return `${userId}`;  // Returnera en standard e-postadress för gäster
+  }
+    try {
+      const response = await axios.get(`http://localhost:3001/api/get-user/${userId}`);
+      return response.data.Email || userId; // Om Email saknas, returnera UserId
+    } catch (error) {
+      console.error(`Fel vid hämtning av e-post för UserID: ${userId}`, error);
+      return userId; // Returnera UserId om det inte går att hämta data
+    }
+  };
+  
+  
   const fetchAllConversations = async () => {
     try {
       setLoading(true);
       setError(null);
       const response = await axios.get('http://localhost:3001/api/get-all-conversations');
       const data = response.data;
+  
       if (!data || data.length === 0) {
         setError('Inga konversationer hittades.');
       } else {
-        setConversations(data);
+        // Lägg till e-post i varje användare
+        const conversationsWithEmails = await Promise.all(
+          data.map(async (conversation) => {
+            if (!conversation.UserId) {
+              console.warn('UserId saknas för en konversation:', conversation);
+              return { ...conversation, Email: 'Gäst - Ingen ID tillgänglig' };
+            }
+            const Email = await fetchUserEmail(conversation.UserId);
+            return { ...conversation, Email };
+          })
+        );
+  
+        setConversations(conversationsWithEmails);
       }
     } catch (err) {
       console.error('Fel vid hämtning av konversationer:', err);
@@ -28,103 +55,80 @@ const AdminPage = () => {
       setLoading(false);
     }
   };
+  
+  
 
-  // Funktion för att hämta alla användare
-  const fetchAllUsers = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/api/get-all-users'); // Uppdatera med rätt API-url för användare
-      setUsers(response.data);
-    } catch (err) {
-      console.error('Fel vid hämtning av användare:', err);
-      setError('Ett fel inträffade vid hämtning av användare.');
-    }
-  };
-
-  // Hämta konversationer och användare när komponenten laddas
   useEffect(() => {
     fetchAllConversations();
-    fetchAllUsers();
   }, []);
 
-  const handleUserChange = (event) => {
-    const userId = event.target.value;
-    setSelectedUser(userId);
+  // Hantera visningen av konversationer
+  const handleShowConversations = () => {
+    setShowConversations(!showConversations);
   };
 
   const renderConversationList = () => {
-  if (loading) return <p className="loading-text">Laddar...</p>;
-  if (error) return <p className="error-text">{error}</p>;
-
-  if (conversations.length === 0) return <p>Inga konversationer tillgängliga.</p>;
-
-  // Filtrera konversationer baserat på vald användare, om det finns någon
-  const filteredConversations = selectedUser
-    ? conversations.filter(conversation => Array.isArray(conversation.Users) && conversation.Users.includes(selectedUser))
-    : conversations;
-
-  return filteredConversations.map((conversation) => {
-    if (conversation.UserId) {
-      // För användarkonversationer
-      return conversation.Conversations.map((userConversation) => (
-        <div key={userConversation.ConversationId} className="conversation-card">
-          <h4 className="conversation-title">Datum: {userConversation.Date}</h4>
-          <p className={`conversation-status ${userConversation.Ended ? 'ended' : 'ongoing'}`}>
-            Status: {userConversation.Ended ? 'Avslutad' : 'Pågående'}
-          </p>
-          <ul className="prompts-and-answers">
-            {userConversation.PromptsAndAnswers?.length > 0 ? (
-              userConversation.PromptsAndAnswers.map((item, index) => (
-                <li key={item?.Prompt || index}>
-                  <strong>Fråga:</strong> {item?.Prompt || 'Ingen fråga'} <br />
-                  <strong>Svar:</strong> {item?.Answer || 'Inget svar'}
-                </li>
-              ))
-            ) : (
-              <p>No questions or answers available.</p>
-            )}
-          </ul>
-          
-          <div className="conversation-users">
-            <strong>Användare:</strong> 
-            {conversation.Users && Array.isArray(conversation.Users) ? 
-              conversation.Users.map((userId) => {
-                // Här kollar vi om den aktuella användaren har en e-post
-                const user = conversation.Users.find((user) => user.UserId === userId);
-                return user ? user.Email || 'Gäst' : 'Gäst'; 
-              }).join(', ') : 'Ingen användare'}
-          </div>
-        </div>
-      ));
-    }
-  });
-};
-
+    if (loading) return <p className="loading-text">Laddar...</p>;
+    if (error) return <p className="error-text">{error}</p>;
   
-
-  const renderUsersDropdown = () => {
-    return (
-      <div className="user-dropdown">
-        <label htmlFor="users">Välj en användare:</label>
-        <select id="users" onChange={handleUserChange} value={selectedUser || ''}>
-          <option value="" disabled>Välj användare</option>
-          {users.map((user) => (
-            <option key={user.id} value={user.id}>{user.Email}</option>
-          ))}
-        </select>
+    if (!conversations || conversations.length === 0)
+      return <p>Inga konversationer tillgängliga.</p>;
+  
+    return conversations.map((conversation) => (
+      <div key={conversation.UserId || Math.random()} className="conversation-card">
+        <h3>
+          Användar-Identifierare:{' '}
+          {conversation.Email === conversation.UserId
+            ? `: ${conversation.UserId}`
+            : conversation.Email}
+        </h3>
+        {conversation.Conversations && conversation.Conversations.length > 0 ? (
+          conversation.Conversations.map((userConversation) => (
+            <div
+              key={userConversation.ConversationId || Math.random()}
+              className="conversation-details"
+            >
+              <h4>Datum: {userConversation.Date || 'Okänt datum'}</h4>
+              <p>
+                Status: {userConversation.Ended ? 'Avslutad' : 'Pågående'}
+              </p>
+              <ul>
+                {userConversation.PromptsAndAnswers &&
+                userConversation.PromptsAndAnswers.length > 0 ? (
+                  userConversation.PromptsAndAnswers.map((item, index) => (
+                    <li key={index}>
+                      <strong>Fråga:</strong> {item?.Prompt || 'Ingen fråga'} <br />
+                      <strong>Svar:</strong> {item?.Answer || 'Inget svar'}
+                    </li>
+                  ))
+                ) : (
+                  <p>Inga frågor eller svar tillgängliga.</p>
+                )}
+              </ul>
+            </div>
+          ))
+        ) : (
+          <p>Inga konversationer för denna användare.</p>
+        )}
       </div>
-    );
+    ));
   };
+  
+  
 
   return (
     <div className="admin-page">
       <h1 className="admin-page-title">Admin - Alla Konversationer</h1>
 
-      {/* Dropdown för användare */}
-      {renderUsersDropdown()}
+      <button onClick={handleShowConversations} className="show-conversations-button">
+        {showConversations ? 'Dölj konversationer' : 'Visa konversationer'}
+      </button>
 
-      <div className="conversation-list">
-        {renderConversationList()}
-      </div>
+      {showConversations && (
+        <div className="conversation-list">
+          {renderConversationList()}
+        </div>
+      )}
     </div>
   );
 };
