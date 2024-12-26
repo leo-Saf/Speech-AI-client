@@ -5,9 +5,9 @@ import '../style.css';
 
 const AudioUploader = () => {
   //const [audioBlob, setAudioBlob] = useState(null);
-  const { selectedLanguage } = useLanguage();
-  const [isRecording, setIsRecording] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+  const { selectedLanguage, isRecording, setIsRecording, isPaused, setIsPaused } = useLanguage();
+  //const [isRecording, setIsRecording] = useState(false);
+  //const [isPaused, setIsPaused] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [responseAudio, setResponseAudio] = useState(null);
   const [loading, setLoading] = useState(false);

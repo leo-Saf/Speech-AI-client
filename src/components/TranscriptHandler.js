@@ -3,7 +3,7 @@ import { useLanguage } from './LanguageContext';
 
 
 const TranscriptHandler = () => {
-  const { selectedLanguage, setSelectedLanguage } = useLanguage();
+  const { selectedLanguage, setSelectedLanguage, isPaused } = useLanguage();
   const [status, setStatus] = useState('Not Connected');
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState(null);
@@ -46,7 +46,7 @@ const TranscriptHandler = () => {
 
           
           mediaRecorder.addEventListener('dataavailable', (event) => {
-            if (event.data.size > 0 && socket.readyState === 1) {
+            if (event.data.size > 0 && socket.readyState === 1 && !isPaused) {
               socket.send(event.data);
             }
           });
@@ -54,8 +54,8 @@ const TranscriptHandler = () => {
           mediaRecorder.start(250); 
         };
 
-        // TODO fixa bättre hantering av dubbletter
         socket.onmessage = (message) => {
+          if(isPaused) return;
           try {
           const received = JSON.parse(message.data);
           const newTranscript = received.channel.alternatives[0]?.transcript || '';
@@ -65,8 +65,7 @@ const TranscriptHandler = () => {
       
             setTranscript((prev) => prev + newTranscript + ' ');
       
-            // Save the last transcript to avoid duplicates
-            //lastTranscriptRef.current = newTranscript;
+
           }
 
         } catch (err) {
@@ -76,7 +75,7 @@ const TranscriptHandler = () => {
 
         socket.onclose = () => {
           setStatus('Disconnected');
-          setTranscript(''); 
+          //setTranscript(''); 
           console.log('WebSocket closed');
         };
 
@@ -93,12 +92,15 @@ const TranscriptHandler = () => {
 
     return () => {
       if (mediaRecorder) mediaRecorder.stop();
-      if (socket) socket.close();
+      // Remove to not close the socket when pausing
+      if (socket && !isPaused) socket.close();
     };
-  }, [selectedLanguage]); 
+  }, [selectedLanguage, isPaused]); 
 
   useEffect(() => {
-    setTranscript('');
+    if (selectedLanguage !== '') {  // Only clear if a new language is selected
+      setTranscript('');
+    }
   }, [selectedLanguage]);
   
     // Update language state based on user selection

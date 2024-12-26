@@ -6,9 +6,14 @@ const LanguageContext = createContext(null);
 // Create a provider component
 export const LanguageProvider = ({ children }) => {
   const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   return (
-    <LanguageContext.Provider value={{ selectedLanguage, setSelectedLanguage }}>
+    <LanguageContext.Provider value={{ selectedLanguage, setSelectedLanguage, isRecording,
+      setIsRecording,
+      isPaused,
+      setIsPaused }}>
       {children}
     </LanguageContext.Provider>
   );
