@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 /* Grundläggande layout och bakgrund */
 .admin-page {
   background-color: #f8f9fa; /* Ljusgrå bakgrund */
@@ -95,4 +96,196 @@
   font-size: 1.2rem;
   color: #dc3545; /* Röd */
   font-weight: bold;
+=======
+/* Administrationssidans grundläggande layout */
+.admin-page {
+  font-family: Arial, sans-serif;
+  background-color: #1e1e2f;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 1200px;
+  margin: 40px auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Titeln på sidan */
+.admin-page h1 {
+  text-align: center;
+  font-size: 36px;
+  color: #8a8aa6;
+  margin-bottom: 20px;
+}
+
+/* Stil för knappar */
+button {
+  background-color: #4c96af;
+  color: rgb(196, 206, 214);
+  border: none;
+  padding: 10px 20px;
+  margin: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(137, 150, 220, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #4560a0;
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Styling för dropdown (select-listan) */
+select, input[type="email"], input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #3e8086a3;
+  text-align: center;
+  font-weight: bolder;
+}
+
+
+select.delete-user-select {
+  background-color: #3e8086a3;
+  color: #000000;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+  font-weight: bolder;
+}
+
+select.delete-user-select:hover {
+  background-color: #3979a1;
+  color: white;
+}
+
+/* Styling för felmeddelanden */
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 20px;
+}
+
+/* Omformatera update-formuläret */
+.update-user-form {
+  background-color: #4260b371;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.update-user-form h2 {
+  text-align: center;
+  color: #8a8aa6;
+}
+
+.update-user-form label {
+  display: block;
+  margin-top: 10px;
+  color: #555;
+  font-size: 16px;
+}
+
+.update-user-form input,
+.update-user-form select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  background-color: #d3d6d991;
+}
+
+.update-user-form input[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.update-user-form input[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+/* Alla användar-konversationer */
+.conversation-card {
+  background-color: #5e71a464;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+h3 {
+
+  color: #a1a1b5 ;
+}
+ h2 {
+
+  color: #8a8aa6 ;
+}
+.conversation-card h4 {
+  margin-bottom: 8px;
+  color: #33c3a9;
+}
+
+.conversation-card p {
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #985555;
+}
+
+.conversation-card ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.conversation-card ul li {
+  margin-bottom: 10px;
+}
+
+.conversation-card ul li strong {
+  color: #80a3cb;
+}
+
+/* Allmänna responsiva inställningar */
+@media (max-width: 768px) {
+  .admin-page {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .admin-buttons button {
+    width: 100%;
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  .update-user-form input[type="submit"] {
+    width: 100%;
+  }
+>>>>>>> Stashed changes
 }
