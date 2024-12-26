@@ -2,7 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { uploadAudio } from '../client';
 import '../style.css';
 
-const AudioUploader = ({ userId }) => {
+const AudioUploader = ({ userId, fetchAndResetEmails }) => {
+
+  console.log(' /////// AudioUploader received fetchAndResetEmails:', fetchAndResetEmails);
+
   const [isConversationStarted, setIsConversationStarted] = useState(false);
   // const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -112,7 +115,19 @@ const AudioUploader = ({ userId }) => {
 
   // Stop the conversation
   const handleStopConversation = () => {
+    console.log('1. fetchAndResetEmails:', typeof fetchAndResetEmails);
     console.log('userid = ', userId);
+    console.log('.............................................................................'); // delete when done testing emails
+    const emails = fetchAndResetEmails; // Fetch emails from App.js and reset
+    console.log('2. fetchAndResetEmails:', typeof fetchAndResetEmails);
+
+    if (!emails) {
+      console.error('Emails are undefined or invalid:', emails);
+    } else {
+      console.log('Fetched emails:', emails);
+      console.log('Sending emails to server:', emails);
+    }
+    
     setIsConversationStarted(false);
     //sendMessageToServer(userId); // TESTING
     setIsRecording(false);

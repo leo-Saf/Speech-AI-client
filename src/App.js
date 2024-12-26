@@ -6,6 +6,7 @@ import AudioUploader from './components/AudioUploader';
 import AdminPage from './components/Admin/AdminPage'; 
 import Register from './components/Register';
 import Login from './components/Login';
+import AddUser from './components/AddUser';
 
 import { toast, ToastContainer } from 'react-toastify'; // For notifications
 import 'react-toastify/dist/ReactToastify.css'; // Toast container styles
@@ -16,6 +17,29 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);  // State to track if the user is authenticated
   const [user, setUser] = useState(null); // State to store the authenticated user's information
   const [authMode, setAuthMode] = useState(null); // State to control which modal (Login/Register) should be shown
+  const [emails, setEmails] = useState([]); // State to store an array of emails
+  const [showAddUserModal, setShowAddUserModal] = useState(false); // State to control modal visibility
+
+  const handleFetchAndResetEmails = () => {
+    const currentEmails = [...emails]; // Clone the emails
+    setEmails([]); // Reset the emails array
+    return currentEmails;
+  };
+
+  // Function to handle the email passed from AddUser
+  const handleEmailSubmit = (email) => {
+    console.log('Email received by App.js: ', email);
+    setEmails((prevEmails) => {
+      // Debugging: Log the current state of the emails array
+      console.log('Previous emails array:', prevEmails);
+  
+      const updatedEmails = [...prevEmails, email]; // Add the new email
+      console.log('Updated emails array:', updatedEmails); // Log the updated array
+  
+      return updatedEmails; // Update the state
+    });
+    toast.success('User added: ' + email); // Optional: Notify the user
+  };
 
   // Callback to handle successful registration
   const handleRegisterSuccess = () => {
@@ -82,6 +106,7 @@ const App = () => {
               <Link to="/Recording">
                 <button>Recording</button>
               </Link>
+              <button onClick={() => setShowAddUserModal(true)}>Add User</button> 
               {/* Show Admin page link if the user is an admin */}
               {user?.admin && ( 
                 <Link to="/admin">
@@ -117,9 +142,20 @@ const App = () => {
         path="/historik"
         element={<HistoryPage userId={user?.id} />}
       />
+      
       <Route
         path="/Recording"
-        element={<AudioUploader userId={user?.id} />}
+        element={
+          <>
+            {/* Debugging log to see if the function is passed correctly */}
+            {console.log("user:", user?.i)}
+            {console.log("fetchAndResetEmails function passed:", handleFetchAndResetEmails)}
+            <AudioUploader
+              userId={user?.id}
+              fetchAndResetEmails={handleFetchAndResetEmails} // function is passed here
+            />
+          </>
+                }
       />
       {user?.admin && ( // Admin-specifik rutt
                 <Route path="/admin" element={<AdminPage />} />
@@ -147,6 +183,19 @@ const App = () => {
    {/* Default homepage route */}
   <Route path="/" element={<Home user={user} />} />
 </Routes>
+        {/* Add User Modal */}
+        {showAddUserModal && (
+          <div className="modal">
+            <div className="modal-content">
+              <button className="close" onClick={() => setShowAddUserModal(false)}>
+                &times;
+              </button>
+              {/* Pass the handleEmailSubmit function to AddUser */}
+              <AddUser onEmailSubmit={handleEmailSubmit} />
+            </div>
+          </div>
+        )}
+
 
 
         {/* Show modals for Login/Registration only when a button is clicked */}
@@ -167,6 +216,15 @@ const App = () => {
           </div>
         )}
         
+        {/* Display the list of emails under "Lägg till" button */}
+        <div className="added-users-list">
+          <h3>Added Users:</h3>
+          <ul>
+            {emails.map((email, index) => (
+              <li key={index}>{email}</li>
+            ))}
+          </ul>
+        </div>
       </div>
     </Router>
   );
