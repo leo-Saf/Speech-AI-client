@@ -219,10 +219,14 @@ const App = () => {
         {/* Display the list of emails under "Lägg till" button */}
         <div className="added-users-list">
           <h3>Added Users:</h3>
-          <ul>
-            {emails.map((email, index) => (
-              <li key={index}>{email}</li>
-            ))}
+          <ul>{
+            emails.length === 0 ? ( // Check if the emails array is empty
+            <li>No users added yet.</li>
+            ) : (
+            emails.map((email, index) => (
+            <li key={index}>{email}</li>
+            ))
+          )}
           </ul>
         </div>
       </div>
