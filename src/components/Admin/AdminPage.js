@@ -6,12 +6,6 @@ import './AdminPage.css';
 
 
 const AdminPage = () => {
-<<<<<<< Updated upstream
-  const [conversations, setConversations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showConversations, setShowConversations] = useState(false);
-=======
   const [users, setUsers] = useState([]); // Alla användare
   const [selectedUserId, setSelectedUserId] = useState(null); // Vald användar-ID
   const [conversations, setConversations] = useState([]); // Användarens konversationer
@@ -24,35 +18,21 @@ const AdminPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [admin, setAdmin] = useState(false); // Initialt icke-admin
->>>>>>> Stashed changes
 
-  // Funktion för att hämta konversationer
-  const fetchUserEmail = async (userId) => {
-    // Kolla om userId är en gäst och hantera det separat
-  if (userId.startsWith('Guest-')) {
-    return `${userId}`;  // Returnera en standard e-postadress för gäster
-  }
+  // Funktion för att hämta alla användare
+  const fetchAllUsers = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/get-user/${userId}`);
-      return response.data.Email || userId; // Om Email saknas, returnera UserId
+      const response = await axios.get('/api/get-all-users');
+      setUsers(response.data); // Sätt alla användare i state
     } catch (error) {
-      console.error(`Fel vid hämtning av e-post för UserID: ${userId}`, error);
-      return userId; // Returnera UserId om det inte går att hämta data
+      console.error("Error fetching users:", error);
+      setError('Failed to load users');
     }
   };
-  
-  
-  const fetchAllConversations = async () => {
+
+  // Funktion för att hämta användarens ID baserat på e-post
+  const fetchUserId = async (email) => {
     try {
-<<<<<<< Updated upstream
-      setLoading(true);
-      setError(null);
-      const response = await axios.get('http://localhost:3001/api/get-all-conversations');
-      const data = response.data;
-  
-      if (!data || data.length === 0) {
-        setError('Inga konversationer hittades.');
-=======
       const decodedEmail = decodeURIComponent(email); // Avkoda från URL-kodning
       console.log('Decoded email:', decodedEmail); // Logga för att kontrollera e-posten
       const response = await axios.get('/api/get-user-id', { params: { email: decodedEmail } });
@@ -76,6 +56,7 @@ const AdminPage = () => {
       console.log('Fetching conversations for user ID:', userId);
       const response = await axios.get(`/api/get-user-conversations/${userId}`);
 
+
       if (response.data.message) {
         // Om meddelandet är 'No conversations found', hantera det här
         if (response.data.message === 'No conversations found') {
@@ -84,34 +65,18 @@ const AdminPage = () => {
         } else {
           setError(response.data.message);  // Visa generella felmeddelanden om de finns
         }
->>>>>>> Stashed changes
       } else {
-        // Lägg till e-post i varje användare
-        const conversationsWithEmails = await Promise.all(
-          data.map(async (conversation) => {
-            if (!conversation.UserId) {
-              console.warn('UserId saknas för en konversation:', conversation);
-              return { ...conversation, Email: 'Gäst - Ingen ID tillgänglig' };
-            }
-            const Email = await fetchUserEmail(conversation.UserId);
-            return { ...conversation, Email };
-          })
-        );
-  
-        setConversations(conversationsWithEmails);
+        const { singleUserConversations, multiUserConversations } = response.data;
+        setConversations([...singleUserConversations, ...multiUserConversations]);
       }
-    } catch (err) {
-      console.error('Fel vid hämtning av konversationer:', err);
-      setError('Ett fel inträffade vid hämtning av konversationer.');
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+      setError('Failed to load conversations');
     } finally {
       setLoading(false);
     }
   };
-  
-  
 
-<<<<<<< Updated upstream
-=======
   // Funktion för att uppdatera användaren
   const updateUser = async (userId, email, password, admin) => {
     try {
@@ -129,6 +94,7 @@ const AdminPage = () => {
   const deleteUser = async (userId) => {
     console.log("Button clicked for userId:", userId);
     const isConfirmed = window.confirm(`Are you sure you want to delete user with ID: ${userId}?`);
+
     if (!isConfirmed) {
       return;
     }
@@ -145,78 +111,63 @@ const AdminPage = () => {
   
 
   // När komponenten har laddats, hämta användare
->>>>>>> Stashed changes
   useEffect(() => {
-    fetchAllConversations();
+    fetchAllUsers();
   }, []);
 
-  // Hantera visningen av konversationer
-  const handleShowConversations = () => {
-    setShowConversations(!showConversations);
+  // När en användare är vald, hämta användar-ID och deras konversationer
+  const handleUserSelect = async (event) => {
+    const email = event.target.value;
+    console.log('Selected email:', email); // Logga för att kontrollera e-posten
+    if (email) {
+      const userId = await fetchUserId(email); // Hämta användarens ID
+      if (userId) {
+        setSelectedUserId(userId); // Sätt valt användar-ID
+        fetchUserConversations(userId); // Hämta konversationer för användaren
+      } else {
+        setError('User ID not found');
+      }
+    }
   };
 
-  const renderConversationList = () => {
-    if (loading) return <p className="loading-text">Laddar...</p>;
-    if (error) return <p className="error-text">{error}</p>;
-  
-    if (!conversations || conversations.length === 0)
-      return <p>Inga konversationer tillgängliga.</p>;
-  
-    return conversations.map((conversation) => (
-      <div key={conversation.UserId || Math.random()} className="conversation-card">
-        <h3>
-          Användar-Identifierare:{' '}
-          {conversation.Email === conversation.UserId
-            ? `: ${conversation.UserId}`
-            : conversation.Email}
-        </h3>
-        {conversation.Conversations && conversation.Conversations.length > 0 ? (
-          conversation.Conversations.map((userConversation) => (
-            <div
-              key={userConversation.ConversationId || Math.random()}
-              className="conversation-details"
-            >
-              <h4>Datum: {userConversation.Date || 'Okänt datum'}</h4>
-              <p>
-                Status: {userConversation.Ended ? 'Avslutad' : 'Pågående'}
-              </p>
-              <ul>
-                {userConversation.PromptsAndAnswers &&
-                userConversation.PromptsAndAnswers.length > 0 ? (
-                  userConversation.PromptsAndAnswers.map((item, index) => (
-                    <li key={index}>
-                      <strong>Fråga:</strong> {item?.Prompt || 'Ingen fråga'} <br />
-                      <strong>Svar:</strong> {item?.Answer || 'Inget svar'}
-                    </li>
-                  ))
-                ) : (
-                  <p>Inga frågor eller svar tillgängliga.</p>
-                )}
-              </ul>
-            </div>
-          ))
-        ) : (
-          <p>Inga konversationer för denna användare.</p>
-        )}
+  // Filterfunktion för att filtrera konversationer baserat på datum
+  const filterConversationsByDateRange = (conversationsList) => {
+    const startDate = new Date('2024-01-01'); // Startdatum för filtrering
+    const endDate = new Date('2024-12-31'); // Slutdatum för filtrering
+    
+    return conversationsList.filter(conversation => {
+      const conversationDate = new Date(conversation.Date);
+      return conversationDate >= startDate && conversationDate <= endDate;
+    });
+  };
+
+  // Rendera konversationerna i en lista med filtrering baserat på datum
+  const renderConversationList = (conversationsList) => {
+    const filteredConversations = filterConversationsByDateRange(conversationsList);
+
+    return filteredConversations.map((conversation) => (
+      <div key={conversation.ConversationId} className="conversation-card">
+        <h4>Date: {conversation.Date}</h4>
+        <p>Status: {conversation.Ended ? 'Completed' : 'Ongoing'}</p>
+        <ul>
+          {Array.isArray(conversation.PromptsAndAnswers) && conversation.PromptsAndAnswers.length > 0 ? (
+            conversation.PromptsAndAnswers.map((item, index) => (
+              <li key={index}>
+                <strong>Question:</strong> {item?.Prompt || 'No question'}
+                <br />
+                <strong>Answer:</strong> {item?.Answer || 'No answer'}
+              </li>
+            ))
+          ) : (
+            <p>No questions or answers available.</p>
+          )}
+        </ul>
       </div>
     ));
   };
-  
-  
 
   return (
     <div className="admin-page">
-<<<<<<< Updated upstream
-      <h1 className="admin-page-title">Admin - Alla Konversationer</h1>
-
-      <button onClick={handleShowConversations} className="show-conversations-button">
-        {showConversations ? 'Dölj konversationer' : 'Visa konversationer'}
-      </button>
-
-      {showConversations && (
-        <div className="conversation-list">
-          {renderConversationList()}
-=======
       <h1>Admin Page</h1>
 
       {/* Dropdown för att välja användare */}
@@ -317,7 +268,6 @@ const AdminPage = () => {
           <h2>Conversations for {selectedUserId}</h2>
           {/* renderConversationList() ska visa användarens konversationer */}
           {renderConversationList(conversations)}
->>>>>>> Stashed changes
         </div>
       )}
 
