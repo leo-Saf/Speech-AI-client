@@ -113,17 +113,24 @@ const AudioUploader = ({ userId, fetchAndResetEmails }) => {
   // Stop the conversation
   const handleStopConversation = () => {
 
+
     console.log('------------------ calling fetchandreset emails --------------------')
-    if (fetchAndResetEmails) {
-      fetchAndResetEmails(); 
-      console.log('FETCH AND RESET WORKED!!!!!!!!!!!!!!!!!!!!!');
-    } else {
+
+    
+    try {
+      if (fetchAndResetEmails) {
+        fetchAndResetEmails(); 
+        console.log('FETCH AND RESET WORKED!!!!!!!!!!!!!!!!!!!!!');
+      } else {
         console.log('ERROR WITH FETCHING EMAILS.. ', fetchAndResetEmails.toString())
+      }
+    } catch (error){
+      console.log('ERROR WITH FETCHING. PROBABLY UNDEFINED?');
     }
 
     console.log('.............................................................................'); // delete when done testing emails
     const emails = fetchAndResetEmails; // Fetch emails from App.js and reset
-    console.log('2. fetchAndResetEmails:', typeof fetchAndResetEmails);
+    console.log('2. fetchAndResetEmails:', typeof fetchAndResetEmails); // should say function
 
     if (!emails) {
       console.error('Emails are undefined or invalid:', emails);
