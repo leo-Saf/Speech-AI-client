@@ -52,7 +52,7 @@ const AddUser = ({ onEmailSubmit }) => {
           </label>
         </div>
         <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Adding User...' : 'Lägg till'}
+          {isLoading ? 'Adding User...' : 'Add user'}
         </button>
       </form>
       <p>{message}</p>

@@ -4,8 +4,6 @@ import { uploadAudio } from '../client';
 
 const AudioUploader = ({ userId, fetchAndResetEmails }) => {
 
-  console.log(' /////// AudioUploader received fetchAndResetEmails:', fetchAndResetEmails);
-
   const [isConversationStarted, setIsConversationStarted] = useState(false);
   // const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -110,13 +108,19 @@ const AudioUploader = ({ userId, fetchAndResetEmails }) => {
   const handleStartConversation = () => {
     console.log('userid = ', userId);
     setIsConversationStarted(true);
-     //sendMessageToServer('START CONVO'); // SEND TO SERVER - TESTING
   };
 
   // Stop the conversation
   const handleStopConversation = () => {
-    console.log('1. fetchAndResetEmails:', typeof fetchAndResetEmails);
-    console.log('userid = ', userId);
+
+    console.log('------------------ calling fetchandreset emails --------------------')
+    if (fetchAndResetEmails) {
+      fetchAndResetEmails(); 
+      console.log('FETCH AND RESET WORKED!!!!!!!!!!!!!!!!!!!!!');
+    } else {
+        console.log('ERROR WITH FETCHING EMAILS.. ', fetchAndResetEmails.toString())
+    }
+
     console.log('.............................................................................'); // delete when done testing emails
     const emails = fetchAndResetEmails; // Fetch emails from App.js and reset
     console.log('2. fetchAndResetEmails:', typeof fetchAndResetEmails);
@@ -158,7 +162,7 @@ const AudioUploader = ({ userId, fetchAndResetEmails }) => {
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
         const audioBlob = new Blob([event.data], { type: 'audio/webm' });
-        console.log('AudioBlob:', audioBlob);
+        console.log('AudioBlob:', audioBlob);        
         handleUpload(audioBlob); // Handle the upload of audio after recording
       }
     };

@@ -20,9 +20,18 @@ const App = () => {
   const [emails, setEmails] = useState([]); // State to store an array of emails
   const [showAddUserModal, setShowAddUserModal] = useState(false); // State to control modal visibility
 
+  React.useEffect(() => {
+    console.log('--------------------------- NEW EMAIL LOGS ----------------------------');
+    console.log('Emails state updated:', emails);
+  }, [emails]);
+  
+
   const handleFetchAndResetEmails = () => {
-    const currentEmails = [...emails]; // Clone the emails
-    setEmails([]); // Reset the emails array
+    console.log('Resetting emails...............................................................');
+    const currentEmails = [...emails];
+    console.log('Before reset:', currentEmails);
+    setEmails([]); // Attempt to reset emails
+    console.log('After reset attempt (emails state):', currentEmails); // This may show the old value due to React's async updates
     return currentEmails;
   };
 
@@ -155,12 +164,10 @@ const App = () => {
         path="/Recording"
         element={
           <>
-            {/* Debugging log to see if the function is passed correctly */}
-            {console.log("user:", user?.i)}
-            {console.log("fetchAndResetEmails function passed:", handleFetchAndResetEmails)}
+            {console.log('PASSING!! fetchAndResetEmails to AudioUploader:', handleFetchAndResetEmails)}
             <AudioUploader
               userId={user?.id}
-              fetchAndResetEmails={handleFetchAndResetEmails} // function is passed here
+              fetchAndResetEmails={handleFetchAndResetEmails || null} // ................... FUNCTION IS PASSED HERE 
             />
           </>
                 }
@@ -236,7 +243,7 @@ const App = () => {
         <div className="added-users-list">
           <h3>Added Users:</h3>
           <ul>{
-            emails.length === 0 ? ( // Check if the emails array is empty
+            emails.length === 0 ? (
             <li>No users added yet.</li>
             ) : (
             emails.map((email, index) => (
