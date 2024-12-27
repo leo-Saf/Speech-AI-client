@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { uploadAudio } from '../client';
 
 
-const AudioUploader = ({ userId, fetchAndResetEmails }) => {
+const AudioUploader = ({ userId, fetchEmails, resetEmails }) => {
 
   const [isConversationStarted, setIsConversationStarted] = useState(false);
   // const [audioBlob, setAudioBlob] = useState(null);
@@ -24,8 +24,6 @@ const AudioUploader = ({ userId, fetchAndResetEmails }) => {
   const recordingTimeoutRef = useRef(null); // Ref to handle the maximum recording time timeout
   const silenceHistory = []; // Keeps track of the silence history
   let silenceTimeout = null; // Timeout variable for silence detection
-
-  const emailsRef = useRef(null);
 
   useEffect(() => {
     const setupRecorder = async () => {
@@ -112,20 +110,11 @@ const AudioUploader = ({ userId, fetchAndResetEmails }) => {
     setIsConversationStarted(true);
   };
 
-  // Stop the conversation
+  // Stop the conversation, empty the array of emails that were active in last conversation / session
   const handleStopConversation = () => {
-    console.log('------------------ calling fetchandreset emails --------------------')
-
     try {
-      if (fetchAndResetEmails) {
-        const emails = fetchAndResetEmails(); // Fetch emails from App.js and reset
-        console.log('Fetched emails:', emails);
-        emailsRef.current = emails; // Store emails in the ref
-        console.log('Sending emails to server');
-        console.log('FETCH AND RESET WORKED');
-      } else {
-        console.log('ERROR WITH FETCHING EMAILS.. NOT undefined')
-      }
+      resetEmails();
+      console.log('EMAILS ARE RESET.');
     } catch (error){
       console.error('Emails are undefined: ', emails);
     }
@@ -191,14 +180,19 @@ const AudioUploader = ({ userId, fetchAndResetEmails }) => {
     }
   };
 
+  // upload audio bits with their corresponding userid (and the emails of other participants if there are any)
   const handleUpload = async (blob) => {
     setLoading(true);
     try {
       const uploadId = userId; // DO NOT use "guest" if userId is missing
     console.log('Uploading audio with ID:', uploadId);
     console.log('Data being sent to backend:', blob);
+    
+    const emails = fetchEmails(); // Store emails in the ref
+    console.log('Fetched emails:', emails);
+    console.log('Sending emails to server');
 
-    const response = await uploadAudio(blob, uploadId, emailsRef.current);
+    const response = await uploadAudio(blob, uploadId, emails);
     
       console.log('Upload successful:', response);
       const audioURL = URL.createObjectURL(response);
@@ -233,7 +227,7 @@ const AudioUploader = ({ userId, fetchAndResetEmails }) => {
           onClick={handleStartConversation}
           className="btn start-conversation-btn"
         >
-          Start Conversation
+          Start Session
         </button>
       ) : (
         <>
@@ -241,7 +235,7 @@ const AudioUploader = ({ userId, fetchAndResetEmails }) => {
             onClick={handleStopConversation}
             className="btn stop-conversation-btn"
           >
-            Stop Conversation
+            Stop Session
           </button>
           <div className="recording-controls">
             {!isRecording ? (

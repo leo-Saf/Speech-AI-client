@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+// function to add user emails to a conversation / session
 const AddUser = ({ onEmailSubmit }) => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');

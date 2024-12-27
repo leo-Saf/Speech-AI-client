@@ -17,6 +17,7 @@ export const uploadAudio = async (blob, userId, additionalParticipants = []) => 
 
   // Combine the userId with any additional participants
   const combinedParticipants = [userId, ...additionalParticipants];
+  console.log('---------------no longer accessing additional participants---------------');
 
   // Serialize the participants array into a JSON string and append it to FormData
   formData.append('participants', JSON.stringify(combinedParticipants));

@@ -24,15 +24,18 @@ const App = () => {
     console.log('--------------------------- NEW EMAIL LOGS ----------------------------');
     console.log('Emails state updated:', emails);
   }, [emails]);
-  
 
-  const handleFetchAndResetEmails = () => {
-    console.log('Resetting emails...............................................................');
-    const currentEmails = [...emails];
-    console.log('Before reset:', currentEmails);
-    setEmails([]); // Attempt to reset emails
-    console.log('After reset attempt (emails state):', currentEmails); // This may show the old value due to React's async updates
-    return currentEmails;
+  const handleFetchEmails = () => {
+    console.log('Fetching emails...');
+    const currentEmails = [...emails]; // Clone the current emails array
+    console.log('Fetched emails:', currentEmails);
+    return currentEmails; // Return the fetched emails
+  };
+  
+  const handleResetEmails = () => {
+    console.log('Resetting emails...');
+    setEmails([]); // Clear the emails state
+    console.log('Emails have been reset.');
   };
 
   // Function to handle the email passed from AddUser
@@ -91,8 +94,6 @@ const App = () => {
 
   return (
     <Router>
-      
-      
       <div>
         <ToastContainer position="top-center" autoClose={3000} />
         <nav className="auth-buttons">
@@ -164,10 +165,10 @@ const App = () => {
         path="/Recording"
         element={
           <>
-            {console.log('PASSING!! fetchAndResetEmails to AudioUploader:', handleFetchAndResetEmails)}
             <AudioUploader
               userId={user?.id}
-              fetchAndResetEmails={handleFetchAndResetEmails || null} // ................... FUNCTION IS PASSED HERE 
+              fetchEmails={handleFetchEmails} // ................... FUNCTION IS PASSED HERE 
+              resetEmails={handleResetEmails} // ................... FUNCTION IS PASSED HERE 
             />
           </>
                 }
