@@ -5,6 +5,13 @@ export const uploadAudio = async (blob, userId, additionalParticipants = []) => 
     //throw new Error('User ID is missing. You must be logged in.');
   }
 
+  console.log('---------------attempting to access additional participants---------------');
+  if (!additionalParticipants){
+    console.log('error with additional participants');
+  } else {
+    console.log('Additional participants / emails: ', additionalParticipants);
+  }
+
   const formData = new FormData(); // Create a new FormData object
   formData.append('audio', blob, 'audio.webm'); // Append the audio Blob to the FormData
 

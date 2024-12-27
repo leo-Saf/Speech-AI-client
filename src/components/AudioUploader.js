@@ -20,10 +20,12 @@ const AudioUploader = ({ userId, fetchAndResetEmails }) => {
 
   const MAX_SILENCE_TIME = 3000; // Time after the user starts talking before silence is detected
   const SILENCE_THRESHOLD = 30; // Threshold for silence detection
-  const MAX_RECORDING_TIME = 15000; // Maximum recording time (15 seconds) regardless of whether the user stops talking or not
+  const MAX_RECORDING_TIME = 30000; // Maximum recording time (30 seconds) regardless of whether the user stops talking or not
   const recordingTimeoutRef = useRef(null); // Ref to handle the maximum recording time timeout
   const silenceHistory = []; // Keeps track of the silence history
   let silenceTimeout = null; // Timeout variable for silence detection
+
+  const emailsRef = useRef(null);
 
   useEffect(() => {
     const setupRecorder = async () => {
@@ -112,35 +114,23 @@ const AudioUploader = ({ userId, fetchAndResetEmails }) => {
 
   // Stop the conversation
   const handleStopConversation = () => {
-
-
     console.log('------------------ calling fetchandreset emails --------------------')
 
-    
     try {
       if (fetchAndResetEmails) {
-        fetchAndResetEmails(); 
-        console.log('FETCH AND RESET WORKED!!!!!!!!!!!!!!!!!!!!!');
+        const emails = fetchAndResetEmails(); // Fetch emails from App.js and reset
+        console.log('Fetched emails:', emails);
+        emailsRef.current = emails; // Store emails in the ref
+        console.log('Sending emails to server');
+        console.log('FETCH AND RESET WORKED');
       } else {
-        console.log('ERROR WITH FETCHING EMAILS.. ', fetchAndResetEmails.toString())
+        console.log('ERROR WITH FETCHING EMAILS.. NOT undefined')
       }
     } catch (error){
-      console.log('ERROR WITH FETCHING. PROBABLY UNDEFINED?');
-    }
-
-    console.log('.............................................................................'); // delete when done testing emails
-    const emails = fetchAndResetEmails; // Fetch emails from App.js and reset
-    console.log('2. fetchAndResetEmails:', typeof fetchAndResetEmails); // should say function
-
-    if (!emails) {
-      console.error('Emails are undefined or invalid:', emails);
-    } else {
-      console.log('Fetched emails:', emails);
-      console.log('Sending emails to server:', emails);
+      console.error('Emails are undefined: ', emails);
     }
     
     setIsConversationStarted(false);
-    //sendMessageToServer(userId); // TESTING
     setIsRecording(false);
     setIsPaused(false);
     clearTimeout(silenceTimeout);
@@ -191,16 +181,6 @@ const AudioUploader = ({ userId, fetchAndResetEmails }) => {
     }
 
     console.log('Recording stopped manually OR by timer.');
-
-      /*if (audioChunks.length > 0) {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        setAudioChunks(audioBlob);
-        handleUpload(audioBlob);
-      } else {
-        console.error("Ingen ljuddata att bearbeta.");
-      }
-
-      setAudioChunks([]); // tar bort gammalt data från audio chunk eftersom denna funktion ska inte räknas som paus funktionen*/
     }
   };
 
@@ -218,7 +198,7 @@ const AudioUploader = ({ userId, fetchAndResetEmails }) => {
     console.log('Uploading audio with ID:', uploadId);
     console.log('Data being sent to backend:', blob);
 
-    const response = await uploadAudio(blob, uploadId);
+    const response = await uploadAudio(blob, uploadId, emailsRef.current);
     
       console.log('Upload successful:', response);
       const audioURL = URL.createObjectURL(response);
