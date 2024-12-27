@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { LanguageProvider } from './components/LanguageContext';
 import Home from './components/Home';
 import HistoryPage from './components/HistoryPage';
 import AudioUploader from './components/AudioUploader';
@@ -9,8 +10,10 @@ import Login from './components/Login';
 import { AllConversations } from './components/Admin/AllConversations';
 import { toast, ToastContainer } from 'react-toastify'; // For notifications
 import 'react-toastify/dist/ReactToastify.css'; // Toast container styles
-import './styling.css'; // Custom styles
-
+import TranscriptHandler from './components/TranscriptHandler';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebaseConfig';
+import './style.css';
 const App = () => {
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);  // State to track if the user is authenticated
@@ -56,145 +59,158 @@ const App = () => {
     setAuthMode(null); // Close the authentication modal
   };
 
+  import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const AppRouter = () => {
+  const [authMode, setAuthMode] = React.useState(null);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [user, setUser] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+  };
+
+  const handleLoginSuccess = (userData) => {
+    setIsAuthenticated(true);
+    setUser(userData);
+    setAuthMode(null);
+  };
+
+  const handleRegisterSuccess = (userData) => {
+    setIsAuthenticated(true);
+    setUser(userData);
+    setAuthMode(null);
+  };
+
   return (
-    <Router>
-      
-      
-      <div>
-        <ToastContainer position="top-center" autoClose={3000} />
-        <nav className="auth-buttons">
-        <h1 className="site-title">Speech AI</h1>
-           {/* If the user is authenticated */}
-          {isAuthenticated ? (
-            <>
-            
-              <span className="span">Welcome {user ? user.email : 'User'}</span>
-               {/* Button for home page */}
-              <Link to="/">
-             <button className="home-button">Home</button> 
-             </Link>
-              
-              <Link to="/historik">
-                <button>View History</button>
-                
-              </Link>
-              <Link to="/Recording">
-                <button>Recording</button>
-              </Link>
-              <button className="Logout" onClick={handleLogout}>
-              Logout
-              </button>
-              {/* Show Admin page link if the user is an admin */}
-              {user?.admin && ( 
-                <Link to="/admin">
-                  <button className="admin-button">Admin Page</button>
+    <LanguageProvider>
+      <Router>
+        <div>
+          <ToastContainer position="top-center" autoClose={3000} />
+          <nav className="auth-buttons">
+            <h1 className="site-title">Speech AI</h1>
+            {isAuthenticated ? (
+              <>
+                <span className="span">Welcome {user ? user.email : 'User'}</span>
+                <Link to="/">
+                  <button className="home-button">Home</button>
                 </Link>
-              )}
-            </>
+                <Link to="/historik">
+                  <button>View History</button>
+                </Link>
+                <Link to="/Recording">
+                  <button>Recording</button>
+                </Link>
+                <button className="Logout" onClick={handleLogout}>
+                  Logout
+                </button>
+                {user?.admin && (
+                  <Link to="/admin">
+                    <button className="admin-button">Admin Page</button>
+                  </Link>
+                )}
+              </>
+            ) : (
+              <>
+                <span className="span">You are a guest</span>
+                <Link to="/">
+                  <button className="home-button">Home</button>
+                </Link>
+                <Link to="/historik">
+                  <button>View History</button>
+                </Link>
+                <Link to="/Recording">
+                  <button>Recording</button>
+                </Link>
+                <button onClick={() => setAuthMode('login')}>Login</button>
+                <button onClick={() => setAuthMode('register')}>Register</button>
+              </>
+            )}
+          </nav>
+
+          {loading ? (
+            <div>Loading...</div>
           ) : (
-
-            // If the user is not authenticated
-            <>
-              <span className="span">You are a guest</span>
-              <Link to="/">
-             <button className="home-button">Home</button> 
-             </Link>
-             
-              <Link to="/historik">
-            <button>View History</button>
-          </Link>
-          <Link to="/Recording">
-          <button>Recording</button>
-          </Link>
-              <button onClick={() => setAuthMode('login')}>Login</button>
-              <button onClick={() => setAuthMode('register')}>Register</button>
-              
-          
-          
-            </>
+            <Routes>
+              {isAuthenticated ? (
+                <>
+                  <Route
+                    path="/historik"
+                    element={<HistoryPage userId={user?.id} />}
+                  />
+                  <Route
+                    path="/Recording"
+                    element={
+                      <div>
+                        <TranscriptHandler />
+                        <AudioUploader userId={user?.id} />
+                      </div>
+                    }
+                  />
+                  {user?.admin && (
+                    <>
+                      <Route path="/admin" element={<AdminPage user={user} />} />
+                      <Route
+                        path="/AllConversations"
+                        element={<AllConversations />}
+                      />
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Route
+                    path="/historik"
+                    element={<HistoryPage userId={null} />}
+                  />
+                  <Route
+                    path="/Recording"
+                    element={
+                      <div>
+                        <TranscriptHandler />
+                        <AudioUploader userId={null} />
+                      </div>
+                    }
+                  />
+                  <Route
+                    path="*"
+                    element={
+                      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                        <h2>You need to log in to access this page.</h2>
+                        <button onClick={() => setAuthMode('login')}>Login</button>
+                      </div>
+                    }
+                  />
+                </>
+              )}
+              <Route path="/" element={<Home user={user} />} />
+            </Routes>
           )}
-        </nav>
 
-        <Routes>
-   {/* Routes for authenticated users */}
-  
-  {isAuthenticated ? (
-    <>
-      <Route
-      
-        path="/historik"
-        element={<HistoryPage userId={user?.id} />}
-      />
-      <Route
-        path="/Recording"
-        element={
-              <AudioUploader userId={user?.id} />
-        }
-      />
-      {user?.admin && (
-      <>
-        {/* Admin-specific route for Admin Page */}
-        <Route path="/admin" element={<AdminPage user={user} />} />
-        
-        {/* Admin-specific route for User Conversations */}
-        <Route
-          path="/AllConversations"
-          element={<AllConversations />} // Replace with your component
-        />
-         </>
-    )}
-    </>  
-  ) : (
-   // Routes for guests (unauthenticated users)
-    <>
-      <Route
-        path="/historik"
-        element={
-        <HistoryPage userId={null} />} // Pass null for guest on history page
-      />
-      <Route
-        path="/Recording"
-        element={
-              <AudioUploader userId={null} />
-        }
-      />
-      <Route
-        path="*"
-        element={
-          <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            <h2>You need to log in to access this page.</h2>
-            <button onClick={() => setAuthMode('login')}>Login</button>
-          </div>
-        }
-      />
-    </>
-  )}
-
-   {/* Default homepage route */}
-  <Route path="/" element={<Home user={user} />} />
-</Routes>
-
-
-        {/* Show modals for Login/Registration only when a button is clicked */}
-        {authMode === 'login' && (
-          <div className="auth-container">
-            <Login
-              onLoginSuccess={handleLoginSuccess}
-              onClose={() => setAuthMode(null)}
-            />
-          </div>
-        )}
-        {authMode === 'register' && (
-          <div className="auth-container">
-            <Register
-              onRegisterSuccess={handleRegisterSuccess}
-              onClose={() => setAuthMode(null)}
-            />
-          </div>
-        )}
-        
-      </div>
-    </Router>
+          {authMode === 'login' && (
+            <div className="auth-container">
+              <Login
+                onLoginSuccess={handleLoginSuccess}
+                onClose={() => setAuthMode(null)}
+              />
+            </div>
+          )}
+          {authMode === 'register' && (
+            <div className="auth-container">
+              <Register
+                onRegisterSuccess={handleRegisterSuccess}
+                onClose={() => setAuthMode(null)}
+              />
+            </div>
+          )}
+        </div>
+      </Router>
+    </LanguageProvider>
   );
 };
 
