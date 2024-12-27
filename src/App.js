@@ -8,6 +8,7 @@ import Register from './components/Register';
 import Login from './components/Login';
 import AddUser from './components/AddUser';
 
+import { AllConversations } from './components/Admin/AllConversations';
 import { toast, ToastContainer } from 'react-toastify'; // For notifications
 import 'react-toastify/dist/ReactToastify.css'; // Toast container styles
 import './styling.css'; // Custom styles
@@ -173,11 +174,19 @@ const App = () => {
           </>
                 }
       />
-      {user?.admin && ( // Admin-specifik rutt
-                <Route path="/admin" element={user?.admin ? <AdminPage user={user} /> : <Navigate to="/" />} />
-
-              )}
-    </>
+      {user?.admin && (
+      <>
+        {/* Admin-specific route for Admin Page */}
+        <Route path="/admin" element={<AdminPage user={user} />} />
+        
+        {/* Admin-specific route for User Conversations */}
+        <Route
+          path="/AllConversations"
+          element={<AllConversations />} // Replace with your component
+        />
+         </>
+    )}
+    </>  
   ) : (
    // Routes for guests (unauthenticated users)
     <>
