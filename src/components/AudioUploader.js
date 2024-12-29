@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { uploadAudio } from '../client';
 import { useLanguage } from './LanguageContext';
-import '../style.css';
 
 const AudioUploader = () => {
   //const [audioBlob, setAudioBlob] = useState(null);
@@ -107,14 +106,14 @@ const AudioUploader = () => {
   // Start the conversation
   const handleStartConversation = () => {
     console.log('userid = ', userId);
-    setIsConversationStarted(true);
+    setIsRecording(true);
      //sendMessageToServer('START CONVO'); // SEND TO SERVER - TESTING
   };
 
   // Stop the conversation
   const handleStopConversation = () => {
     console.log('userid = ', userId);
-    setIsConversationStarted(false);
+    setIsRecording(false);
     //sendMessageToServer(userId); // TESTING
     setIsRecording(false);
     setIsPaused(false);
@@ -227,7 +226,7 @@ const AudioUploader = () => {
 
   return (
     <div className="audio-uploader">
-      {!isConversationStarted ? (
+      {!isRecording ? (
         <button 
         onClick={handleStartRecording} 
         disabled={loading || !selectedLanguage} 

@@ -8,82 +8,47 @@ import AdminPage from './components/Admin/AdminPage';
 import Register from './components/Register';
 import Login from './components/Login';
 import { AllConversations } from './components/Admin/AllConversations';
-import { toast, ToastContainer } from 'react-toastify'; // For notifications
-import 'react-toastify/dist/ReactToastify.css'; // Toast container styles
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import TranscriptHandler from './components/TranscriptHandler';
-import { signOut, onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebaseConfig';
-import './style.css';
+//import { signOut, onAuthStateChanged } from 'firebase/auth';
+//import { auth } from './firebaseConfig';
+//import './style.css';
+
 const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authMode, setAuthMode] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);  // State to track if the user is authenticated
-  const [user, setUser] = useState(null); // State to store the authenticated user's information
-  const [authMode, setAuthMode] = useState(null); // State to control which modal (Login/Register) should be shown
-
-  // Callback to handle successful registration
   const handleRegisterSuccess = () => {
-    setAuthMode(null); // Close the authentication modal
-    toast.success('Registration successful! Please log in to continue.'); // Show a success message
+    setAuthMode(null);
+    toast.success('Registration successful! Please log in to continue.');
   };
 
-   // Callback to handle successful login
   const handleLoginSuccess = (userData) => {
-    console.log('User data from the backend:', userData); // Log the user data for debugging
-    // Check the alternative structures if userId exists
+    console.log('User data from the backend:', userData);
     if (userData?.userId) {
-      // If login is successful, update the authentication state and user data
       setIsAuthenticated(true);
       setUser({
         id: userData.userId,
         email: userData.Email,
-        admin: userData.Admin, // Store admin status for later use
+        admin: userData.Admin,
       });
-    setAuthMode(null); // Close the authentication modal
-    toast.success('Login successful! Welcome back.');// Show a success message
+      setAuthMode(null);
+      toast.success('Login successful! Welcome back.');
+    } else {
+      toast.error('Login failed! No user ID found.');
     }
-   else {
-     // If userId is not found, show an error message
-    toast.error('Login failed! No user ID found.');
-   }
   };
-
-  // Callback to handle logging out
-  const handleLogout = () => {
-    setIsAuthenticated(false); // Set authentication to false
-    setUser(null); // Clear the user data
-    toast.info('You have logged out.'); // Show a log out message
-  };
-
-  // Callback to close the authentication modal without action
-  const handleAuthClose = () => {
-    setAuthMode(null); // Close the authentication modal
-  };
-
-  import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
-const AppRouter = () => {
-  const [authMode, setAuthMode] = React.useState(null);
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
-  const [user, setUser] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUser(null);
+    toast.info('You have logged out.');
   };
 
-  const handleLoginSuccess = (userData) => {
-    setIsAuthenticated(true);
-    setUser(userData);
-    setAuthMode(null);
-  };
-
-  const handleRegisterSuccess = (userData) => {
-    setIsAuthenticated(true);
-    setUser(userData);
+  const handleAuthClose = () => {
     setAuthMode(null);
   };
 

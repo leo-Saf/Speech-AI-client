@@ -389,30 +389,29 @@ body {
     padding: 20px;
    
   }
-  * Styling for the drop down menu */
+
+  /* Styling for the drop down menu */
 .language-selector{
   margin: 10px 0;
   }
   .language-selector select {
     font-size: 14px;
     padding: 5px 15px;
-    border: 1px solid#0056b3;
+    border: 1px solid#6c63ff;
     border-radius: 5px;
-    background-color: #007bff;
+    background-color: #6c63ff;
     color: white;
-    width: 157px;
+    width: 175px;
     cursor: pointer;
-    /* Maybe change? */
-    /*appearance: none; */
   }
   
   .language-selector select:hover {
-    background-color: #0056b3;
+    background-color: #4139cb;
   }
   
   .language-selector select:focus {
     outline: none;
-    border-color: #63b3ed;
+    border-color: #6c63ff;
   }
   
 .back-button:hover {
