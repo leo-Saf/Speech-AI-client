@@ -111,9 +111,9 @@ const App = () => {
                   <Route
                     path="/Recording"
                     element={
-                      <div>
-                        <TranscriptHandler />
+                      <div className ="home-container">
                         <AudioUploader userId={user?.id} />
+                        <TranscriptHandler />
                       </div>
                     }
                   />
@@ -136,9 +136,9 @@ const App = () => {
                   <Route
                     path="/Recording"
                     element={
-                      <div>
-                        <TranscriptHandler />
+                      <div className ="home-container">
                         <AudioUploader userId={null} />
+                        <TranscriptHandler />
                       </div>
                     }
                   />
