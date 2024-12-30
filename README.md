@@ -23,11 +23,8 @@ Before you start, make sure you have the following installed:
    ```bash
    git clone https://github.com/leo-Saf/Speech-AI-client.git
    
-2. Run npm install to install all the necessary dependencies:
 
-bash
-Kopiera kod
-npm install
+
 
 ## The following dependencies will be installed:
 
@@ -52,12 +49,12 @@ Here’s a breakdown of the key components:
 * Login.js: Component for logging users into the application.
 
 ## Key Features
-1. User Authentication:
+1.  ### User Authentication:
 
 Allows users to register, login, and log out with success/failure messages using react-toastify.
 Admin users have access to additional functionalities, such as managing conversations.
 
-2. Audio Uploading:
+2. ### Audio Uploading:
 
 Users can upload audio for conversion via the AudioUploader component. This integrates with an API for processing the audio.
 
