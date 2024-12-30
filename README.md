@@ -58,7 +58,7 @@ Admin users have access to additional functionalities, such as managing conversa
 
 Users can upload audio for conversion via the AudioUploader component. This integrates with an API for processing the audio.
 
-3. Admin Panel:
+3. ### Admin Panel:
 
  * - View a list of all users.
  * - Select a user and view their conversations.
@@ -69,14 +69,14 @@ Users can upload audio for conversion via the AudioUploader component. This inte
 
 # Notes
 
-1. Styling:
+1. ### Styling:
 
 Custom styles are applied via CSS files like AdminPage.css, HistoryStyle.css, and styling.css.
 
-2. Toast Notifications:
+2. ###  Toast Notifications:
 
 Notifications for actions such as logging in or registering a user are managed by react-toastify.
 
-3. Email Handling:
+3. ### Email Handling:
 
 Email addresses are stored and handled via useState in App.js.
