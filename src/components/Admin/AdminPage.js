@@ -6,35 +6,35 @@ import './AdminPage.css';
 
 
 const AdminPage = () => {
-  const [users, setUsers] = useState([]); // Alla användare
-  const [selectedUserId, setSelectedUserId] = useState(null); // Vald användar-ID
-  const [conversations, setConversations] = useState([]); // Användarens konversationer
-  const [loading, setLoading] = useState(false); // För att visa laddning
-  const [error, setError] = useState(null); // För att hantera fel
-  const [showForm, setShowForm] = useState(false);
+  const [users, setUsers] = useState([]); // All users
+  const [selectedUserId, setSelectedUserId] = useState(null);// Selected user ID
+  const [conversations, setConversations] = useState([]); // User's conversations
+  const [loading, setLoading] = useState(false); // To show loading state
+  const [error, setError] = useState(null);// To handle errors
+  const [showForm, setShowForm] = useState(false); // To toggle the form visibility
 
 
-  // För att hantera användarens formdata
+   // To handle user form data
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [admin, setAdmin] = useState(false); // Initialt icke-admin
+  const [admin, setAdmin] = useState(false); // Initially not an admin
 
-  // Funktion för att hämta alla användare
+  // Function to fetch all users
   const fetchAllUsers = async () => {
     try {
       const response = await axios.get('/api/get-all-users');
-      setUsers(response.data); // Sätt alla användare i state
+      setUsers(response.data); // Set all users in state
     } catch (error) {
       console.error("Error fetching users:", error);
       setError('Failed to load users');
     }
   };
 
-  // Funktion för att hämta användarens ID baserat på e-post
+  // Function to fetch user ID based on email
   const fetchUserId = async (email) => {
     try {
-      const decodedEmail = decodeURIComponent(email); // Avkoda från URL-kodning
-      console.log('Decoded email:', decodedEmail); // Logga för att kontrollera e-posten
+      const decodedEmail = decodeURIComponent(email); // Decode from URL encoding
+      console.log('Decoded email:', decodedEmail); // Log for checking the email
       const response = await axios.get('/api/get-user-id', { params: { email: decodedEmail } });
       return response.data.userId;
     } catch (error) {
@@ -43,7 +43,7 @@ const AdminPage = () => {
     }
   };
 
-  // Funktion för att hämta användarens konversationer
+  // Function to fetch the user's conversations
   const fetchUserConversations = async (userId) => {
     if (!userId) {
       setError('Invalid user ID');
@@ -58,12 +58,12 @@ const AdminPage = () => {
 
 
       if (response.data.message) {
-        // Om meddelandet är 'No conversations found', hantera det här
+        // If the message is 'No conversations found', handle it here
         if (response.data.message === 'No conversations found') {
-          setConversations([]);  // Rensa konversationerna om det inte finns några
-          setError(null);  // Rensa eventuella gamla fel
+          setConversations([]);  // Clear the conversations if none exist
+          setError(null); // Clear any previous errors
         } else {
-          setError(response.data.message);  // Visa generella felmeddelanden om de finns
+          setError(response.data.message); // Display general error messages if any
         }
       } else {
         const { singleUserConversations, multiUserConversations } = response.data;
@@ -77,20 +77,21 @@ const AdminPage = () => {
     }
   };
 
-  // Funktion för att uppdatera användaren
+  // Function to update the user
   const updateUser = async (userId, email, password, admin) => {
     try {
-      setLoading(true); // Sätt laddningsstatus
+      setLoading(true); // Set loading status
       const response = await axios.put(`/api/update-user/${userId}`, { email, password, admin });
-      alert(response.data.message); // Visa svar från servern (t.ex. "User updated successfully.")
+      alert(response.data.message);// Display response from the server (e.g., "User updated successfully.")
     } catch (error) {
       console.error("Error updating user:", error);
       setError('Failed to update user');
     } finally {
-      setLoading(false); // Återställ laddning
+      setLoading(false); // Reset loading
     }
   };
 
+  // Function to delete a user
   const deleteUser = async (userId) => {
     console.log("Button clicked for userId:", userId);
     const isConfirmed = window.confirm(`Are you sure you want to delete user with ID: ${userId}?`);
@@ -101,8 +102,8 @@ const AdminPage = () => {
   
     try {
       const response = await axios.delete(`/api/delete-user/${userId}`);
-      alert(response.data.message); // Visa meddelandet som vi får från servern
-      fetchAllUsers(); // Uppdatera användarlistan
+      alert(response.data.message);// Display the message received from the server
+      fetchAllUsers();  // Update the user list
     } catch (error) {
       console.error("Error deleting user:", error);
       setError('Failed to delete user');
@@ -110,30 +111,30 @@ const AdminPage = () => {
   };
   
 
-  // När komponenten har laddats, hämta användare
+  // When the component is loaded, fetch users
   useEffect(() => {
     fetchAllUsers();
   }, []);
 
-  // När en användare är vald, hämta användar-ID och deras konversationer
+  // When a user is selected, fetch the user ID and their conversations
   const handleUserSelect = async (event) => {
     const email = event.target.value;
-    console.log('Selected email:', email); // Logga för att kontrollera e-posten
+    console.log('Selected email:', email); // Log to check the email
     if (email) {
-      const userId = await fetchUserId(email); // Hämta användarens ID
+      const userId = await fetchUserId(email); // Fetch the user ID
       if (userId) {
-        setSelectedUserId(userId); // Sätt valt användar-ID
-        fetchUserConversations(userId); // Hämta konversationer för användaren
+        setSelectedUserId(userId); // Set the selected user ID
+        fetchUserConversations(userId); // Fetch conversations for the user
       } else {
         setError('User ID not found');
       }
     }
   };
 
-  // Filterfunktion för att filtrera konversationer baserat på datum
+  // Filter function to filter conversations based on date
   const filterConversationsByDateRange = (conversationsList) => {
-    const startDate = new Date('2024-01-01'); // Startdatum för filtrering
-    const endDate = new Date('2024-12-31'); // Slutdatum för filtrering
+    const startDate = new Date('2024-01-01'); // Start date for filtering
+    const endDate = new Date('2024-12-31'); // End date for filtering
     
     return conversationsList.filter(conversation => {
       const conversationDate = new Date(conversation.Date);
@@ -141,7 +142,7 @@ const AdminPage = () => {
     });
   };
 
-  // Rendera konversationerna i en lista med filtrering baserat på datum
+  // Render the conversations in a list with filtering based on date
   const renderConversationList = (conversationsList) => {
     const filteredConversations = filterConversationsByDateRange(conversationsList);
 
@@ -170,7 +171,7 @@ const AdminPage = () => {
     <div className="admin-page">
       <h1>Admin Page</h1>
 
-      {/* Dropdown för att välja användare */}
+      {/* Dropdown to select a user  */}
       <div>
         <label>Select a user:</label>
         <select onChange={handleUserSelect}>
@@ -187,13 +188,13 @@ const AdminPage = () => {
       <div className="admin-buttons">
         <button onClick={() => setShowForm(!showForm)}>Update</button>
 
-        {/* Dropdown för att välja användare att radera */}
+        {/* Dropdown to select a user to delete*/}
 <select
-  className="delete-user-select" // Lägg till en klass för att styla den
+  className="delete-user-select" 
   onChange={async (e) => {
-    const userId = await fetchUserId(e.target.value); // Hämta ID baserat på e-post
+    const userId = await fetchUserId(e.target.value); // Fetch ID based on email
     if (userId) {
-      deleteUser(userId); // Kör delete om ID är korrekt
+      deleteUser(userId); // Run delete if ID is valid
     } else {
       console.error("Could not find user ID for email:", e.target.value);
     }
@@ -214,14 +215,14 @@ const AdminPage = () => {
         </Link>
       </div>
 
-      {/* Visa formulär för att uppdatera användare om knappen Update trycks */}
+      {/* Show form to update user if the Update button is clicked */}
       {showForm && selectedUserId && (
         <div className="update-user-form">
           <h2>Update User Info</h2>
           <form
             onSubmit={(e) => {
-              e.preventDefault(); // Hindra sidomladdning vid formulärsändning
-              updateUser(selectedUserId, email, password, admin); // Uppdatera användaren
+              e.preventDefault(); // Prevent page reload on form submit
+              updateUser(selectedUserId, email, password, admin); // Update user
             }}
           >
             <label>
@@ -229,7 +230,7 @@ const AdminPage = () => {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)} // Sätt e-post
+                onChange={(e) => setEmail(e.target.value)} // Set email
               />
             </label>
             <label>
@@ -237,14 +238,14 @@ const AdminPage = () => {
               <input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} // Sätt lösenord
+                onChange={(e) => setPassword(e.target.value)} // Set password
               />
             </label>
             <label>
               Admin:
               <select
                 value={admin}
-                onChange={(e) => setAdmin(e.target.value === "true")} // Välj adminstatus
+                onChange={(e) => setAdmin(e.target.value === "true")} // Set admin status
               >
                 <option value={false}>No</option>
                 <option value={true}>Yes</option>
@@ -255,18 +256,18 @@ const AdminPage = () => {
         </div>
       )}
 
-      {/* Hantera laddning eller fel */}
+      {/* Handle loading or errors */}
       {loading && <p>Loading...</p>}
       {error && <p className="error">{error}</p>}
 
-      {/* Visa konversationerna */}
+      {/*Show conversations */}
       {conversations.length === 0 && !loading && !error && (
         <p>No conversations available for this user.</p>
       )}
       {conversations.length > 0 && !error && (
         <div>
           <h2>Conversations for {selectedUserId}</h2>
-          {/* renderConversationList() ska visa användarens konversationer */}
+          {/* renderConversationList() will display the user's conversations */}
           {renderConversationList(conversations)}
         </div>
       )}

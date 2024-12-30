@@ -9,18 +9,18 @@ const AllConversations = () => {
   const [error, setError] = useState(null);
   const [showConversations, setShowConversations] = useState(false);
 
-  // Funktion för att hämta konversationer
+  // Function to fetch user email
   const fetchUserEmail = async (userId) => {
-    // Kolla om userId är en gäst och hantera det separat
+    // Check if userId is a guest and handle it separately
   if (userId.startsWith('Guest-')) {
-    return `${userId}`;  // Returnera en standard e-postadress för gäster
+    return `${userId}`;  // Return a default email address for guests
   }
     try {
       const response = await axios.get(`http://localhost:3001/api/get-user/${userId}`);
-      return response.data.Email || userId; // Om Email saknas, returnera UserId
+      return response.data.Email || userId; // If Email is missing, return UserId
     } catch (error) {
       console.error(`Fel vid hämtning av e-post för UserID: ${userId}`, error);
-      return userId; // Returnera UserId om det inte går att hämta data
+      return userId; // Return UserId if data cannot be fetched
     }
   };
   
@@ -33,14 +33,14 @@ const AllConversations = () => {
       const data = response.data;
   
       if (!data || data.length === 0) {
-        setError('Inga konversationer hittades.');
+        setError('No conversations found.');
       } else {
-        // Lägg till e-post i varje användare
+        // Add email to each user
         const conversationsWithEmails = await Promise.all(
           data.map(async (conversation) => {
             if (!conversation.UserId) {
-              console.warn('UserId saknas för en konversation:', conversation);
-              return { ...conversation, Email: 'Gäst - Ingen ID tillgänglig' };
+              console.warn('UserId is missing for a conversation:', conversation);
+              return { ...conversation, Email: 'Guest - No ID available' };
             }
             const Email = await fetchUserEmail(conversation.UserId);
             return { ...conversation, Email };
@@ -50,8 +50,8 @@ const AllConversations = () => {
         setConversations(conversationsWithEmails);
       }
     } catch (err) {
-      console.error('Fel vid hämtning av konversationer:', err);
-      setError('Ett fel inträffade vid hämtning av konversationer.');
+      console.error('Error fetching conversations:', err);
+      setError('An error occurred while fetching the conversations.');
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,7 @@ const AllConversations = () => {
     fetchAllConversations();
   }, []);
 
-  // Hantera visningen av konversationer
+  // Handle displaying conversations
   const handleShowConversations = () => {
     setShowConversations(!showConversations);
   };
@@ -73,12 +73,12 @@ const AllConversations = () => {
     if (error) return <p className="error-text">{error}</p>;
   
     if (!conversations || conversations.length === 0)
-      return <p>Inga konversationer tillgängliga.</p>;
+      return <p>No conversations available.</p>;
   
     return conversations.map((conversation) => (
       <div key={conversation.UserId || Math.random()} className="conversation-card">
         <h3>
-          Användar-Identifierare:{' '}
+        User Identifier:{' '}
           {conversation.Email === conversation.UserId
             ? `: ${conversation.UserId}`
             : conversation.Email}
@@ -89,27 +89,27 @@ const AllConversations = () => {
               key={userConversation.ConversationId || Math.random()}
               className="conversation-details"
             >
-              <h4>Datum: {userConversation.Date || 'Okänt datum'}</h4>
+              <h4>Datum: {userConversation.Date || 'Unknown date'}</h4>
               <p>
-                Status: {userConversation.Ended ? 'Avslutad' : 'Pågående'}
+                Status: {userConversation.Ended ? 'Ended' : 'Ongoing'}
               </p>
               <ul>
                 {userConversation.PromptsAndAnswers &&
                 userConversation.PromptsAndAnswers.length > 0 ? (
                   userConversation.PromptsAndAnswers.map((item, index) => (
                     <li key={index}>
-                      <strong>Fråga:</strong> {item?.Prompt || 'Ingen fråga'} <br />
-                      <strong>Svar:</strong> {item?.Answer || 'Inget svar'}
+                      <strong>Question:</strong> {item?.Prompt || 'No question'} <br />
+                      <strong>Answer:</strong> {item?.Answer || 'No answer'}
                     </li>
                   ))
                 ) : (
-                  <p>Inga frågor eller svar tillgängliga.</p>
+                  <p>No questions or answers available.</p>
                 )}
               </ul>
             </div>
           ))
         ) : (
-          <p>Inga konversationer för denna användare.</p>
+          <p>No conversations for this user.</p>
         )}
       </div>
     ));
@@ -119,7 +119,7 @@ const AllConversations = () => {
 
   return (
     <div className="admin-page">
-      <h1 className="admin-page-title">Admin - Alla Konversationer</h1>
+      <h1 className="admin-page-title">Admin - All Conversations</h1>
 
       <button onClick={handleShowConversations} className="show-conversations-button">
         {showConversations ? 'Dölj konversationer' : 'Visa konversationer'}

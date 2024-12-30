@@ -241,12 +241,12 @@ body {
 /* Audio uploader container */
 .audio-uploader {
     padding: 20px;
-    background-color: #2e2e4e; /* Mörk bakgrundsfärg */
+    background-color: #2e2e4e; 
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     max-width: 600px;
-    margin: 0 auto; /* Centrerar behållaren */
-    color: #fff; /* Vit text */
+    margin: 0 auto; 
+    color: #fff; 
     text-align: center; /* Centrerad text */
   }
   
