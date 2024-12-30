@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from './LanguageContext';
 
-
+// This class handles the transcription of the audio input from the user and shows it in realtime
 const TranscriptHandler = () => {
   const { selectedLanguage, setSelectedLanguage, isPaused } = useLanguage();
   const [status, setStatus] = useState('Not Connected');
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState(null);
-  //const [language, setLanguage] = useState('');
   const lastTranscriptRef = React.useRef('');
 
 
@@ -37,7 +36,7 @@ const TranscriptHandler = () => {
 
         socket = new WebSocket(socketUrl, [
           'token',
-          'e2998f677895517095fd772b3810024fb1340dfb',
+          process.env.REACT_APP_DEEPGRAM_API_KEY,
         ]);
 
         socket.onopen = () => {
@@ -75,7 +74,6 @@ const TranscriptHandler = () => {
 
         socket.onclose = () => {
           setStatus('Disconnected');
-          //setTranscript(''); 
           console.log('WebSocket closed');
         };
 
@@ -92,7 +90,6 @@ const TranscriptHandler = () => {
 
     return () => {
       if (mediaRecorder) mediaRecorder.stop();
-      // Remove to not close the socket when pausing
       if (socket && !isPaused) socket.close();
     };
   }, [selectedLanguage, isPaused]); 
@@ -108,6 +105,7 @@ const TranscriptHandler = () => {
     setSelectedLanguage(e.target.value);  
   };
 
+  // The dropdown menu for selecting the language
   return (
     <div>
       <div className='language-selector'>

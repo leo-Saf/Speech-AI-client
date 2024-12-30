@@ -3,14 +3,17 @@ import React, { createContext, useState, useContext } from 'react';
 // Create the context
 const LanguageContext = createContext(null);
 
-// Create a provider component
+// This class is used to provide the language context to the rest of the application
 export const LanguageProvider = ({ children }) => {
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
   return (
-    <LanguageContext.Provider value={{ selectedLanguage, setSelectedLanguage, isRecording,
+    <LanguageContext.Provider value={{ 
+      selectedLanguage, 
+      setSelectedLanguage, 
+      isRecording,
       setIsRecording,
       isPaused,
       setIsPaused }}>
