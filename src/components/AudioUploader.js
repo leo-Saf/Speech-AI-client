@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { uploadAudio } from '../client';
+import { useLanguage } from './LanguageContext';
 
-
-const AudioUploader = ({ userId, fetchEmails, resetEmails }) => {
-
-  const [isConversationStarted, setIsConversationStarted] = useState(false);
-  // const [audioBlob, setAudioBlob] = useState(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
+const AudioUploader = () => {
+  //const [audioBlob, setAudioBlob] = useState(null);
+  const { selectedLanguage, isRecording, setIsRecording, isPaused, setIsPaused } = useLanguage();
+  //const [isRecording, setIsRecording] = useState(false);
+  //const [isPaused, setIsPaused] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [responseAudio, setResponseAudio] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [audioChunks, setAudioChunks] = useState([]);
+  const [audioChunks, setAudioChunks] = useState([]); 
   const audioRef = useRef(null);
   const canvasRef = useRef(null);
   const analyserRef = useRef(null);
@@ -127,6 +126,10 @@ const AudioUploader = ({ userId, fetchEmails, resetEmails }) => {
 
   // Start recording
   const handleStartRecording = () => {
+    if(!selectedLanguage){
+      alert('Please select a language before starting recording');
+       return;
+     }
     if (!mediaRecorder) return;
     if (isPaused) {
       mediaRecorder.resume(); // Resume recording if it was paused
@@ -222,13 +225,16 @@ const AudioUploader = ({ userId, fetchEmails, resetEmails }) => {
 
   return (
     <div className="audio-uploader">
-      {!isConversationStarted ? (
-        <button
-          onClick={handleStartConversation}
-          className="btn start-conversation-btn"
-        >
-          Start Session
-        </button>
+      {!isRecording ? (
+        <button 
+        onClick={handleStartRecording} 
+        disabled={loading || !selectedLanguage} 
+        className={`btn start-btn ${!selectedLanguage ? 'disabled' : ''}`}
+      >
+        {selectedLanguage 
+          ? 'Start recording' 
+          : 'Please select a language first'}
+      </button>
       ) : (
         <>
           <button
