@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from './LanguageContext';
 
-// This class handles the transcription of the audio input from the user and shows it in realtime
+// This class handles the transcription of the audio input from the user and shows it in realtime using Deepgrams API
 const TranscriptHandler = () => {
   const { selectedLanguage, setSelectedLanguage, isPaused } = useLanguage();
   const [status, setStatus] = useState('Not Connected');
@@ -9,7 +9,10 @@ const TranscriptHandler = () => {
   const [error, setError] = useState(null);
   const lastTranscriptRef = React.useRef('');
 
-
+  /**
+   * Main useEffect hook for handling WebSocket and MediaRecorder setup
+   * Establishes connection to Deepgram API and manages audio streaming
+   */
   useEffect(() => {
     let mediaRecorder;
     let socket;
@@ -52,7 +55,8 @@ const TranscriptHandler = () => {
 
           mediaRecorder.start(250); 
         };
-
+      
+        // Handle incoming transcription data
         socket.onmessage = (message) => {
           if(isPaused) return;
           try {
@@ -94,18 +98,19 @@ const TranscriptHandler = () => {
     };
   }, [selectedLanguage, isPaused]); 
 
+  // Clear the transcript only when a new language is selected
   useEffect(() => {
-    if (selectedLanguage !== '') {  // Only clear if a new language is selected
+    if (selectedLanguage !== '') {
       setTranscript('');
     }
   }, [selectedLanguage]);
   
-    // Update language state based on user selection
+  // Update language state based on user selection
   const handleLanguageChange = (e) => {
     setSelectedLanguage(e.target.value);  
   };
 
-  // The dropdown menu for selecting the language
+// The component creates a dropdown menu for selecting the language and showing the transcription text in reatime.
   return (
     <div>
       <div className='language-selector'>
