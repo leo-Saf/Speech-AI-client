@@ -1,9 +1,14 @@
 import React, { createContext, useState, useContext } from 'react';
 
-// Create the context
+/**
+ * Context for managing language and recording state across components.
+ * Initially set to null as it will be populated by the Provider.
+ */
 const LanguageContext = createContext(null);
-
-// This class is used to provide the language context to the rest of the application
+/**
+ * Provider component that manages shared state for language selection and recording status.
+ * Wraps the application to make these states available to all child components.
+ */
 export const LanguageProvider = ({ children }) => {
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
