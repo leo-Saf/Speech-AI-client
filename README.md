@@ -80,3 +80,7 @@ Notifications for actions such as logging in or registering a user are managed b
 3. ### Email Handling:
 
 Email addresses are stored and handled via useState in App.js.
+
+4. ### Transcription:
+
+You need to choose a language for transcription in the drop down menu to be able to start a session.
