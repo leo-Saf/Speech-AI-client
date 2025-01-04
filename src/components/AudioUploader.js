@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { uploadAudio } from '../client';
 import { useLanguage } from './LanguageContext';
 
-const AudioUploader = () => {
+const AudioUploader = ({ userId, fetchEmails }) => {
   //const [audioBlob, setAudioBlob] = useState(null);
   const { selectedLanguage, isRecording, setIsRecording, isPaused, setIsPaused } = useLanguage();
   //const [isRecording, setIsRecording] = useState(false);
@@ -187,17 +187,22 @@ const AudioUploader = () => {
   const handleUpload = async (blob) => {
     setLoading(true);
     try {
-      const uploadId = userId; // DO NOT use "guest" if userId is missing
+      const uploadId = userId || "guest"; // DO NOT use "guest" if userId is missing
     console.log('Uploading audio with ID:', uploadId);
     console.log('Data being sent to backend:', blob);
     
-    const emails = fetchEmails(); // Store emails in the ref
-    console.log('Fetched emails:', emails);
-    console.log('Sending emails to server');
+    let emails = [];
+   
+    if (userId !== "guest") {
+      emails = fetchEmails(); 
+      console.log('Fetched emails:', emails);
+    } else {
+      console.log('User is a guest, skipping email handling.');
+    }
 
     const response = await uploadAudio(blob, uploadId, emails);
-    
-      console.log('Upload successful:', response);
+    console.log('Upload successful:', response);
+
       const audioURL = URL.createObjectURL(response);
       setResponseAudio(audioURL); // Set the audio to be playable
   

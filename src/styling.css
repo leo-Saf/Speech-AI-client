@@ -238,6 +238,7 @@ body {
 
   
   
+  
 /* Audio uploader container */
 .audio-uploader {
     padding: 20px;
@@ -342,6 +343,111 @@ body {
     border-radius: 5px;
   }
   
+
+  /* AddUser.css */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background-color: #2150bf;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+label {
+  font-size: 16px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button.submit-btn {
+  background-color: #6d9fa0b7;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+button.submit-btn:disabled {
+  background-color: #888;
+}
+
+button.submit-btn:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.message {
+  margin-top: 20px;
+  color: #333;
+}
+
+.message.loading {
+  color: #ff9800;
+}
+
+.message.error {
+  color: #f44336;
+}
+
+.message.success {
+  color: #4caf50;
+}
+
+.close-btn {
+  position:relative;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s;
+  background-color: #3ab266;
+}
+
+.close-btn:hover {
+  color: #f44336;
+}
+
 
 
   /* Responsive layout for small screens */

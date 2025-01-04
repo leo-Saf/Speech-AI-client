@@ -20,6 +20,7 @@ const App = () => {
   const [authMode, setAuthMode] = useState(null);
   const [emails, setEmails] = useState([]);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   React.useEffect(() => {
     console.log('--------------------------- NEW EMAIL LOGS ----------------------------');
@@ -90,7 +91,8 @@ const App = () => {
                 <Link to="/"><button className="home-button">Home</button></Link>
                 <Link to="/historik"><button>View History</button></Link>
                 <Link to="/Recording"><button>Recording</button></Link>
-                <button onClick={() => setShowAddUserModal(true)}>Add User</button>
+                <button onClick={() => setIsModalOpen(true)}>Add User</button>
+      {isModalOpen && <AddUser onClose={() => setIsModalOpen(false)} />}
                 <button className="Logout" onClick={handleLogout}>Logout</button>
                 {user?.admin && (
                   <Link to="/admin"><button className="admin-button">Admin Page</button></Link>
@@ -112,7 +114,7 @@ const App = () => {
             <div>Loading...</div>
           ) : (
             <Routes>
-              <Route path="/" element={<Home user={user} />} />
+              <Route path="/" element={<Home user={user} fetchEmails={handleFetchEmails} />} />
               
               {isAuthenticated ? (
                 <>
@@ -184,16 +186,21 @@ const App = () => {
             </div>
           )}
 
-          <div className="added-users-list">
-            <h3>Added Users:</h3>
-            <ul>
-              {emails.length === 0 ? (
-                <li>No users added yet.</li>
-              ) : (
-                emails.map((email, index) => <li key={index}>{email}</li>)
-              )}
-            </ul>
-          </div>
+<div className="added-users-list">
+  {/* Visa listan över "Added Users" endast om användaren är inloggad */}
+  {isAuthenticated && (
+    <>
+      <h3>Added Users:</h3>
+      <ul>
+        {emails.length === 0 ? (
+          <li>No users added yet.</li>
+        ) : (
+          emails.map((email, index) => <li key={index}>{email}</li>)
+        )}
+      </ul>
+    </>
+  )}
+</div>
         </div>
       </Router>
     </LanguageProvider>

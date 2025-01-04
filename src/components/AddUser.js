@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 
-// function to add user emails to a conversation / session
-const AddUser = ({ onEmailSubmit }) => {
+// Funktion för att lägga till användarens email till konversationen eller sessionen
+const AddUser = ({ onEmailSubmit, onClose }) => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAddUser = async (e) => {
-    e.preventDefault();  // Prevent form submission from reloading the page
+    e.preventDefault();  // Förhindrar formulärsändning som laddar om sidan
     setIsLoading(true);
+    // Simulera API-anrop
+    setTimeout(() => {
+      setIsLoading(false);
+      setMessage('User added successfully!');
+    }, 2000);
+  
 
     try {
-      // api
+      // API-anrop, kan fyllas i senare
       /*const response = await fetch('http://localhost:3000/addUser', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -24,9 +30,9 @@ const AddUser = ({ onEmailSubmit }) => {
         throw new Error(data.error || 'Could not add user');
       }*/
 
-      // On success, pass the email back to the parent component
+      // Vid lyckad tillägg, skicka email tillbaka till föräldrakomponenten
       console.log('NEW EMAIL: ', email);
-      onEmailSubmit(email);  // Send the email back to the parent (App.js)
+      onEmailSubmit(email);  // Skicka email till föräldern (App.js)
 
       setMessage('User added successfully!');
     } catch (error) {
@@ -37,26 +43,30 @@ const AddUser = ({ onEmailSubmit }) => {
   };
 
   return (
-    <div>
-      <h1>Add New User</h1>
-      <form onSubmit={handleAddUser}>
-        <div>
-          <label>
-            Email:
+    <div className="modal-overlay">
+      <div className="modal-container">
+      <button className="close-btn" onClick={onClose}>
+          &times;
+        </button>
+        <h1>Add New User</h1>
+        <form onSubmit={handleAddUser}>
+          <div className="form-group">
+            <label htmlFor="email">Email:</label>
             <input
+              id="email"
               type="email"
               value={email}
-              placeholder="Email"
+              placeholder="Enter user's email"
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          </label>
-        </div>
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Adding User...' : 'Add user'}
-        </button>
-      </form>
-      <p>{message}</p>
+          </div>
+          <button type="submit" disabled={isLoading} className="submit-btn">
+            {isLoading ? 'Adding User...' : 'Add User'}
+          </button>
+        </form>
+        {message && <p className={`message ${isLoading ? 'loading' : ''}`}>{message}</p>}
+      </div>
     </div>
   );
 };
