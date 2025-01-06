@@ -2,16 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import { uploadAudio } from '../client';
 import { useLanguage } from './LanguageContext';
 
-const AudioUploader = ({ userId, fetchEmails }) => {
+
+const AudioUploader = ({ userId }) => {
   const [isConversationStarted, setIsConversationStarted] = useState(false);
-  //const [audioBlob, setAudioBlob] = useState(null);
-  const { selectedLanguage, isRecording, setIsRecording, isPaused, setIsPaused } = useLanguage();
-  //const [isRecording, setIsRecording] = useState(false);
-  //const [isPaused, setIsPaused] = useState(false);
+  // const [audioBlob, setAudioBlob] = useState(null);
+   //const [audioBlob, setAudioBlob] = useState(null);
+   const { selectedLanguage, isRecording, setIsRecording, isPaused, setIsPaused } = useLanguage();
+ // const [isRecording, setIsRecording] = useState(false);
+ // const [isPaused, setIsPaused] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [responseAudio, setResponseAudio] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [audioChunks, setAudioChunks] = useState([]); 
+  const [audioChunks, setAudioChunks] = useState([]);
   const audioRef = useRef(null);
   const canvasRef = useRef(null);
   const analyserRef = useRef(null);
@@ -20,7 +22,7 @@ const AudioUploader = ({ userId, fetchEmails }) => {
 
   const MAX_SILENCE_TIME = 3000; // Time after the user starts talking before silence is detected
   const SILENCE_THRESHOLD = 30; // Threshold for silence detection
-  const MAX_RECORDING_TIME = 30000; // Maximum recording time (30 seconds) regardless of whether the user stops talking or not
+  const MAX_RECORDING_TIME = 15000; // Maximum recording time (15 seconds) regardless of whether the user stops talking or not
   const recordingTimeoutRef = useRef(null); // Ref to handle the maximum recording time timeout
   const silenceHistory = []; // Keeps track of the silence history
   let silenceTimeout = null; // Timeout variable for silence detection
@@ -108,22 +110,14 @@ const AudioUploader = ({ userId, fetchEmails }) => {
   const handleStartConversation = () => {
     console.log('userid = ', userId);
     setIsConversationStarted(true);
+     //sendMessageToServer('START CONVO'); // SEND TO SERVER - TESTING
   };
 
-  // Stop the conversation, empty the array of emails that were active in last conversation / session
+  // Stop the conversation
   const handleStopConversation = () => {
-    try {
-      if (emails) {
-        resetEmails();
-        console.log('EMAILS ARE RESET.');
-      } else {
-        console.log('Emails är inte definierade');
-      }
-    } catch (error) {
-      console.error('Ett fel inträffade:', error);
-    }
-    
+    console.log('userid = ', userId);
     setIsConversationStarted(false);
+    //sendMessageToServer(userId); // TESTING
     setIsRecording(false);
     setIsPaused(false);
     clearTimeout(silenceTimeout);
@@ -131,10 +125,6 @@ const AudioUploader = ({ userId, fetchEmails }) => {
 
   // Start recording
   const handleStartRecording = () => {
-    if(!selectedLanguage){
-      alert('Please select a language before starting recording');
-       return;
-     }
     if (!mediaRecorder) return;
     if (isPaused) {
       mediaRecorder.resume(); // Resume recording if it was paused
@@ -156,7 +146,7 @@ const AudioUploader = ({ userId, fetchEmails }) => {
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
         const audioBlob = new Blob([event.data], { type: 'audio/webm' });
-        console.log('AudioBlob:', audioBlob);        
+        console.log('AudioBlob:', audioBlob);
         handleUpload(audioBlob); // Handle the upload of audio after recording
       }
     };
@@ -178,6 +168,16 @@ const AudioUploader = ({ userId, fetchEmails }) => {
     }
 
     console.log('Recording stopped manually OR by timer.');
+
+      /*if (audioChunks.length > 0) {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        setAudioChunks(audioBlob);
+        handleUpload(audioBlob);
+      } else {
+        console.error("Ingen ljuddata att bearbeta.");
+      }
+
+      setAudioChunks([]); // tar bort gammalt data från audio chunk eftersom denna funktion ska inte räknas som paus funktionen*/
     }
   };
 
@@ -188,26 +188,16 @@ const AudioUploader = ({ userId, fetchEmails }) => {
     }
   };
 
-  // upload audio bits with their corresponding userid (and the emails of other participants if there are any)
   const handleUpload = async (blob) => {
     setLoading(true);
     try {
       const uploadId = userId; // DO NOT use "guest" if userId is missing
     console.log('Uploading audio with ID:', uploadId);
     console.log('Data being sent to backend:', blob);
+
+    const response = await uploadAudio(blob, uploadId);
     
-    let emails = [];
-   
-    if (userId) {
-      emails = fetchEmails(); 
-      console.log('Fetched emails:', emails);
-    } else {
-      console.log('User is a guest, skipping email handling.');
-    }
-
-    const response = await uploadAudio(blob, uploadId, emails);
-    console.log('Upload successful:', response);
-
+      console.log('Upload successful:', response);
       const audioURL = URL.createObjectURL(response);
       setResponseAudio(audioURL); // Set the audio to be playable
   
@@ -223,7 +213,6 @@ const AudioUploader = ({ userId, fetchEmails }) => {
     if (responseAudio && audioRef.current) {
       const audioElement = audioRef.current;
       audioElement.src = responseAudio;
-      console.log('Försöker spela upp ljud från URL:', audioElement.src);
       audioElement.play().catch((error) => console.error('Error during playback:', error));
 
       audioElement.onended = () => {
@@ -236,23 +225,20 @@ const AudioUploader = ({ userId, fetchEmails }) => {
 
   return (
     <div className="audio-uploader">
-      {!isRecording ? (
-        <button 
-        onClick={handleStartRecording} 
-        disabled={loading || !selectedLanguage} 
-        className={`btn start-btn ${!selectedLanguage ? 'disabled' : ''}`}
-      >
-        {selectedLanguage 
-          ? 'Start recording' 
-          : 'Please select a language first'}
-      </button>
+      {!isConversationStarted ? (
+        <button
+          onClick={handleStartConversation}
+          className="btn start-conversation-btn"
+        >
+          Start Session
+        </button>
       ) : (
         <>
           <button
             onClick={handleStopConversation}
             className="btn stop-conversation-btn"
           >
-            Stop Session
+             Stop Session
           </button>
           <div className="recording-controls">
             {!isRecording ? (
