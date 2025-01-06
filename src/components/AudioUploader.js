@@ -2,14 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { uploadAudio } from '../client';
 import { useLanguage } from './LanguageContext';
 
-
 const AudioUploader = ({ userId }) => {
   const [isConversationStarted, setIsConversationStarted] = useState(false);
-  // const [audioBlob, setAudioBlob] = useState(null);
-   //const [audioBlob, setAudioBlob] = useState(null);
-   const { selectedLanguage, isRecording, setIsRecording, isPaused, setIsPaused } = useLanguage();
- // const [isRecording, setIsRecording] = useState(false);
- // const [isPaused, setIsPaused] = useState(false);
+  const { selectedLanguage, isRecording, setIsRecording, isPaused, setIsPaused } = useLanguage();
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [responseAudio, setResponseAudio] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -20,36 +15,32 @@ const AudioUploader = ({ userId }) => {
   const audioContextRef = useRef(null);
   const microphoneRef = useRef(null);
 
-  const MAX_SILENCE_TIME = 3000; // Time after the user starts talking before silence is detected
-  const SILENCE_THRESHOLD = 30; // Threshold for silence detection
-  const MAX_RECORDING_TIME = 15000; // Maximum recording time (15 seconds) regardless of whether the user stops talking or not
-  const recordingTimeoutRef = useRef(null); // Ref to handle the maximum recording time timeout
-  const silenceHistory = []; // Keeps track of the silence history
-  let silenceTimeout = null; // Timeout variable for silence detection
+  const MAX_SILENCE_TIME = 3000;
+  const SILENCE_THRESHOLD = 30;
+  const MAX_RECORDING_TIME = 15000;
+  const recordingTimeoutRef = useRef(null);
+  const silenceHistory = [];
+  let silenceTimeout = null;
 
   useEffect(() => {
     const setupRecorder = async () => {
       try {
-        // Request permission for the microphone
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         
-        // Create a new MediaRecorder instance
         const options = { mimeType: 'audio/webm' };
         const recorder = new MediaRecorder(stream, options);
         setMediaRecorder(recorder);
 
-        // Initialize AudioContext for visualizing audio
         audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
         analyserRef.current = audioContextRef.current.createAnalyser();
         analyserRef.current.fftSize = 256;
         
-        // Create a media stream source connected to the analyser
         microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
         microphoneRef.current.connect(analyserRef.current);
 
-        console.log('User ID = ', userId); // Log user ID (for debugging)
+        console.log('User ID = ', userId);
       } catch (error) {
-        console.error('Error accessing the microphone:', error); // Log error if access is denied or fails
+        console.error('Error accessing the microphone:', error);
       }
     };
 
@@ -79,12 +70,12 @@ const AudioUploader = ({ userId }) => {
         if (!silenceTimeout) {
           silenceTimeout = setTimeout(() => {
             console.log('Silence detected, stopping recording...');
-            handleStopRecording(); // Stop the recording due to silence
+            handleStopRecording();
           }, MAX_SILENCE_TIME);
         }
       } else {
         clearTimeout(silenceTimeout);
-        silenceTimeout = null; // Reset the silence timeout if silence is not detected
+        silenceTimeout = null;
       }
 
       const sliceWidth = canvas.width / bufferLength;
@@ -97,48 +88,50 @@ const AudioUploader = ({ userId }) => {
         x += sliceWidth;
       }
 
-      requestAnimationFrame(drawWaveform); // Repeatedly call to draw the waveform
+      requestAnimationFrame(drawWaveform);
     };
 
-    // If recording is happening and not paused, continue drawing the waveform
     if (isRecording && !isPaused) {
       drawWaveform();
     }
-  }, [isRecording, isPaused]); // Dependencies for effect to rerun based on recording or pause status
+  }, [isRecording, isPaused]);
 
-  // Start the conversation
   const handleStartConversation = () => {
+    if (!selectedLanguage) {
+      alert('Please select a language before starting the session');
+      return;
+    }
     console.log('userid = ', userId);
     setIsConversationStarted(true);
-     //sendMessageToServer('START CONVO'); // SEND TO SERVER - TESTING
   };
 
-  // Stop the conversation
   const handleStopConversation = () => {
     console.log('userid = ', userId);
     setIsConversationStarted(false);
-    //sendMessageToServer(userId); // TESTING
     setIsRecording(false);
     setIsPaused(false);
     clearTimeout(silenceTimeout);
   };
 
-  // Start recording
   const handleStartRecording = () => {
+    if (!selectedLanguage) {
+      alert('Please select a language before starting recording');
+      return;
+    }
     if (!mediaRecorder) return;
+    
     if (isPaused) {
-      mediaRecorder.resume(); // Resume recording if it was paused
+      mediaRecorder.resume();
       setIsPaused(false);
     } else {
-      mediaRecorder.start(); // Start recording if it's not paused
+      mediaRecorder.start();
       setIsRecording(true);
       silenceHistory.length = 0;
 
-      // Timeout to stop recording after a maximum time
-    recordingTimeoutRef.current = setTimeout(() => {
-      console.log('Max recording time reached, stopping...');
-      handleStopRecording();
-    }, MAX_RECORDING_TIME);
+      recordingTimeoutRef.current = setTimeout(() => {
+        console.log('Max recording time reached, stopping...');
+        handleStopRecording();
+      }, MAX_RECORDING_TIME);
     }
 
     console.log('MediaRecorder state:', mediaRecorder.state);
@@ -147,37 +140,24 @@ const AudioUploader = ({ userId }) => {
       if (event.data.size > 0) {
         const audioBlob = new Blob([event.data], { type: 'audio/webm' });
         console.log('AudioBlob:', audioBlob);
-        handleUpload(audioBlob); // Handle the upload of audio after recording
+        handleUpload(audioBlob);
       }
     };
   };
 
-  // Stop recording
   const handleStopRecording = () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
-      mediaRecorder.stop(); // Stop recording manually or by the timer
+      mediaRecorder.stop();
       setIsRecording(false);
       setIsPaused(false);
-      clearTimeout(silenceTimeout); // Clear the silence detection timeout
+      clearTimeout(silenceTimeout);
 
-
-    // Reset the timer
-    if (recordingTimeoutRef.current) {
-      clearTimeout(recordingTimeoutRef.current);
-      recordingTimeoutRef.current = null;
-    }
-
-    console.log('Recording stopped manually OR by timer.');
-
-      /*if (audioChunks.length > 0) {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        setAudioChunks(audioBlob);
-        handleUpload(audioBlob);
-      } else {
-        console.error("Ingen ljuddata att bearbeta.");
+      if (recordingTimeoutRef.current) {
+        clearTimeout(recordingTimeoutRef.current);
+        recordingTimeoutRef.current = null;
       }
 
-      setAudioChunks([]); // tar bort gammalt data från audio chunk eftersom denna funktion ska inte räknas som paus funktionen*/
+      console.log('Recording stopped manually OR by timer.');
     }
   };
 
@@ -191,21 +171,20 @@ const AudioUploader = ({ userId }) => {
   const handleUpload = async (blob) => {
     setLoading(true);
     try {
-      const uploadId = userId; // DO NOT use "guest" if userId is missing
-    console.log('Uploading audio with ID:', uploadId);
-    console.log('Data being sent to backend:', blob);
+      const uploadId = userId;
+      console.log('Uploading audio with ID:', uploadId);
+      console.log('Data being sent to backend:', blob);
 
-    const response = await uploadAudio(blob, uploadId);
-    
+      const response = await uploadAudio(blob, uploadId);
+      
       console.log('Upload successful:', response);
       const audioURL = URL.createObjectURL(response);
-      setResponseAudio(audioURL); // Set the audio to be playable
-  
+      setResponseAudio(audioURL);
     } catch (error) {
       console.error('Upload error:', error);
-      alert(`Upload error: ${error.message}`);// Show error message to the user
+      alert(`Upload error: ${error.message}`);
     } finally {
-      setLoading(false);   // Turn off loading indicator
+      setLoading(false);
     }
   };
   
@@ -220,17 +199,17 @@ const AudioUploader = ({ userId }) => {
         handleStartRecording();
       };
     }
-  }, [responseAudio]);  // Run every time responseAudio changes
-  
+  }, [responseAudio]);
 
   return (
     <div className="audio-uploader">
       {!isConversationStarted ? (
         <button
           onClick={handleStartConversation}
-          className="btn start-conversation-btn"
+          disabled={!selectedLanguage}
+          className={`btn start-conversation-btn ${!selectedLanguage ? 'disabled' : ''}`}
         >
-          Start Session
+          {selectedLanguage ? 'Start Session' : 'Please select a language first'}
         </button>
       ) : (
         <>
@@ -238,24 +217,24 @@ const AudioUploader = ({ userId }) => {
             onClick={handleStopConversation}
             className="btn stop-conversation-btn"
           >
-             Stop Session
+            Stop Session
           </button>
           <div className="recording-controls">
             {!isRecording ? (
               <button onClick={handleStartRecording} disabled={loading} className="btn start-btn">
-                 Start Recording
+                Start Recording
               </button>
             ) : isPaused ? (
               <button onClick={handleStartRecording} disabled={loading} className="btn resume-btn">
-                 Resume Recording
+                Resume Recording
               </button>
             ) : (
               <>
                 <button onClick={handleStopRecording} disabled={loading} className="btn stop-btn">
-                Stop Recording
+                  Stop Recording
                 </button>
                 <button onClick={handlePauseRecording} disabled={loading} className="btn pause-btn">
-                Pause Recording
+                  Pause Recording
                 </button>
               </>
             )}
@@ -277,16 +256,5 @@ const AudioUploader = ({ userId }) => {
     </div>
   );
 };
-
-const sendMessageToServer = async (message) => {
-  await fetch('/api/end-conversation', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ message }), // JSON message
-  });
-};
-
 
 export default AudioUploader;
