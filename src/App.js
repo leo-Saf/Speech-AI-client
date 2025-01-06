@@ -90,7 +90,7 @@ const App = () => {
                 <span className="span">Welcome {user ? user.email : 'User'}</span>
                 <Link to="/"><button className="home-button">Home</button></Link>
                 <Link to="/historik"><button>View History</button></Link>
-                <Link to="/Recording"><button>Recording</button></Link>
+               
                 <button onClick={() => setIsModalOpen(true)}>Add User</button>
       {isModalOpen && <AddUser onClose={() => setIsModalOpen(false)} />}
                 <button className="Logout" onClick={handleLogout}>Logout</button>
@@ -103,7 +103,7 @@ const App = () => {
                 <span className="span">You are a guest</span>
                 <Link to="/"><button className="home-button">Home</button></Link>
                 <Link to="/historik"><button>View History</button></Link>
-                <Link to="/Recording"><button>Recording</button></Link>
+                
                 <button onClick={() => setAuthMode('login')}>Login</button>
                 <button onClick={() => setAuthMode('register')}>Register</button>
               </>
@@ -119,19 +119,7 @@ const App = () => {
               {isAuthenticated ? (
                 <>
                   <Route path="/historik" element={<HistoryPage userId={user?.id} />} />
-                  <Route
-                    path="/Recording"
-                    element={
-                      <div className="home-container">
-                        <AudioUploader
-                          userId={user?.id}
-                          fetchEmails={handleFetchEmails}
-                          resetEmails={handleResetEmails}
-                        />
-                        <TranscriptHandler />
-                      </div>
-                    }
-                  />
+                 
                   {user?.admin && (
                     <>
                       <Route path="/admin" element={<AdminPage user={user} />} />
@@ -142,15 +130,7 @@ const App = () => {
               ) : (
                 <>
                   <Route path="/historik" element={<HistoryPage userId={null} />} />
-                  <Route
-                    path="/Recording"
-                    element={
-                      <div className="home-container">
-                        <AudioUploader userId={null} />
-                        <TranscriptHandler />
-                      </div>
-                    }
-                  />
+                  
                   <Route
                     path="*"
                     element={
