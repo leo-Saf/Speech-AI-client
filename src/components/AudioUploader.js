@@ -105,12 +105,13 @@ const AudioUploader = ({ userId }) => {
     setIsConversationStarted(true);
   };
 
-  const handleStopConversation = () => {
-    console.log('userid = ', userId);
+  const handleStopConversation = async () => {
+    console.log('Stopping conversation for user: ', userId);
     setIsConversationStarted(false);
     setIsRecording(false);
     setIsPaused(false);
     clearTimeout(silenceTimeout);
+    await sendMessageToServer('end-conversation');
   };
 
   const handleStartRecording = () => {
@@ -262,7 +263,7 @@ const sendMessageToServer = async (message) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ message }), // JSON message
+    body: JSON.stringify({ message }),
   });
 };
 
