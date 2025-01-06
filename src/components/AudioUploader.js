@@ -187,13 +187,13 @@ const AudioUploader = ({ userId, fetchEmails }) => {
   const handleUpload = async (blob) => {
     setLoading(true);
     try {
-      const uploadId = userId || "guest"; // DO NOT use "guest" if userId is missing
+      const uploadId = userId; // DO NOT use "guest" if userId is missing
     console.log('Uploading audio with ID:', uploadId);
     console.log('Data being sent to backend:', blob);
     
     let emails = [];
    
-    if (userId !== "guest") {
+    if (userId !== " ") {
       emails = fetchEmails(); 
       console.log('Fetched emails:', emails);
     } else {
