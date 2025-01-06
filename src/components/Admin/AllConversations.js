@@ -122,7 +122,7 @@ const AllConversations = () => {
       <h1 className="admin-page-title">Admin - All Conversations</h1>
 
       <button onClick={handleShowConversations} className="show-conversations-button">
-        {showConversations ? 'Dölj konversationer' : 'Visa konversationer'}
+        {showConversations ? 'Hide conversations' : 'Show conversations'}
       </button>
 
       {showConversations && (
