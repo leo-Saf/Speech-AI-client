@@ -120,23 +120,23 @@ const AudioUploader = ({ userId }) => {
       return;
     }
     if (!mediaRecorder) return;
-    
+  
     if (isPaused) {
       mediaRecorder.resume();
       setIsPaused(false);
-    } else {
+    } else if (!isRecording) { // Kontrollera att inspelningen inte redan har startat
       mediaRecorder.start();
       setIsRecording(true);
       silenceHistory.length = 0;
-
+  
       recordingTimeoutRef.current = setTimeout(() => {
         console.log('Max recording time reached, stopping...');
         handleStopRecording();
       }, MAX_RECORDING_TIME);
     }
-
+  
     console.log('MediaRecorder state:', mediaRecorder.state);
-
+  
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
         const audioBlob = new Blob([event.data], { type: 'audio/webm' });
@@ -145,6 +145,7 @@ const AudioUploader = ({ userId }) => {
       }
     };
   };
+  
 
   const handleStopRecording = () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
