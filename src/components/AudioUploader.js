@@ -3,6 +3,7 @@ import { uploadAudio } from '../client';
 import { useLanguage } from './LanguageContext';
 
 const AudioUploader = ({ userId, fetchEmails }) => {
+  const [isConversationStarted, setIsConversationStarted] = useState(false);
   //const [audioBlob, setAudioBlob] = useState(null);
   const { selectedLanguage, isRecording, setIsRecording, isPaused, setIsPaused } = useLanguage();
   //const [isRecording, setIsRecording] = useState(false);
@@ -112,10 +113,14 @@ const AudioUploader = ({ userId, fetchEmails }) => {
   // Stop the conversation, empty the array of emails that were active in last conversation / session
   const handleStopConversation = () => {
     try {
-      resetEmails();
-      console.log('EMAILS ARE RESET.');
-    } catch (error){
-      console.error('Emails are undefined: ', emails);
+      if (emails) {
+        resetEmails();
+        console.log('EMAILS ARE RESET.');
+      } else {
+        console.log('Emails är inte definierade');
+      }
+    } catch (error) {
+      console.error('Ett fel inträffade:', error);
     }
     
     setIsConversationStarted(false);
@@ -193,7 +198,7 @@ const AudioUploader = ({ userId, fetchEmails }) => {
     
     let emails = [];
    
-    if (userId !== " ") {
+    if (userId) {
       emails = fetchEmails(); 
       console.log('Fetched emails:', emails);
     } else {
@@ -218,6 +223,7 @@ const AudioUploader = ({ userId, fetchEmails }) => {
     if (responseAudio && audioRef.current) {
       const audioElement = audioRef.current;
       audioElement.src = responseAudio;
+      console.log('Försöker spela upp ljud från URL:', audioElement.src);
       audioElement.play().catch((error) => console.error('Error during playback:', error));
 
       audioElement.onended = () => {
