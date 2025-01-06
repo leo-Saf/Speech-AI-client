@@ -7,22 +7,19 @@ const TranscriptHandler = () => {
   const [status, setStatus] = useState('Not Connected');
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState(null);
-  const lastTranscriptRef = React.useRef('');
-  const socketRef = React.useRef(null);
-  const mediaRecorderRef = React.useRef(null);
-
+  const lastTranscriptRef = useRef('');
+  const socketRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
 
   /**
    * Main useEffect hook for handling WebSocket and MediaRecorder setup
    * Establishes connection to Deepgram API and manages audio streaming
    */
   useEffect(() => {
-    let mediaRecorder;
-    let socket;
-
-    // Return nothing if no language is selected
+    // Return early if no language is selected or not recording
     if (!selectedLanguage || !isRecording) {
       if (socketRef.current) {
+        socketRef.current.onclose = null; // Prevent cascading close calls
         socketRef.current.close();
         socketRef.current = null;
       }
@@ -42,10 +39,20 @@ const TranscriptHandler = () => {
           return;
         }
 
+        // Clean up existing WebSocket before creating a new one
+        if (socketRef.current) {
+          socketRef.current.onclose = null;
+          socketRef.current.close();
+        }
+
+        // Clean up existing MediaRecorder before creating a new one
+        if (mediaRecorderRef.current) {
+          mediaRecorderRef.current.stop();
+        }
+
         mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-        
+
         console.log('Selected language:', selectedLanguage);
-        // Dynamic WebSocket URL that changes language for the selected language of the user
         const socketUrl = `wss://api.deepgram.com/v1/listen?model=nova-2&language=${selectedLanguage}`;
         console.log('WebSocket URL:', socketUrl);
 
@@ -58,34 +65,30 @@ const TranscriptHandler = () => {
           setStatus('Connected');
           console.log('WebSocket connected');
 
-          
           mediaRecorderRef.current.addEventListener('dataavailable', (event) => {
-            if (event.data.size > 0 && socketRef.current?.readyState === 1 && !isPaused) {
+            if (event.data.size > 0 && 
+                socketRef.current?.readyState === 1 && 
+                !isPaused) {
               socketRef.current.send(event.data);
             }
           });
 
           mediaRecorderRef.current.start(250);
         };
-      
-        // Handle incoming transcription data
+
         socketRef.current.onmessage = (message) => {
-          if(isPaused) return;
+          if (isPaused) return;
           try {
-          const received = JSON.parse(message.data);
-          const newTranscript = received.channel.alternatives[0]?.transcript || '';
-      
-          if (newTranscript && received.is_final) {
-            console.log('Final transcript:', newTranscript);
-      
-            setTranscript((prev) => prev + newTranscript + ' ');
-      
+            const received = JSON.parse(message.data);
+            const newTranscript = received.channel.alternatives[0]?.transcript || '';
 
+            if (newTranscript && received.is_final) {
+              console.log('Final transcript:', newTranscript);
+              setTranscript((prev) => prev + newTranscript + ' ');
+            }
+          } catch (err) {
+            console.error('Error parsing WebSocket message:', err);
           }
-
-        } catch (err) {
-          console.error('Error parsing WebSocket message:', err);
-        }
         };
 
         socketRef.current.onclose = () => {
@@ -104,11 +107,19 @@ const TranscriptHandler = () => {
 
     setupTranscription();
 
+    // Cleanup function
     return () => {
-      if (mediaRecorder) mediaRecorder.stop();
-      if (socket && !isPaused) socket.close();
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+        mediaRecorderRef.current = null;
+      }
+      if (socketRef.current) {
+        socketRef.current.onclose = null;
+        socketRef.current.close();
+        socketRef.current = null;
+      }
     };
-  }, [selectedLanguage, isPaused, isRecording]); 
+  }, [selectedLanguage, isPaused, isRecording]);
 
   // Clear the transcript only when a new language is selected
   useEffect(() => {
@@ -116,16 +127,15 @@ const TranscriptHandler = () => {
       setTranscript('');
     }
   }, [selectedLanguage]);
-  
+
   // Update language state based on user selection
   const handleLanguageChange = (e) => {
-    setSelectedLanguage(e.target.value);  
+    setSelectedLanguage(e.target.value);
   };
 
-// The component creates a dropdown menu for selecting the language and showing the transcription text in reatime.
   return (
     <div>
-      <div className='language-selector'>
+      <div className="language-selector">
         <label htmlFor="language-selector"></label>
         <select
           id="language-selector"
@@ -144,11 +154,7 @@ const TranscriptHandler = () => {
       <div style={{ border: '1px solid #1a202c', padding: '10px', marginTop: '20px' }}>
         <h3>Transcription:</h3>
         <p style={{ whiteSpace: 'pre-wrap', color: 'white' }}>{transcript}</p>
-        {selectedLanguage && (
-          <div>
-
-          </div>
-        )}
+        {selectedLanguage && <div></div>}
       </div>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
