@@ -91,8 +91,7 @@ const App = () => {
                 <Link to="/"><button className="home-button">Home</button></Link>
                 <Link to="/historik"><button>View History</button></Link>
                
-                <button onClick={() => setIsModalOpen(true)}>Add User</button>
-      {isModalOpen && <AddUser onClose={() => setIsModalOpen(false)} />}
+                
                 <button className="Logout" onClick={handleLogout}>Logout</button>
                 {user?.admin && (
                   <Link to="/admin"><button className="admin-button">Admin Page</button></Link>
