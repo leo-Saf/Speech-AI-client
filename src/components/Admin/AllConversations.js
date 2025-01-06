@@ -89,7 +89,7 @@ const AllConversations = () => {
               key={userConversation.ConversationId || Math.random()}
               className="conversation-details"
             >
-              <h4>Datum: {userConversation.Date || 'Unknown date'}</h4>
+              <h4>Date: {userConversation.Date || 'Unknown date'}</h4>
               <p>
                 Status: {userConversation.Ended ? 'Ended' : 'Ongoing'}
               </p>
