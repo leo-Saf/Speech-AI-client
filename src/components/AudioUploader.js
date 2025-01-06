@@ -256,5 +256,14 @@ const AudioUploader = ({ userId }) => {
     </div>
   );
 };
+const sendMessageToServer = async (message) => {
+  await fetch('/api/end-conversation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message }), // JSON message
+  });
+};
 
 export default AudioUploader;
