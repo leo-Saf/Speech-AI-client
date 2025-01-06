@@ -91,8 +91,7 @@ const App = () => {
                 <Link to="/"><button className="home-button">Home</button></Link>
                 <Link to="/historik"><button>View History</button></Link>
                
-                <button onClick={() => setIsModalOpen(true)}>Add User</button>
-      {isModalOpen && <AddUser onClose={() => setIsModalOpen(false)} />}
+                
                 <button className="Logout" onClick={handleLogout}>Logout</button>
                 {user?.admin && (
                   <Link to="/admin"><button className="admin-button">Admin Page</button></Link>
@@ -166,21 +165,7 @@ const App = () => {
             </div>
           )}
 
-<div className="added-users-list">
-  {/* Visa listan över "Added Users" endast om användaren är inloggad */}
-  {isAuthenticated && (
-    <>
-      <h3>Added Users:</h3>
-      <ul>
-        {emails.length === 0 ? (
-          <li>No users added yet.</li>
-        ) : (
-          emails.map((email, index) => <li key={index}>{email}</li>)
-        )}
-      </ul>
-    </>
-  )}
-</div>
+
         </div>
       </Router>
     </LanguageProvider>

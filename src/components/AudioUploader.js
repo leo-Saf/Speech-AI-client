@@ -105,12 +105,13 @@ const AudioUploader = ({ userId }) => {
     setIsConversationStarted(true);
   };
 
-  const handleStopConversation = () => {
-    console.log('userid = ', userId);
+  const handleStopConversation = async () => {
+    console.log('Stopping conversation for user: ', userId);
     setIsConversationStarted(false);
     setIsRecording(false);
     setIsPaused(false);
     clearTimeout(silenceTimeout);
+    await sendMessageToServer('end-conversation');
   };
 
   const handleStartRecording = () => {
@@ -119,23 +120,23 @@ const AudioUploader = ({ userId }) => {
       return;
     }
     if (!mediaRecorder) return;
-    
+  
     if (isPaused) {
       mediaRecorder.resume();
       setIsPaused(false);
-    } else {
+    } else if (!isRecording) { // Kontrollera att inspelningen inte redan har startat
       mediaRecorder.start();
       setIsRecording(true);
       silenceHistory.length = 0;
-
+  
       recordingTimeoutRef.current = setTimeout(() => {
         console.log('Max recording time reached, stopping...');
         handleStopRecording();
       }, MAX_RECORDING_TIME);
     }
-
+  
     console.log('MediaRecorder state:', mediaRecorder.state);
-
+  
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
         const audioBlob = new Blob([event.data], { type: 'audio/webm' });
@@ -144,6 +145,7 @@ const AudioUploader = ({ userId }) => {
       }
     };
   };
+  
 
   const handleStopRecording = () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
@@ -255,6 +257,15 @@ const AudioUploader = ({ userId }) => {
       )}
     </div>
   );
+};
+const sendMessageToServer = async (message) => {
+  await fetch('/api/end-conversation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message }),
+  });
 };
 
 export default AudioUploader;
