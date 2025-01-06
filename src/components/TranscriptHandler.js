@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLanguage } from './LanguageContext';
 
 // This class handles the transcription of the audio input from the user and shows it in realtime using Deepgrams API
 const TranscriptHandler = () => {
-  const { selectedLanguage, setSelectedLanguage, isPaused } = useLanguage();
+  const { selectedLanguage, setSelectedLanguage, isPaused, isRecording } = useLanguage();
   const [status, setStatus] = useState('Not Connected');
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState(null);
   const lastTranscriptRef = React.useRef('');
+  const socketRef = React.useRef(null);
+  const mediaRecorderRef = React.useRef(null);
+
 
   /**
    * Main useEffect hook for handling WebSocket and MediaRecorder setup
@@ -18,8 +21,17 @@ const TranscriptHandler = () => {
     let socket;
 
     // Return nothing if no language is selected
-    if (!selectedLanguage) 
-    return;
+    if (!selectedLanguage || !isRecording) {
+      if (socketRef.current) {
+        socketRef.current.close();
+        socketRef.current = null;
+      }
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+        mediaRecorderRef.current = null;
+      }
+      return;
+    }
 
     const setupTranscription = async () => {
       try {
@@ -30,34 +42,34 @@ const TranscriptHandler = () => {
           return;
         }
 
-        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+        mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'audio/webm' });
         
         console.log('Selected language:', selectedLanguage);
         // Dynamic WebSocket URL that changes language for the selected language of the user
         const socketUrl = `wss://api.deepgram.com/v1/listen?model=nova-2&language=${selectedLanguage}`;
         console.log('WebSocket URL:', socketUrl);
 
-        socket = new WebSocket(socketUrl, [
+        socketRef.current = new WebSocket(socketUrl, [
           'token',
           process.env.REACT_APP_DEEPGRAM_API_KEY,
         ]);
 
-        socket.onopen = () => {
+        socketRef.current.onopen = () => {
           setStatus('Connected');
           console.log('WebSocket connected');
 
           
-          mediaRecorder.addEventListener('dataavailable', (event) => {
-            if (event.data.size > 0 && socket.readyState === 1 && !isPaused) {
-              socket.send(event.data);
+          mediaRecorderRef.current.addEventListener('dataavailable', (event) => {
+            if (event.data.size > 0 && socketRef.current?.readyState === 1 && !isPaused) {
+              socketRef.current.send(event.data);
             }
           });
 
-          mediaRecorder.start(250); 
+          mediaRecorderRef.current.start(250);
         };
       
         // Handle incoming transcription data
-        socket.onmessage = (message) => {
+        socketRef.current.onmessage = (message) => {
           if(isPaused) return;
           try {
           const received = JSON.parse(message.data);
@@ -76,12 +88,12 @@ const TranscriptHandler = () => {
         }
         };
 
-        socket.onclose = () => {
+        socketRef.current.onclose = () => {
           setStatus('Disconnected');
           console.log('WebSocket closed');
         };
 
-        socket.onerror = (error) => {
+        socketRef.current.onerror = (error) => {
           setError('WebSocket Error');
           console.error('WebSocket error:', error);
         };
@@ -96,7 +108,7 @@ const TranscriptHandler = () => {
       if (mediaRecorder) mediaRecorder.stop();
       if (socket && !isPaused) socket.close();
     };
-  }, [selectedLanguage, isPaused]); 
+  }, [selectedLanguage, isPaused, isRecording]); 
 
   // Clear the transcript only when a new language is selected
   useEffect(() => {
