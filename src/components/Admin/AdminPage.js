@@ -186,7 +186,7 @@ const AdminPage = () => {
 
       {/* Knappar: Update, Delete (Dropdown), All User Conversations */}
       <div className="admin-buttons">
-        <button onClick={() => setShowForm(!showForm)}>Update</button>
+        <button onClick={() => setShowForm(!showForm)}>Update User</button>
 
         {/* Dropdown to select a user to delete*/}
 <select
