@@ -165,21 +165,7 @@ const App = () => {
             </div>
           )}
 
-<div className="added-users-list">
-  {/* Visa listan över "Added Users" endast om användaren är inloggad */}
-  {isAuthenticated && (
-    <>
-      <h3>Added Users:</h3>
-      <ul>
-        {emails.length === 0 ? (
-          <li>No users added yet.</li>
-        ) : (
-          emails.map((email, index) => <li key={index}>{email}</li>)
-        )}
-      </ul>
-    </>
-  )}
-</div>
+
         </div>
       </Router>
     </LanguageProvider>
