@@ -15,9 +15,9 @@ const AudioUploader = ({ userId }) => {
   const audioContextRef = useRef(null);
   const microphoneRef = useRef(null);
 
-  const MAX_SILENCE_TIME = 3000;
+  const MAX_SILENCE_TIME = 2000;
   const SILENCE_THRESHOLD = 30;
-  const MAX_RECORDING_TIME = 15000;
+  const MAX_RECORDING_TIME = 40000;
   const recordingTimeoutRef = useRef(null);
   const silenceHistory = [];
   let silenceTimeout = null;
@@ -70,7 +70,7 @@ const AudioUploader = ({ userId }) => {
         if (!silenceTimeout) {
           silenceTimeout = setTimeout(() => {
             console.log('Silence detected, stopping recording...');
-            handleStopRecording();
+            handleStartRecording();
           }, MAX_SILENCE_TIME);
         }
       } else {
@@ -148,20 +148,29 @@ const AudioUploader = ({ userId }) => {
   
 
   const handleStopRecording = () => {
+    
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
       setIsRecording(false);
       setIsPaused(false);
       clearTimeout(silenceTimeout);
-
+  
+      // Ta bort timeout-referenser när inspelningen stängs
       if (recordingTimeoutRef.current) {
         clearTimeout(recordingTimeoutRef.current);
         recordingTimeoutRef.current = null;
       }
-
+  
       console.log('Recording stopped manually OR by timer.');
+  
+      // Återstarta inspelning om svaret från backend är försenat eller vid tomt svar
+      if (!responseAudio) {
+        console.log('Backend has not responded yet. Re-starting recording...');
+        handleStartRecording(); // Starta inspelning på nytt om det inte har inkommit ett svar från backend
+      }
     }
   };
+  
 
   const handlePauseRecording = () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
@@ -191,17 +200,24 @@ const AudioUploader = ({ userId }) => {
   };
   
   useEffect(() => {
+    // Hantera fallet där det finns ett AI-svar (responsljud) att spela upp
     if (responseAudio && audioRef.current) {
       const audioElement = audioRef.current;
       audioElement.src = responseAudio;
       audioElement.play().catch((error) => console.error('Error during playback:', error));
-
+  
       audioElement.onended = () => {
-        console.log('AI responded. Recording...');
+        console.log('AI responded. Starting recording...');
         handleStartRecording();
       };
+    } 
+    // Falla tillbaka på att starta inspelning direkt om inget AI-svar finns
+    else if (!responseAudio && !isRecording && !isPaused) {
+      console.log('No response from AI, starting recording...');
+      handleStartRecording();
     }
-  }, [responseAudio]);
+  }, [responseAudio, isRecording, isPaused]); // Vi kollar efter ändringar i `responseAudio`, `isRecording` och `isPaused`
+  
 
   return (
     <div className="audio-uploader">
