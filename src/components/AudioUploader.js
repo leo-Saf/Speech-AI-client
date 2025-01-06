@@ -93,6 +93,10 @@ const AudioUploader = ({ userId }) => {
   }, [isRecording, isPaused]);
 
   const handleStartRecording = () => {
+    if(!selectedLanguage){
+      alert('Please select a language before starting recording');
+       return;
+     }
     if (!mediaRecorder) return;
     if (isPaused) {
       mediaRecorder.resume();
@@ -173,11 +177,31 @@ const AudioUploader = ({ userId }) => {
 
   return (
     <div className="audio-uploader">
+<<<<<<< Updated upstream
       <h2 className="title">Spela in ett ljud</h2>
       <div className="recording-controls">
         {!isRecording ? (
           <button onClick={handleStartRecording} disabled={loading} className="btn start-btn">
             Starta inspelning
+=======
+      {!isConversationStarted ? (
+        <button 
+        onClick={handleStartRecording} 
+        disabled={loading || !selectedLanguage} 
+        className={`btn start-btn ${!selectedLanguage ? 'disabled' : ''}`}
+      >
+        {selectedLanguage 
+          ? 'Start recording' 
+          : 'Please select a language first'}
+      </button>
+      ) : (
+        <>
+          <button
+            onClick={handleStopConversation}
+            className="btn stop-conversation-btn"
+          >
+             Stop Session
+>>>>>>> Stashed changes
           </button>
         ) : isPaused ? (
           <button onClick={handleStartRecording} disabled={loading} className="btn resume-btn">
